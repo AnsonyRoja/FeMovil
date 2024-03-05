@@ -1,4 +1,5 @@
 import 'package:femovil/presentation/clients/edit_clients.dart';
+import 'package:femovil/presentation/orden_venta/orden_venta.dart';
 import 'package:flutter/material.dart';
 
 class ClientDetailsScreen extends StatelessWidget {
@@ -36,7 +37,27 @@ class ClientDetailsScreen extends StatelessWidget {
                 _buildTextFormField('Correo', '${client['correo']}'),
                 _buildTextFormField('Telefono', client['telefono'].toString()),
                 _buildTextFormField('Grupo', client['grupo'].toString()),
-          
+                const SizedBox(height: 29,),
+               SizedBox(
+                
+                width: double.infinity, // Ocupa el ancho de la pantalla horizontalmente
+                child: ElevatedButton(
+                  
+                  onPressed: () {
+                    // Aquí puedes manejar la acción de agregar orden
+                    // Por ejemplo, puedes navegar a una pantalla de agregar orden
+                   Navigator.push(context,MaterialPageRoute(builder: (context) => OrdenDeVentaScreen(clientId: client["id"] ,clientName: client["name"])),
+                  );
+
+                  },
+                  style: const ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll<Color>(Colors.green),
+                    foregroundColor: MaterialStatePropertyAll<Color>(Colors.white),
+                  ) ,
+                  child: const Text('Agregar Orden'),
+
+                ),
+              ),
               ],
             ),
           ),

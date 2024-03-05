@@ -17,6 +17,7 @@ class AddProductForm extends StatefulWidget {
 class _AddProductFormState extends State<AddProductForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _qtySoldController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _minStockController = TextEditingController();
@@ -138,6 +139,16 @@ class _AddProductFormState extends State<AddProductForm> {
                       return null;
                     },
                   ),
+                   TextFormField(
+                    controller: _qtySoldController,
+                    decoration: const InputDecoration(labelText: 'Vendido', filled: true, fillColor: Colors.white),
+                     validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingresa la cantidad de ventas del producto';
+                      }
+                      return null;
+                    },
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: SizedBox(
@@ -177,6 +188,8 @@ class _AddProductFormState extends State<AddProductForm> {
     double minStock = double.parse(_minStockController.text);
     double maxStock = double.parse(_maxStockController.text);
     String categoria = _categoriaController.text;
+    int qtySold = int.parse(_qtySoldController.text);
+
     // Crea una instancia del producto
     Product product = Product(
       name: name,
@@ -186,6 +199,8 @@ class _AddProductFormState extends State<AddProductForm> {
       minStock: minStock,
       maxStock: maxStock,
       categoria:categoria,
+      qtySold: qtySold
+      
     );
 
     // Llama a un método para guardar el producto en Sqflite
@@ -198,6 +213,7 @@ class _AddProductFormState extends State<AddProductForm> {
     _minStockController.clear();
     _maxStockController.clear();
     _categoriaController.clear();
+    _qtySoldController.clear();
 
     // Muestra un mensaje de éxito o realiza cualquier otra acción necesaria
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -232,6 +248,7 @@ class _AddProductFormState extends State<AddProductForm> {
     _quantityController.dispose();
     _minStockController.dispose();
     _maxStockController.dispose();
+    _qtySoldController.dispose();
     super.dispose();
   }
 

@@ -96,6 +96,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
     // Actualizar el producto en la base de datos
     await DatabaseHelper.instance.updateProduct(updatedProduct);
 
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Producto actualizado satisfactoriamente'),
+            duration: Duration(seconds: 2), 
+            backgroundColor: Colors.green,
+          ),
+        );
+
     // Cerrar la pantalla de edición después de actualizar el producto
     Navigator.pop(context);
           },

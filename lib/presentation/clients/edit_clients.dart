@@ -65,7 +65,9 @@ class _EditClientScreenState extends State<EditClientScreen> {
                   _buildTextFormField('Correo', _correoController),
                   _buildTextFormField('Telefono', _telefonoController),
                   _buildTextFormField('Grupo', _grupoController),
+              
                 ],
+
               ),
             ),
           ),
@@ -91,6 +93,14 @@ class _EditClientScreenState extends State<EditClientScreen> {
 
     // Actualizar el producto en la base de datos
     await DatabaseHelper.instance.updateClient(updatedClient);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cliente actualizado satisfactoriamente'),
+          duration: Duration(seconds: 2), 
+          backgroundColor: Colors.green,
+        ),
+      );
 
     // Cerrar la pantalla de edición después de actualizar el producto
     Navigator.pop(context);

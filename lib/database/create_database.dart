@@ -47,7 +47,8 @@ import 'package:path/path.dart' as path;
           price REAL,
           min_stock INTEGER,
           max_stock INTEGER,
-          categoria TEXT
+          categoria TEXT,
+          quantity_sold INTEGER
         )
       ''');
     await db.execute('''
@@ -62,6 +63,32 @@ import 'package:path/path.dart' as path;
       )
 
   ''');
+
+    await db.execute('''
+        CREATE TABLE orden_venta (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        numero_referencia TEXT,
+        fecha TEXT,
+        descripcion TEXT,
+        monto REAL,
+        FOREIGN KEY (cliente_id) REFERENCES clients(id)
+      )
+    ''');
+
+    await db.execute('''
+
+      CREATE TABLE orden_venta_producto (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          orden_venta_id INTEGER,
+          producto_id INTEGER,
+          cantidad INTEGER,
+          FOREIGN KEY (orden_venta_id) REFERENCES orden_venta(id),
+          FOREIGN KEY (producto_id) REFERENCES products(id)
+       )
+
+    ''');
+
     },
   );
 
@@ -142,6 +169,74 @@ import 'package:path/path.dart' as path;
   }
 }
 
+    Future<int> insertOrder(Map<String, dynamic> order) async {
+  final db = await database;
+  if (db != null) {
+    // Verificar la disponibilidad de productos antes de insertar la orden
+    for (Map<String, dynamic> product in order['productos']) {
+      final productId = product['id'];
+      final productQuantity = product['quantity'];
+      final productAvailableQuantity = await getProductAvailableQuantity(productId);
+      
+      if (productQuantity > productAvailableQuantity) {
+        // Si la cantidad solicitada es mayor que la cantidad disponible, mostrar un mensaje de error
+        print('Error: Producto con ID $productId no tiene suficiente stock disponible.');
+        return -1;
+      }
+    }
+
+    // Insertar la orden de venta en la tabla 'orden_venta'
+    int orderId = await db.insert('orden_venta', {
+      'cliente_id': order['cliente_id'],
+      'numero_referencia': order['numero_referencia'],
+      'fecha': order['fecha'],
+      'descripcion': order['descripcion'],
+      'monto': order['monto'],
+    });
+
+    // Recorrer la lista de productos y agregarlos a la tabla de unión 'orden_venta_producto'
+    for (Map<String, dynamic> product in order['productos']) {
+      await db.insert('orden_venta_producto', {
+        'orden_venta_id': orderId,
+        'producto_id': product['id'],
+        'cantidad': product['quantity'], // Agrega la cantidad del producto si es necesario
+      });
+
+      // Actualizar la cantidad disponible del producto en la tabla 'products'
+      int productId = product['id'];
+      int soldQuantity = product['quantity'];
+      await db.rawUpdate(
+        'UPDATE products SET quantity = quantity - ? WHERE id = ?',
+        [soldQuantity, productId],
+      );
+    }
+
+    return orderId;
+  } else {
+    // Manejar el caso en el que db sea null
+    print('Error: db is null');
+    return -1;
+  }
+}
+
+Future<int> getProductAvailableQuantity(int productId) async {
+  final db = await database;
+  if (db != null) {
+    // Consultar la cantidad disponible del producto en la tabla 'products'
+    List<Map<String, dynamic>> result = await db.query('products', where: 'id = ?', whereArgs: [productId]);
+    if (result.isNotEmpty) {
+      return result.first['quantity'] ?? 0;
+    } else {
+      // Manejar el caso en el que no se encuentre el producto
+      print('Error: No se encontró el producto con ID $productId');
+      return 0;
+    }
+  } else {
+    // Manejar el caso en el que db sea null
+    print('Error: db is null');
+    return 0;
+  }
+}
 
 
 

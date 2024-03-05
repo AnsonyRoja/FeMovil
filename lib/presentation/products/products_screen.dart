@@ -64,6 +64,7 @@ class _ProductsState extends State<Products> {
   @override
   void initState(){
       _loadProducts();
+     //  _deleteBaseDatos();
       super.initState();
   }
 
@@ -245,9 +246,7 @@ class _ProductsState extends State<Products> {
               ),
             ),
             //esto para abajo es el navbar bottom 
-           
-           
-
+                 
           ],
         ),
       ),

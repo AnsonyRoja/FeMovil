@@ -33,15 +33,15 @@ void _showFilterOptions(BuildContext context) {
     context: context,
     position: RelativeRect.fromRect(
       Rect.fromPoints(
-        Offset(0, 0), // Punto de inicio en la esquina superior izquierda
-        Offset(0, 0), // Punto de fin en la esquina superior izquierda
+        const Offset(0, 0), // Punto de inicio en la esquina superior izquierda
+        const Offset(0, 0), // Punto de fin en la esquina superior izquierda
       ),
       overlay.localToGlobal(Offset.zero) & overlay.size, // Tamaño del overlay
     ),
     items: <PopupMenuEntry>[
       PopupMenuItem(
         child: ListTile(
-          title: Text('Filtrar por mayor precio'),
+          title: const Text('Filtrar por mayor precio'),
           onTap: () {
             Navigator.pop(context);
             _filterByMaxPrice();
@@ -50,10 +50,19 @@ void _showFilterOptions(BuildContext context) {
       ),
       PopupMenuItem(
         child: ListTile(
-          title: Text('Filtrar por menor precio'),
+          title: const Text('Filtrar por menor precio'),
           onTap: () {
             Navigator.pop(context);
             _filterByMinPrice();
+          },
+        ),
+      ),
+       PopupMenuItem(
+        child: ListTile(
+          title: const Text('Ordenar por mas el vendido'),
+          onTap: () {
+            Navigator.pop(context);
+            _filterByMostSold();
           },
         ),
       ),
@@ -76,6 +85,14 @@ void _filterByMinPrice() {
   sortedProducts.sort((a, b) => a['price'].compareTo(b['price'])); // Ordena de forma ascendente por precio
   setState(() {
     products = sortedProducts; // Actualiza la lista original con la lista ordenada
+  });
+}
+
+void _filterByMostSold() {
+  List<Map<String, dynamic>> sortedProducts = List.from(products);
+  sortedProducts.sort((a, b) => b['quantity_sold'].compareTo(a['quantity_sold']));
+  setState(() {
+    products = sortedProducts;
   });
 }
 
@@ -162,6 +179,7 @@ Widget build(BuildContext context) {
                       children: [
                         Text('Categoria: ${product['categoria']}'),
                         Text('Precio: \$${product['price']}'),
+                        Text('Vendidos: ${product['quantity_sold']}'),
                         Text('Cantidad disponible ${product['quantity']}'),
                         const Divider(),
                       ],
