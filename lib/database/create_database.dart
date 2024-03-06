@@ -169,19 +169,20 @@ import 'package:path/path.dart' as path;
   }
 }
 
-    Future<int> insertOrder(Map<String, dynamic> order) async {
+    Future insertOrder(Map<String, dynamic> order) async {
   final db = await database;
   if (db != null) {
     // Verificar la disponibilidad de productos antes de insertar la orden
     for (Map<String, dynamic> product in order['productos']) {
       final productId = product['id'];
+      final productName = product['name'];
       final productQuantity = product['quantity'];
       final productAvailableQuantity = await getProductAvailableQuantity(productId);
       
       if (productQuantity > productAvailableQuantity) {
         // Si la cantidad solicitada es mayor que la cantidad disponible, mostrar un mensaje de error
         print('Error: Producto con ID $productId no tiene suficiente stock disponible.');
-        return -1;
+        return {"failure": -1, "Error":"Producto $productName no tiene suficiente stock disponible." };
       }
     }
 
