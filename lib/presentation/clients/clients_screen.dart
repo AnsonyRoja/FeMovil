@@ -23,7 +23,7 @@ class _ClientsState extends State<Clients> {
   TextEditingController searchController = TextEditingController();
   String input = "";
 
-  Future<void> _loadProducts() async {
+  Future<void> _loadClients() async {
     final clientes = await DatabaseHelper.instance.getClients(); // Obtener todos los productos
 
     print("Estoy obteniendo Clientes $clientes");
@@ -58,7 +58,7 @@ class _ClientsState extends State<Clients> {
   @override
   void initState(){
 
-      _loadProducts();
+      _loadClients();
       super.initState();
 
   }
@@ -304,7 +304,7 @@ class _ClientsState extends State<Clients> {
         FloatingActionButton(
           heroTag: "btn3",
           onPressed: () {
-            _loadProducts();
+            _loadClients();
           },
           child: const Icon(Icons.refresh),
         ),
@@ -342,11 +342,4 @@ class _ClientsState extends State<Clients> {
 }
 
 
-class ClientFilter {
-  final String? grupo;
-  final String? name;
 
-  ClientFilter({this.grupo, this.name});
-
-
-}

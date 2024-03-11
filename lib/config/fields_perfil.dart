@@ -6,11 +6,11 @@ class Fields extends StatelessWidget {
   final String? field;
 
   const Fields({
-    Key? key,
+    super.key,
     required this.value,
     required this.heights,
     required this.field,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

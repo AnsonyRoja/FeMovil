@@ -4,27 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
 
 
-class OrdenDeVentaScreen extends StatefulWidget {
-  final int clientId;
-  final String clientName;
+class OrdenDeCompraScreen extends StatefulWidget {
+  final int providerId;
+  final String providerName;
 
-  const OrdenDeVentaScreen({super.key, required this.clientId, required this.clientName});
+  const OrdenDeCompraScreen({super.key, required this.providerId, required this.providerName});
 
   @override
-  _OrdenDeVentaScreenState createState() => _OrdenDeVentaScreenState();
+  _OrdenDeCompraScreenState createState() => _OrdenDeCompraScreenState();
 }
 
-class _OrdenDeVentaScreenState extends State<OrdenDeVentaScreen> {
+class _OrdenDeCompraScreenState extends State<OrdenDeCompraScreen> {
   TextEditingController numeroReferenciaController = TextEditingController();
   TextEditingController fechaController = TextEditingController();
   TextEditingController descripcionController = TextEditingController();
   TextEditingController montoController = TextEditingController();
+  TextEditingController numeroFacturaController = TextEditingController();
+
   List<Map<String, dynamic>> selectedProducts = [];
   bool _validateDescription = false;
-   DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now();
 
-
-     double calcularMontoTotal() {
+    double calcularMontoTotal() {
     double total = 0;
     for (var product in selectedProducts) {
       total += product['price'] * product['quantity'];
@@ -106,8 +107,8 @@ void _removeProduct(int index) {
 void initState() {
     fechaController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
-    print("Esto es el id ${widget.clientId}");
-     print("Esto es el name ${widget.clientName}");
+    print("Esto es el id ${widget.providerId}");
+     print("Esto es el name ${widget.providerName}");
     super.initState();
   
 }
@@ -116,7 +117,7 @@ void initState() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Orden de Venta'),
+        title: const Text('Orden de Compra'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -127,6 +128,10 @@ void initState() {
               TextField(
                 controller: numeroReferenciaController,
                 decoration: const InputDecoration(labelText: 'Número de Referencia'),
+              ),
+              TextField(
+                controller: numeroFacturaController,
+                decoration: const InputDecoration(labelText: 'Número de Factura'),
               ),
              TextField(
                 controller: fechaController,
@@ -141,7 +146,7 @@ void initState() {
               ),
                           TextFormField(
                 readOnly: true,
-                controller: TextEditingController(text: widget.clientName),
+                controller: TextEditingController(text: widget.providerName),
                 decoration: const InputDecoration(labelText: 'Nombre del Cliente'),
               ),
             TextField(
@@ -273,15 +278,16 @@ void initState() {
                             return;
                           }
                   final order = {
-                    'cliente_id': widget.clientId,
+                    'proveedor_id': widget.providerId,
                     'numero_referencia': numeroReferenciaController.text,
+                    'numero_factura': numeroFacturaController.text,
                     'fecha': fechaController.text,
                     'descripcion': descripcionController.text,
                     'monto': double.parse(montoController.text),
                     'productos': selectedProducts, // Esta lista contendría los detalles de los productos seleccionados
                   };
                   // Luego puedes guardar la orden de venta en la base de datos o enviarla al servidor
-                       DatabaseHelper.instance.insertOrder(order).then((orderId) {
+                       DatabaseHelper.instance.insertOrderCompra(order).then((orderId) {
                    // Limpiar los campos después de guardar la orden
                             if (orderId is Map<String, dynamic> && orderId.containsKey('failure')) {
                               if ( orderId['failure'] == -1) {
@@ -306,6 +312,7 @@ void initState() {
                         numeroReferenciaController.clear();
                         descripcionController.clear();
                         montoController.clear();
+                        numeroFacturaController.clear();
         
                   // Limpiar la lista de productos seleccionados después de guardar la orden
                   setState(() {
@@ -317,7 +324,7 @@ void initState() {
                 
                 });
                 },
-                child: const Text('Agregar Orden'),
+                child: const Text('Completar'),
               ),
             ],
           ),

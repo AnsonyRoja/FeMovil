@@ -8,3 +8,9 @@ Verificar los campos que llevara el producto la pantalla de products
 
 
 
+saldo pagado 
+
+salgo abierto 
+
+
+

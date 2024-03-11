@@ -1,19 +1,20 @@
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/infrastructure/models/clients.dart';
+import 'package:femovil/infrastructure/models/providers.dart';
 import 'package:flutter/material.dart';
 
 
 
 
 
-class AddClientsForm extends StatefulWidget {
-  const AddClientsForm({super.key});
+class AddProvidersForm extends StatefulWidget {
+  const AddProvidersForm({super.key});
 
   @override
-  _AddClientsFormState createState() => _AddClientsFormState();
+  _AddProvidersFormState createState() => _AddProvidersFormState();
 }
 
-class _AddClientsFormState extends State<AddClientsForm> {
+class _AddProvidersFormState extends State<AddProvidersForm> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _nameController = TextEditingController();
@@ -27,7 +28,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-      appBar: AppBar(title: const Text("Agregar Cliente", style: TextStyle(
+      appBar: AppBar(title: const Text("Agregar Proveedor", style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 105, 102, 102),
@@ -51,10 +52,10 @@ class _AddClientsFormState extends State<AddClientsForm> {
                 const SizedBox(height: 15),
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(labelText: 'Nombre del Cliente', filled: true, fillColor: Colors.white),
+                    decoration: const InputDecoration(labelText: 'Nombre del Proveedor', filled: true, fillColor: Colors.white),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa el nombre del Cliente';
+                        return 'Por favor ingresa el nombre del Proveedor';
                       }
                       return null;
                     },
@@ -66,7 +67,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa un Ruc/Dni Valido';
+                        return 'Por favor ingresa un Ruc Valido';
                       }
                       return null;
                     },
@@ -90,7 +91,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
                     keyboardType: TextInputType.number,
                      validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa el telefono del cliente';
+                        return 'Por favor ingresa el telefono del Proveedor';
                       }
                       return null;
                     },
@@ -102,7 +103,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
                     keyboardType: TextInputType.number,
                      validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa el grupo del cliente';
+                        return 'Por favor ingresa el grupo del Proveedor';
                       }
                       return null;
                     },
@@ -148,7 +149,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
     String grupo = _grupoController.text;
 
     // Crea una instancia del producto
-    Cliente client = Cliente(
+    Proveedor provider = Proveedor(
         name: name,
         ruc:ruc,
         correo: correo,
@@ -157,7 +158,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
     );
 
     // Llama a un método para guardar el producto en Sqflite
-    await saveClientToDatabase(client);
+    await saveProviderToDatabase(provider);
 
     // Limpia los controladores de texto después de guardar el producto
     _nameController.clear();
@@ -168,22 +169,22 @@ class _AddClientsFormState extends State<AddClientsForm> {
 
     // Muestra un mensaje de éxito o realiza cualquier otra acción necesaria
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Cliente guardado correctamente'),
+      content: Text('Proveedor guardado correctamente'),
     ));
 
 
 
   }
 
-  Future<void> saveClientToDatabase(Cliente product) async {
+  Future<void> saveProviderToDatabase(Proveedor provider) async {
     final db = await DatabaseHelper.instance.database;
     if (db != null) {
-      int result = await db.insert('clients', product.toMap());
+      int result = await db.insert('providers', provider.toMap());
 
       if (result != -1) {
-        print('El Cliente se ha guardado correctamente en la base de datos con el id: $result');
+        print('El providers se ha guardado correctamente en la base de datos con el id: $result');
       } else {
-        print('Error al guardar el Cliente en la base de datos');
+        print('Error al guardar el providers en la base de datos');
       }
     } else {
       // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error

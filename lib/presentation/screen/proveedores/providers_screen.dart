@@ -1,40 +1,37 @@
 import 'package:femovil/database/create_database.dart';
-import 'package:femovil/presentation/products/add_products.dart';
-import 'package:femovil/presentation/products/filter_dialog.dart';
-import 'package:femovil/presentation/products/products_details.dart';
+import 'package:femovil/presentation/screen/proveedores/add_proveedor.dart';
+import 'package:femovil/presentation/screen/proveedores/filter_dialog_providers.dart';
+import 'package:femovil/presentation/screen/proveedores/providers_details.dart';
+
 import 'package:flutter/material.dart';
 
 
 
 
-class Products extends StatefulWidget {
-  const Products({super.key});
+
+
+class Providers extends StatefulWidget {
+  const Providers({super.key});
 
   @override
-  State<Products> createState() => _ProductsState();
+  State<Providers> createState() => _ProvidersState();
 }
 
-class _ProductsState extends State<Products> {
+class _ProvidersState extends State<Providers> {
  String _filter = "";
-  late List<Map<String, dynamic>> products = [];
-  List<Map<String, dynamic>> filteredProducts = [];
+  late List<Map<String, dynamic>> providers= [];
+  List<Map<String, dynamic>> searchProvider = [];
   TextEditingController searchController = TextEditingController();
   String input = "";
 
-  Future<void> _loadProducts() async {
-    final productos = await DatabaseHelper.instance.getProducts(); // Obtener todos los productos
+  Future<void> _loadProviders() async {
+    final proveedores = await DatabaseHelper.instance.getProviders(); // Obtener todos los productos
 
-    print("Estoy obteniendo products $products");
+    print("Estoy obteniendo proveedores $proveedores");
     setState(() {
-      products = productos;
-      filteredProducts = productos;
+      providers = proveedores;
+      searchProvider = proveedores;
     });
-  }
-
-
-  Future<void> _deleteBaseDatos() async {
-    final productos = await DatabaseHelper.instance.deleteDatabases(); // Obtener todos los productos
-      
 
   }
 
@@ -42,7 +39,7 @@ class _ProductsState extends State<Products> {
   void _showFilterOptions(BuildContext context) async {
     final selectedFilter = await showDialog<String>(
       context: context,
-      builder: (context) => FilterCategories(products: products,), // Reemplaza YourFilterDialog con tu widget de filtro
+      builder: (context) => FilterGroupsProviders(providers: providers,), // Reemplaza YourFilterDialog con tu widget de filtro
     );
 
     print("Esto es el valor del select $selectedFilter");
@@ -53,8 +50,6 @@ class _ProductsState extends State<Products> {
         print("Esto es el filter $_filter");
       });
     }
-
-
   }
 
 
@@ -62,9 +57,10 @@ class _ProductsState extends State<Products> {
 
   @override
   void initState(){
-      _loadProducts();
-      // _deleteBaseDatos();
+
+      _loadProviders();
       super.initState();
+
   }
 
   
@@ -73,7 +69,7 @@ class _ProductsState extends State<Products> {
 
      if(input == ""){
 
-        filteredProducts = products.toList();
+        searchProvider = providers.toList();
 
     }
  
@@ -84,28 +80,36 @@ class _ProductsState extends State<Products> {
             searchController.clear();
             input = "";
 
-            filteredProducts = products.toList();
+            searchProvider = providers.toList();
           } else {
-            filteredProducts = products.where((product) => product['categoria'] == _filter).toList();
+            searchProvider = providers.where((provider) => provider['grupo'] == _filter).toList();
+            print("Este es el searchProvider $searchProvider");
           }
           input = ""; // Limpiar el campo de búsqueda al filtrar por categoría
         });
       } else if (input != "") {
+        print("Estoy entrando en el input cuando no esta vacio ");
         setState(() {
-          filteredProducts = products.where((product) => product['name'].toLowerCase().contains(input.toLowerCase())).toList();
+          searchProvider = providers.where((provider) {
+            final name = provider['name'].toString().toLowerCase();
+            final ruc = provider['ruc'].toString().toLowerCase();
+            final inputLower = input.toLowerCase();
+            return name.contains(inputLower) || ruc.contains(inputLower);
+          }).toList();
+          print("Estos son los proveedores por grupo $searchProvider $input");
         });
       }
 
       if(_filter != "" && _filter != "Todos"){
           
-          filteredProducts = products.where((product) => product['categoria'] == _filter).toList();
+          searchProvider = providers.where((provider) => provider['grupo'] == _filter).toList();
           searchController.clear();
           input = "";
       }else if(_filter == "Todos"){
           searchController.clear();
           input = "";
     
-            filteredProducts = products.toList();
+            searchProvider = providers.toList();
       }
 
 
@@ -116,7 +120,7 @@ class _ProductsState extends State<Products> {
       backgroundColor: const Color.fromARGB(255, 236, 247, 255),
       appBar: AppBar(
         title: const Text(
-          "Productos",
+          "Proveedores",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w400,
@@ -163,13 +167,27 @@ class _ProductsState extends State<Products> {
                setState(() {
                 input = value;
               print("Este es el valor $value");
-                  filteredProducts = products.where((product) => product['name'].toLowerCase().contains(value.toLowerCase())).toList();
-                  print("cual es el valor de filteredproducts $filteredProducts");
+
+                searchProvider = providers.where((provider) {
+                  final valueLower = value.toLowerCase();
+                  if (int.tryParse(valueLower) != null) {
+                    // Si el valor se puede convertir a un número entero, buscar por ruc
+                    final ruc = provider['ruc'].toString().toLowerCase();
+                    return ruc.contains(valueLower);
+                  } else {
+                    // Si no se puede convertir a un número entero, buscar por nombre
+                    final name = provider['name'].toString().toLowerCase();
+                    return name.contains(valueLower);
+                  }
+                }).toList();
+
+
+                  print("cual es el valor de filteredproducts $searchProvider");
                 });
       
                 },
                 decoration: const InputDecoration(
-                  labelText: 'Buscar por nombre',
+                  labelText: 'Buscar por nombre o Ruc',
                   prefixIcon: Icon(Icons.search),
                   border: OutlineInputBorder(),
                 ),
@@ -177,10 +195,10 @@ class _ProductsState extends State<Products> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: filteredProducts.length,
+                itemCount: searchProvider.length,
                 itemBuilder: (context, index) {
       
-                  final product = filteredProducts[index];
+                  final provider = searchProvider[index];
       
       
       
@@ -197,8 +215,7 @@ class _ProductsState extends State<Products> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              product['categoria'],
+                            child: Text(' RUC ${provider['ruc'].toString()}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -212,11 +229,11 @@ class _ProductsState extends State<Products> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Nombre: ${product['name']}'),
-                                Text('Precio: \$${product['price']}'),
-                                Text('Cantidad: ${product['quantity']}'),
-                                Text('Stock mínimo: ${product['min_stock']}'),
-                                Text('Stock máximo: ${product['max_stock']}'),
+                                Text('Nombre: ${provider['name']}'),
+                                Text('Ruc: ${provider['ruc'].toString()}'),
+                                Text('Correo: ${provider['correo']}'),
+                                Text('Telefono: ${provider['telefono'].toString()}'),
+                                Text('Grupo: ${provider['grupo']}'),
                               ],
                             ),
                           ),
@@ -225,7 +242,7 @@ class _ProductsState extends State<Products> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             TextButton(
-                              onPressed: () => _verMasProducto('${product['id']}'),
+                              onPressed: () => _verMasprovider('${provider['id']}'),
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.grey,
                                 foregroundColor: Colors.white,
@@ -244,8 +261,8 @@ class _ProductsState extends State<Products> {
                 },
               ),
             ),
-            //esto para abajo es el navbar bottom 
-                 
+           
+
           ],
         ),
       ),
@@ -278,7 +295,7 @@ class _ProductsState extends State<Products> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AddProductForm()),
+              MaterialPageRoute(builder: (context) => const AddProvidersForm()),
             );
           },
           child: const Icon(Icons.add),
@@ -287,7 +304,7 @@ class _ProductsState extends State<Products> {
         FloatingActionButton(
           heroTag: "btn3",
           onPressed: () {
-            _loadProducts();
+            _loadProviders();
           },
           child: const Icon(Icons.refresh),
         ),
@@ -306,22 +323,22 @@ class _ProductsState extends State<Products> {
     );
   }
 
-    void _verMasProducto(String productId) async {
+    void _verMasprovider(String providerId) async {
     final db = await DatabaseHelper.instance.database;
     if (db != null) {
-      final product = await db.query(
-        'products',
+      final provider = await db.query(
+        'providers',
         where: 'id = ?',
-        whereArgs: [int.parse(productId)],
+        whereArgs: [int.parse(providerId)],
       );
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ProductDetailsScreen(product: product.first)),
+        MaterialPageRoute(builder: (context) => ProvidersDetailsScreen(provider: provider.first)),
       );
-      
     } else {
       print('Error: db is null');
     }
   }
 }
+
 
