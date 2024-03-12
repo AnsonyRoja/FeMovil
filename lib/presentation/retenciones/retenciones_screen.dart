@@ -23,22 +23,24 @@ class _RetencionesState extends State<Retenciones> {
       TextEditingController searchController = TextEditingController();
         List<Map<String, dynamic>> filteredRetenciones = [];
 
-            Future<void>  _loadOrders() async{ 
+            Future<void>  _loadWithholdings() async{ 
 
-                List<Map<String, dynamic>> ordenesCompra = await DatabaseHelper.instance.getAllOrdenesCompraWithProveedorNames();
+                      List<Map<String, dynamic>> retenciones = await DatabaseHelper.instance.getRetencionesWithProveedorNames();
 
-                      print("Esto es ordenes de compra $ordenesCompra");
                   setState(() {
-                  filteredRetenciones = ordenesCompra;
+                  filteredRetenciones = retenciones;
                     
                   });
-            }      
+
+                  print('Estos son las retenciones $retenciones');
+            }     
+
 
           @override
   void initState() {
 
 
-      _loadOrders();
+      _loadWithholdings();
     super.initState();
   }
 
@@ -102,7 +104,7 @@ class _RetencionesState extends State<Retenciones> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("N° ${retencion['numero_referencia']}",
+                            child: Text("N° ${retencion['nro_document']}",
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -123,7 +125,9 @@ class _RetencionesState extends State<Retenciones> {
                               children: [
                                 Text('Proveedor: ${retencion['nombre_proveedor']}'),
                                 Text('Numero de Factura: ${retencion['numero_factura']}'),
-                                Text('Fecha:  ${retencion['fecha']}'),
+                                Text('Fecha:  ${retencion['fecha_transaccion']}'),
+                                Text('Tipo de Retencion:  ${retencion['tipo_retencion']}'),
+                                Text('Monto: ${retencion['monto']} ')
                                 // Text('Descripcion: ${retencion['descripcion']}'),
                                 // aqui quiero agregar los dos botones con space betwenn 
                                      
@@ -132,25 +136,25 @@ class _RetencionesState extends State<Retenciones> {
                           ),
                         ),
                            const SizedBox(height: 5,),
-                          Container(
-                            width: screenSize,
-                            child:  ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
-                                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                              ),
-                              onPressed: () {
-                                // Acción al presionar el botón "Ver más"
-                                  // Navigator.of(context).push(
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => retencionsDetails(retencionId: retencion['id'], nameClient: retencion['nombre_cliente'], saldoTotal: retencion['saldo_total']),
-                                  //   ),
-                                  // );
-                              },
-                              child: const Text('Ver más'),
-                            ),
+                        //   Container(
+                        //     width: screenSize,
+                        //     child:  ElevatedButton(
+                        //       style: ButtonStyle(
+                        //         backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                        //         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                        //       ),
+                        //       onPressed: () {
 
-                        ),  
+                        //           Navigator.of(context).push(
+                        //             MaterialPageRoute(
+                        //               builder: (context) => RetencionesDetails(retenciones: filteredRetenciones),
+                        //             ),
+                        //           );
+                        //       },
+                        //       child: const Text('Ver más'),
+                        //     ),
+
+                        // ),  
                                                 const SizedBox(height: 5,),
 
                  
@@ -191,7 +195,7 @@ class _RetencionesState extends State<Retenciones> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const CrearRetencions()),
+                          MaterialPageRoute(builder: (context) => const CrearRetenciones()),
                         );
                       },
                       child: const Icon(Icons.add),
@@ -200,7 +204,7 @@ class _RetencionesState extends State<Retenciones> {
                     FloatingActionButton(
                       heroTag: "btn3",
                       onPressed: () {
-                        // _loadProducts();
+                          _loadWithholdings();
                       },
                       child: const Icon(Icons.refresh),
                     ),

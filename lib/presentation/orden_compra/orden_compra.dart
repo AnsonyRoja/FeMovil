@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/presentation/orden_compra/product_selection.dart';
 import 'package:femovil/presentation/orden_venta/product_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
@@ -59,14 +60,12 @@ void _addOrUpdateProduct(List<Map<String, dynamic>> products) {
       });
     } else {
       // Si el producto no existe, verificar la disponibilidad antes de agregarlo
-      final availableQuantity = product['quantity_avaible'] ?? 0; // Obtener la cantidad disponible del producto
       final selectedQuantity = product['quantity']; // Obtener la cantidad seleccionada
   
-      print("cantidad disponible $availableQuantity");
 
         
 
-        if (selectedQuantity > availableQuantity) {
+        if (selectedQuantity == 0) {
         // Si la cantidad seleccionada es mayor que la cantidad disponible, mostrar un mensaje de error
         showDialog(
           context: context,
@@ -217,7 +216,7 @@ void initState() {
                             
                   final  selectedProductsResult = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProductSelectionScreen()),
+                    MaterialPageRoute(builder: (context) => ProductSelectionComprasScreen()),
                   );
                   print("Cantidad de productos $selectedProductsResult");
                   if (selectedProductsResult != null) {
