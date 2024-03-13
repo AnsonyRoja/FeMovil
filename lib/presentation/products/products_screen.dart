@@ -1,3 +1,4 @@
+import 'package:femovil/assets/nav_bottom_menu.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/presentation/products/add_products.dart';
 import 'package:femovil/presentation/products/filter_dialog.dart';
@@ -20,11 +21,15 @@ class _ProductsState extends State<Products> {
   List<Map<String, dynamic>> filteredProducts = [];
   TextEditingController searchController = TextEditingController();
   String input = "";
+  late List<Map<String, dynamic>> taxes = []; // Lista para almacenar los impuestos
+
 
   Future<void> _loadProducts() async {
     final productos = await DatabaseHelper.instance.getProducts(); // Obtener todos los productos
-
+    // final inserccion = await DatabaseHelper.instance.insertTaxData(); // Obtener todos los productos
     print("Estoy obteniendo products $products");
+
+
     setState(() {
       products = productos;
       filteredProducts = productos;
@@ -217,6 +222,7 @@ class _ProductsState extends State<Products> {
                                 Text('Cantidad: ${product['quantity']}'),
                                 Text('Stock mínimo: ${product['min_stock']}'),
                                 Text('Stock máximo: ${product['max_stock']}'),
+
                               ],
                             ),
                           ),
@@ -251,58 +257,20 @@ class _ProductsState extends State<Products> {
       ),
         
       ),
-      bottomNavigationBar: Container(
-  width: double.infinity, // Ancho máximo igual al ancho total de la pantalla
-  decoration: BoxDecoration(
-    borderRadius: const BorderRadius.only(
-      topLeft: Radius.circular(20), // Ajusta el radio de los bordes superiores izquierdos según sea necesario
-      topRight: Radius.circular(20), // Ajusta el radio de los bordes superiores derechos según sea necesario
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.grey.withOpacity(0.5), // Color de la sombra
-        spreadRadius: 5, // Radio de expansión de la sombra
-        blurRadius: 15, // Radio de desenfoque de la sombra
-        offset: const Offset(0, 5), // Desplazamiento de la sombra
-      ),
-    ],
-  ),
-  child: BottomAppBar(
-    shape:  const CircularNotchedRectangle(), // Utilizamos CircularNotchedRectangle para crear una forma de muesca redondeada
-
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        FloatingActionButton(
-          heroTag: "btn2",
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddProductForm()),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-        const SizedBox(width: 20),
-        FloatingActionButton(
-          heroTag: "btn3",
-          onPressed: () {
-            _loadProducts();
-          },
-          child: const Icon(Icons.refresh),
-        ),
-        const SizedBox(width: 20),
-        FloatingActionButton(
-          heroTag: "btn4",
-              onPressed: () {
-                Navigator.pop(context);
-              },
-             child: const Icon(Icons.arrow_back),
-            ),
-          ],
-        ),
-      ),
-    ),
+      bottomNavigationBar:   CustomBottomNavigationBar(
+          onAddPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddProductForm()),
+              );
+            },
+            onRefreshPressed: () {
+              _loadProducts();
+            },
+            onBackPressed: () {
+              Navigator.pop(context);
+            },
+          ),
     );
   }
 

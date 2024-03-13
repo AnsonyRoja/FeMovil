@@ -137,7 +137,12 @@ Widget build(BuildContext context) {
               color: Color.fromARGB(255, 105, 102, 102),
             ),),
                     backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-    
+              actions: [
+                IconButton(onPressed: () {
+                    Navigator.pop(context);
+                }, icon: const Icon(Icons.arrow_back))
+              ],
+               iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
                     ),
                     backgroundColor: const Color.fromARGB(255, 236, 247, 255),
     
@@ -195,20 +200,6 @@ Widget build(BuildContext context) {
         ],
       ),
     ),
-     Positioned(
-        left: 16,
-        bottom: 20,
-        child: IconButton(
-  icon: const Icon(
-    FeatherIcons.arrowLeftCircle, // Ícono de flecha hacia atrás de la biblioteca Flutter Feather Icons
-    color: Colors.blue, // Cambia el color del ícono
-    size: 40, // Cambia el tamaño del ícono
-  ),
-  onPressed: () {
-    Navigator.pop(context);
-  },
-),)
-
 
   ]
   );

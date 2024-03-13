@@ -120,6 +120,13 @@ void _showFilterOptions(BuildContext context) {
                       _showFilterOptions(context);
                     },
                   ),
+        actions: [
+          IconButton(onPressed: () {
+              Navigator.pop(context);
+          }, icon: const Icon(Icons.arrow_back))
+        ],
+       iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

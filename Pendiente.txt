@@ -1,0 +1,13 @@
+
+1) retencion se puede reactivar el comprobante, anular el comprobante o cerrar. pero eso es despues
+de completar el documento
+
+
+2) crear una nueva tabla que se va a a llamar tax va tener los siguientes campos
+(id,name,rate, isWithHolding)
+si isWithHolding es n aparecera en las ordenes de compra y venta si es y entonces
+aparecera en cobros
+
+agregar a la tabla de productos el impuesto 
+
+cada producto tiene propio impuesto es decir cada linea de la orden 

@@ -127,6 +127,11 @@ void initState() {
                                                  label: "Ruc",
                                                  value: clientData['ruc'].toString(),
                                                ),
+                                                CustomTextInfo(
+                                                 label: "Saldo Total",
+                                                 value: widget.saldoTotal.toString(),
+                                               ),
+                                            
                                             
                                                                                       ],
                                                                                       ),

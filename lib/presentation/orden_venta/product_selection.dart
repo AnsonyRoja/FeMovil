@@ -19,7 +19,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
   }
 
   Future<void> _loadProducts() async {
-    final productList = await DatabaseHelper.instance.getProducts(); // Obtener todos los productos
+    final productList = await DatabaseHelper.instance.getProductsAndTaxes(); // Obtener todos los productos
 
     setState(() {
       products = productList;
@@ -83,6 +83,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                         "quantity_avaible" : filteredProducts[index]['quantity'],
                         "quantity": newQuantity, // Usar la nueva cantidad calculada
                         "price": productPrice,
+                        "impuesto": filteredProducts[index]['tax_rate']
                       };
 
                       setState(() {

@@ -7,6 +7,7 @@ class Product {
   final String categoria;
   final String imagePath;
   final int qtySold;
+  final int taxId;
 
 
   Product({
@@ -18,6 +19,7 @@ class Product {
     required this.categoria,
     required this.imagePath,
     required this.qtySold,
+    required this.taxId
 
   });
 
@@ -32,6 +34,7 @@ class Product {
       'max_stock': maxStock,
       'categoria': categoria,
       'quantity_sold': qtySold, 
+      'tax_id': taxId
     };
   }
 }

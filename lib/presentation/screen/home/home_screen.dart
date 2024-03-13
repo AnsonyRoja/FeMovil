@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'package:femovil/assets/nav_bar_bottom.dart';
 import 'package:femovil/presentation/cobranzas/cobranzas_list.dart';
-import 'package:femovil/presentation/perfil/perfil.dart';
 import 'package:femovil/presentation/clients/clients_screen.dart';
 import 'package:femovil/presentation/precios/precios.dart';
 import 'package:femovil/presentation/products/products_screen.dart';
@@ -9,10 +7,7 @@ import 'package:femovil/presentation/retenciones/retenciones_screen.dart';
 import 'package:femovil/presentation/screen/login/progress_indicator.dart';
 import 'package:femovil/presentation/screen/proveedores/providers_screen.dart';
 import 'package:femovil/presentation/screen/ventas/ventas.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:http/http.dart';
 
 dynamic documentosPorTipo = {};
 bool flag = false;
@@ -331,11 +326,13 @@ class HomeState extends State<Home> {
                         ],
                                            ),
                      ),
+                     
                
                   ],
                   
                   
                 ),
+                
 
                 
 

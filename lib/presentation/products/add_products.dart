@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 
 
@@ -23,7 +27,31 @@ class _AddProductFormState extends State<AddProductForm> {
   final TextEditingController _minStockController = TextEditingController();
   final TextEditingController _maxStockController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
+  XFile? _imageFile;
   String imagePath = "";
+ List<Map<String, dynamic>> _taxList = []; // Lista para almacenar los impuestos disponibles
+  int _selectedTaxIndex = 1; // Índice del impuesto seleccionado por defecto
+
+
+     void _loadTaxs()async {
+
+        final getTaxs = await DatabaseHelper.instance.getTaxs();
+        print("esto es getTaxs $getTaxs");
+
+        setState(() {
+            _taxList = getTaxs;
+
+        });
+        print("esto es taxlist $_taxList");
+      }
+
+
+  @override
+  void initState()  {
+    _loadTaxs();
+    super.initState();
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,24 +113,80 @@ class _AddProductFormState extends State<AddProductForm> {
                       return null;
                     },
                   ),
-                  ElevatedButton(
-          onPressed: () async {
-            final imagePicker = ImagePicker();
-            
-            final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
-
-
-            if (image != null) {
-              // Aquí puedes guardar la ruta de la imagen en una variable o mostrarla en algún lugar de tu formulario
-              setState(() {
-                
-                imagePath = image.path;
-
-              });
-            }
-          },
-          child: const Text('Seleccionar imagen'),
-        ),
+                  SizedBox(height: 5,),
+                  DropdownButtonFormField<int>(
+                    value: _selectedTaxIndex,
+                    items: _taxList.map<DropdownMenuItem<int>>((tax) {
+                      print('tax $tax');
+                      return DropdownMenuItem<int>(
+                        value: tax['id'] as int,
+                        child: Text(tax['name'] as String),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedTaxIndex = newValue as int;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Selecciona un impuesto',
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Por favor selecciona un impuesto';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 5,),
+                Container(
+                    color: Colors.white,
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Seleccione una imagen',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        if (_imageFile != null)
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              width: 250,
+                              height: 150,
+                              child: Image.file(File(_imageFile!.path)),
+                            ),
+                          ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final imagePicker = ImagePicker();
+                            final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
+                                            
+                            if (image != null) {
+                              setState(() {
+                                _imageFile = image;
+                                imagePath = image.path;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100), // Hacer que los bordes sean cuadrados
+                            ),
+                          ),
+                          child: const Text('Tac'),
+                        ),
+                      ],
+                    ),
+                  ),
 
                    const SizedBox(height: 10,),
                   TextFormField(
@@ -139,6 +223,7 @@ class _AddProductFormState extends State<AddProductForm> {
                       return null;
                     },
                   ),
+                  const SizedBox(height: 10,),
                    TextFormField(
                     controller: _qtySoldController,
                     decoration: const InputDecoration(labelText: 'Vendido', filled: true, fillColor: Colors.white),
@@ -189,7 +274,7 @@ class _AddProductFormState extends State<AddProductForm> {
     double maxStock = double.parse(_maxStockController.text);
     String categoria = _categoriaController.text;
     int qtySold = int.parse(_qtySoldController.text);
-
+    int selectTax = _selectedTaxIndex;
     // Crea una instancia del producto
     Product product = Product(
       name: name,
@@ -199,7 +284,8 @@ class _AddProductFormState extends State<AddProductForm> {
       minStock: minStock,
       maxStock: maxStock,
       categoria:categoria,
-      qtySold: qtySold
+      qtySold: qtySold,
+      taxId: selectTax
       
     );
 
@@ -214,6 +300,9 @@ class _AddProductFormState extends State<AddProductForm> {
     _maxStockController.clear();
     _categoriaController.clear();
     _qtySoldController.clear();
+    setState(() {
+    _imageFile = null;
+    });
 
     // Muestra un mensaje de éxito o realiza cualquier otra acción necesaria
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

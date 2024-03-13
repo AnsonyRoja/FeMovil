@@ -22,14 +22,37 @@ class _OrdenDeVentaScreenState extends State<OrdenDeVentaScreen> {
   List<Map<String, dynamic>> selectedProducts = [];
   bool _validateDescription = false;
    DateTime selectedDate = DateTime.now();
-
+  double? saldoNeto;
+  double? totalImpuesto;
 
      double calcularMontoTotal() {
     double total = 0;
     for (var product in selectedProducts) {
       total += product['price'] * product['quantity'];
     }
+    print('productos totales $selectedProducts');
     return total;
+
+  }
+
+  double calcularSaldoNetoProducto(cantidadProducts, price){
+
+        double multi = cantidadProducts * price;
+
+        
+          saldoNeto = multi;
+      
+
+      return multi;
+  }
+  double calcularMontoImpuesto(impuesto, monto){
+
+      double montoImpuesto =  monto * impuesto/100;
+
+            totalImpuesto = montoImpuesto;
+
+            print('El monto $monto y el impuesto $impuesto y el monto impuesto seria $montoImpuesto');
+    return montoImpuesto;
   }
 
 Future<void> _selectDate(BuildContext context) async {
@@ -176,8 +199,28 @@ void initState() {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Cantidad: ${product["quantity"]}'),
-                          Text('Precio: ${product['price']}'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Cantidad: ${product["quantity"]}'),
+                              Text('Precio: ${product['price']}'),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Impuesto: ${product['impuesto']}%'),
+                              Text('Monto Impuesto: ${calcularMontoImpuesto(product['impuesto'],product['quantity']*product['price'])}')
+                            ],
+                          ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Saldo Neto ${ calcularSaldoNetoProducto(product['quantity'], product['price']) }'),
+                                  Text('Monto Total ${ saldoNeto! + totalImpuesto! }'),
+
+                                ],
+                              ) 
                         ],
                       ),
                       trailing: IconButton(

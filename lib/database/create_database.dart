@@ -48,7 +48,10 @@
             min_stock INTEGER,
             max_stock INTEGER,
             categoria TEXT,
-            quantity_sold INTEGER
+            quantity_sold INTEGER,
+            tax_id INTEGER,
+            FOREIGN KEY(tax_id) REFERENCES tax(id)
+
           )
         ''');
       await db.execute('''
@@ -180,6 +183,15 @@
             )
         ''');
 
+          await db.execute('''
+          CREATE TABLE tax(
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          name TEXT,
+          rate INTEGER,
+          iswithholding TEXT
+          )
+        ''');
+
       },
     );
 
@@ -216,12 +228,41 @@
     );
   }
 
+  Future<List<Map<String, dynamic>>> getProductsAndTaxes() async {
+  final  db = await database;
+  if (db != null) {
+    // Realiza una consulta que una las tablas "products" y "tax" utilizando una cláusula JOIN
+    return await db.rawQuery('''
+      SELECT p.*, t.rate AS tax_rate
+      FROM products p
+      JOIN tax t ON p.tax_id = t.id
+      WHERE t.iswithholding = 'n'
+    ''');
+  } else {
+    // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
+    print('Error: db is null');
+    return [];
+  }
+}
+
 
     Future<List<Map<String, dynamic>>> getProducts() async {
     final db = await database;
     if (db != null) {
       // Realiza la consulta para recuperar todos los registros de la tabla "products"
       return await db.query('products');
+    } else {
+      // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
+      print('Error: db is null');
+      return [];
+    }
+  }
+
+   Future<List<Map<String, dynamic>>> getTaxs() async {
+    final db = await database;
+    if (db != null) {
+      // Realiza la consulta para recuperar todos los registros de la tabla "products"
+      return await db.query('tax');
     } else {
       // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
       print('Error: db is null');
@@ -579,6 +620,26 @@
   }
 
 
+  Future<void> insertTaxData() async {
+    // Abre la base de datos
+    final db = await database;
+    
+
+    // Inserta los datos de prueba en la tabla "tax"
+    await db?.transaction((txn) async {
+      await txn.rawInsert(
+        'INSERT INTO tax(name, rate, iswithholding) VALUES(?, ?, ?)',
+        ['Exento', 0, 'n'], // Datos de prueba para el primer impuesto
+      );
+      await txn.rawInsert(
+        'INSERT INTO tax(name, rate, iswithholding) VALUES(?, ?, ?)',
+        ['Iva 16%', 16, 'n'], // Datos de prueba para el segundo impuesto
+      );
+      // Puedes agregar más inserciones según sea necesario
+    });
+
+    print('Datos de prueba insertados en la tabla tax.');
+  }
 
 
 
