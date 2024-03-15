@@ -1,7 +1,6 @@
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 
 
@@ -211,6 +210,7 @@ void _showFilterOptions(BuildContext context) {
                         ),
                         const SizedBox(height: 10,),
                         Container(
+
                           width: screenMax,
                           child:  Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

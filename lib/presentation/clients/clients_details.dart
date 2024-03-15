@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class ClientDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> client;
 
+
   const ClientDetailsScreen({super.key, required this.client});
 
   @override
@@ -16,8 +17,8 @@ class ClientDetailsScreen extends StatelessWidget {
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 105, 102, 102),
           ),),
-              backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-              iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
+            backgroundColor: const Color.fromARGB(255, 236, 247, 255),
+            iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
               
           ),
       backgroundColor: const Color.fromARGB(255, 236, 247, 255),

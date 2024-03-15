@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 
 
+  
 
 
 
@@ -29,7 +30,6 @@ class _CobroState extends State<Cobro> {
   String? coinValue = "\$";
   String? typeDocumentValue = "Cobro";
   String? bankAccountValue = "123456";
-
 
 
 void _loadCurrentDate() {
@@ -131,11 +131,9 @@ void initState() {
                                                  label: "Saldo Total",
                                                  value: widget.saldoTotal.toString(),
                                                ),
-                                            
-                                            
-                                                                                      ],
-                                                                                      ),
-                                                                                    ),
+                                               ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       const SizedBox(height: 10,),
@@ -326,7 +324,7 @@ void initState() {
   final String? paymentType = paymentTypeValue;
   final String date = dateController.text;
   final String? coin = coinValue;
-  final int amount = int.parse(montoController.text);
+  final double amount = double.parse(montoController.text);
   final String? bankAccount = bankAccountValue;
   final String observation = observacionController.text;
   final int saleOrderId = widget.orderId;

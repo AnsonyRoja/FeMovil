@@ -24,7 +24,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     // Initialize controllers with existing product details
     _nameController.text = widget.product['name'].toString();
     _categoryController.text = widget.product['categoria'].toString();
-    _priceController.text = widget.product['price'].toString();
+    _priceController.text = widget.product['price'] is double ?  widget.product['price'].toString(): 0.toString();
     _quantityController.text = widget.product['quantity'].toString();
     _minStockController.text = widget.product['min_stock'].toString();
     _maxStockController.text = widget.product['max_stock'].toString();
@@ -66,8 +66,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   _buildTextFormField('Categoría', _categoryController),
                   _buildTextFormField('Precio', _priceController),
                   _buildTextFormField('Cantidad Disponible', _quantityController),
-                  _buildTextFormField('Stock Mínimo', _minStockController),
-                  _buildTextFormField('Stock Máximo', _maxStockController),
+               
                 ],
               ),
             ),
@@ -79,8 +78,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     String newCategory = _categoryController.text;
     double newPrice = double.parse(_priceController.text);
     int newQuantity = int.parse(_quantityController.text);
-    int newMinStock = int.parse(_minStockController.text);
-    int newMaxStock = int.parse(_maxStockController.text);
+
 
     // Crear un mapa con los datos actualizados del producto
     Map<String, dynamic> updatedProduct = {
@@ -89,8 +87,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       'categoria': newCategory,
       'price': newPrice,
       'quantity': newQuantity,
-      'min_stock': newMinStock,
-      'max_stock': newMaxStock,
+  
     };
 
     // Actualizar el producto en la base de datos

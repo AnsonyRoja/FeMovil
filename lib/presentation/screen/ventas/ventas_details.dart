@@ -1,6 +1,8 @@
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class VentasDetails extends StatefulWidget {
   final int ventaId;
@@ -168,6 +170,9 @@ class _VentasDetailsState extends State<VentasDetails> {
                               children: [
                                 Text('Name', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                                 Text('Cantidad', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                Text('Precio', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                Text('Impuesto', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+
                               ],
                             ),
                           ),
@@ -195,8 +200,12 @@ class _VentasDetailsState extends State<VentasDetails> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                        Text(product['name'],),
-                                        Text(product['cantidad'].toString()),
+                                        Expanded(child: Text('${product['name']}',)),
+                                        const SizedBox(width: 50,),
+                                        Expanded(child: Text(product['cantidad'].toString())),
+                                        Expanded(child: Text(product['price'].toString())),
+                                        const SizedBox(width: 15,),
+                                        Expanded(child: Text('${product['impuesto'].toString()}%'))
                                         
                                     ] 
                                                          
@@ -220,12 +229,24 @@ class _VentasDetailsState extends State<VentasDetails> {
                         ),
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
                           children: [
-                            const Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
-                            
-                            Text(' \$ ${ventaData['monto'].toString()}'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Saldo Neto', style: TextStyle(fontWeight: FontWeight.bold)),
+                                
+                                Text(' \$ ${ventaData['saldo_neto'].toString()}'),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
+                                
+                                Text(' \$ ${ventaData['monto'].toString()}'),
+                              ],
+                            ),
                           ],
                         ),
                       )),

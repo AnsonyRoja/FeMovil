@@ -19,8 +19,8 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
   }
 
   Future<void> _loadProducts() async {
-    final productList = await DatabaseHelper.instance.getProducts(); // Obtener todos los productos
-
+    final productList = await DatabaseHelper.instance.getProductsAndTaxes(); // Obtener todos los productos
+    print('esto es productList de ordenes de compras $productList');
     setState(() {
       products = productList;
       filteredProducts = productList;
@@ -83,6 +83,8 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
                         "quantity_avaible" : filteredProducts[index]['quantity'],
                         "quantity": newQuantity, // Usar la nueva cantidad calculada
                         "price": productPrice,
+                        "impuesto": filteredProducts[index]['tax_rate']
+
                       };
 
                       setState(() {

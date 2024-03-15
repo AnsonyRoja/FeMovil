@@ -3,6 +3,7 @@ import 'package:femovil/database/create_database.dart';
 import 'package:femovil/presentation/products/add_products.dart';
 import 'package:femovil/presentation/products/filter_dialog.dart';
 import 'package:femovil/presentation/products/products_details.dart';
+import 'package:femovil/presentation/products/products_http.dart';
 import 'package:flutter/material.dart';
 
 
@@ -70,6 +71,7 @@ class _ProductsState extends State<Products> {
       _loadProducts();
       // _deleteBaseDatos();
       super.initState();
+      // sincronizationProducts();
   }
 
   
@@ -113,9 +115,7 @@ class _ProductsState extends State<Products> {
             filteredProducts = products.toList();
       }
 
-
         final screenMax = MediaQuery.of(context).size.width * 0.8;
-
     
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 236, 247, 255),
@@ -218,10 +218,9 @@ class _ProductsState extends State<Products> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Nombre: ${product['name']}'),
-                                Text('Precio: \$${product['price']}'),
+                                Text('Precio: \$${product['price'] is double ? product['price'] :0}'),
                                 Text('Cantidad: ${product['quantity']}'),
-                                Text('Stock mínimo: ${product['min_stock']}'),
-                                Text('Stock máximo: ${product['max_stock']}'),
+                      
 
                               ],
                             ),

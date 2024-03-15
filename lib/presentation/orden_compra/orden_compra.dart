@@ -1,7 +1,9 @@
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/presentation/orden_compra/product_selection.dart';
 import 'package:femovil/presentation/orden_venta/product_selection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
 
 
@@ -21,18 +23,53 @@ class _OrdenDeCompraScreenState extends State<OrdenDeCompraScreen> {
   TextEditingController descripcionController = TextEditingController();
   TextEditingController montoController = TextEditingController();
   TextEditingController numeroFacturaController = TextEditingController();
-
+  TextEditingController saldoNetoController = TextEditingController();
   List<Map<String, dynamic>> selectedProducts = [];
   bool _validateDescription = false;
   DateTime selectedDate = DateTime.now();
+  double? saldoNeto;
+  double? totalImpuesto;
 
-    double calcularMontoTotal() {
-    double total = 0;
-    for (var product in selectedProducts) {
-      total += product['price'] * product['quantity'];
-    }
-    return total;
+    double calcularSaldoNetoProducto(cantidadProducts, price){
+
+        double multi = cantidadProducts * price;
+
+        
+          saldoNeto = multi;
+      
+
+      return multi;
   }
+  double calcularMontoImpuesto(impuesto, monto){
+
+      double montoImpuesto =  monto * impuesto/100;
+
+            totalImpuesto = montoImpuesto;
+
+            print('El monto $monto y el impuesto $impuesto y el monto impuesto seria $montoImpuesto');
+    return montoImpuesto;
+  }
+
+
+   double calcularMontoTotal() {
+    double total = 0;
+    double totalNeto = 0;
+    double suma = 0;
+
+    for (var product in selectedProducts) {
+        total += product['price'] * product['quantity']*(product['impuesto']/100);
+        totalNeto += product['price'] * product['quantity'];
+
+    }
+    saldoNetoController.text = '\$${totalNeto.toString()}';
+    suma = total + totalNeto;
+
+    print('productos totales $selectedProducts');
+
+    return suma;
+
+  }
+
 
 Future<void> _selectDate(BuildContext context) async {
   final DateTime currentDate = DateTime.now();
@@ -165,38 +202,13 @@ void initState() {
                 },
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Productos:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Container(
-                height: 100,
-                child: ListView.builder(
-                  itemCount: selectedProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = selectedProducts[index];
-                    return ListTile(
-                      title: Text(product['name']),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Cantidad: ${product["quantity"]}'),
-                          Text('Precio: ${product['price']}'),
-                        ],
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                        
-                          setState(() {
-                                _removeProduct(index);
-                        
-                          });
-                        },
-                      ),
-                    );
-                  },
-                ),
+               TextField(
+                  readOnly: true,
+                controller: saldoNetoController,
+                decoration: const InputDecoration(labelText: 'Saldo Neto'),
+                keyboardType: TextInputType.number,
+                
+              
               ),
                 TextField(
                   readOnly: true,
@@ -205,6 +217,91 @@ void initState() {
                 keyboardType: TextInputType.number,
                 
               
+              ),
+              const Text(
+                'Productos:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10,),
+               Container(
+                height: 300,
+                child: ListView.builder(
+                  itemCount: selectedProducts.length,
+                  itemBuilder: (context, index) {
+                    final product = selectedProducts[index];
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product['name'],
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Cantidad: ${product["quantity"]}'),
+                              Text('Precio: ${product['price']}'),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Impuesto: ${product['impuesto']}%'),
+                              Text(
+                                'Monto Impuesto: ${calcularMontoImpuesto(product['impuesto'], product['quantity'] * product['price'])}',
+                                style: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Saldo Neto: ${calcularSaldoNetoProducto(product['quantity'], product['price'])}',
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                ),
+                              ),
+                              Text(
+                                'Monto Total: ${(calcularSaldoNetoProducto(product['quantity'], product['price']) + calcularMontoImpuesto(product['impuesto'], product['quantity'] * product['price'])).toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() {
+                                  _removeProduct(index);
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -224,11 +321,11 @@ void initState() {
         
                         _addOrUpdateProduct(selectedProductsResult);
                         
-        
-                      montoController.text = calcularMontoTotal().toString();
+                    
+                      montoController.text = '\$${calcularMontoTotal().toStringAsFixed(2)}';
                       
                     });
-                  }
+                  } 
                 },
                 child: const Text('Agregar Productos'),
               ),
@@ -282,7 +379,8 @@ void initState() {
                     'numero_factura': numeroFacturaController.text,
                     'fecha': fechaController.text,
                     'descripcion': descripcionController.text,
-                    'monto': double.parse(montoController.text),
+                    'monto': double.parse(montoController.text.substring(1)),
+                    'saldo_neto':double.parse(saldoNetoController.text.substring(1)),
                     'productos': selectedProducts, // Esta lista contendría los detalles de los productos seleccionados
                   };
                   // Luego puedes guardar la orden de venta en la base de datos o enviarla al servidor
@@ -312,6 +410,7 @@ void initState() {
                         descripcionController.clear();
                         montoController.clear();
                         numeroFacturaController.clear();
+                        saldoNetoController.clear();
         
                   // Limpiar la lista de productos seleccionados después de guardar la orden
                   setState(() {

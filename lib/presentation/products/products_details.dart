@@ -38,10 +38,8 @@ class ProductDetailsScreen extends StatelessWidget {
                 // _buildTextFormField('Path Image', product['image_path'].toString()),
                 // _buildImage(product['image_path'].toString()),
                 _buildTextFormField('Categoría', product['categoria'].toString()),
-                _buildTextFormField('Precio', '\$${product['price']}'),
+                _buildTextFormField('Precio', '\$${product['price'] is double ? product['price']: 0}'),
                 _buildTextFormField('Cantidad Disponible', product['quantity'].toString()),
-                _buildTextFormField('Stock Mínimo', product['min_stock'].toString()),
-                _buildTextFormField('Stock Máximo', product['max_stock'].toString()),
           
               ],
             ),

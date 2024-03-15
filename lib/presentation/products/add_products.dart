@@ -20,6 +20,7 @@ class AddProductForm extends StatefulWidget {
 
 class _AddProductFormState extends State<AddProductForm> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _codProdController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _qtySoldController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -270,19 +271,15 @@ class _AddProductFormState extends State<AddProductForm> {
     String name = _nameController.text;
     double price = double.parse(_priceController.text);
     int quantity = int.parse(_quantityController.text);
-    double minStock = double.parse(_minStockController.text);
-    double maxStock = double.parse(_maxStockController.text);
     String categoria = _categoriaController.text;
     int qtySold = int.parse(_qtySoldController.text);
     int selectTax = _selectedTaxIndex;
     // Crea una instancia del producto
     Product product = Product(
+      
       name: name,
       price: price,
       quantity: quantity,
-      imagePath: imagePath,
-      minStock: minStock,
-      maxStock: maxStock,
       categoria:categoria,
       qtySold: qtySold,
       taxId: selectTax
@@ -300,9 +297,9 @@ class _AddProductFormState extends State<AddProductForm> {
     _maxStockController.clear();
     _categoriaController.clear();
     _qtySoldController.clear();
-    setState(() {
-    _imageFile = null;
-    });
+    // setState(() {
+    // _imageFile = null;
+    // });
 
     // Muestra un mensaje de éxito o realiza cualquier otra acción necesaria
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

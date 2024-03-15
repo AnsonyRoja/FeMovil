@@ -1,4 +1,5 @@
 import 'package:femovil/assets/nav_bar_bottom.dart';
+import 'package:femovil/infrastructure/models/info_perfil.dart';
 import 'package:femovil/presentation/cobranzas/cobranzas_list.dart';
 import 'package:femovil/presentation/clients/clients_screen.dart';
 import 'package:femovil/presentation/precios/precios.dart';
@@ -14,6 +15,8 @@ bool flag = false;
 bool processingApproval = false;
 bool actualizando = false;
 String mensaje = '';
+InfPerfil? perfilData;
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -37,10 +40,10 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-
     print("me monte");
 
   }
+
 
 
 
@@ -131,7 +134,7 @@ class HomeState extends State<Home> {
                      GestureDetector(
                       onTap: (){
 
-                       Navigator.push(context, MaterialPageRoute(builder:(context) => const Clients(),));
+                       Navigator.push(context, MaterialPageRoute(builder:(context) =>  const Clients(),));
 
 
                       },
@@ -171,22 +174,21 @@ class HomeState extends State<Home> {
                           Navigator.push(context, MaterialPageRoute(builder:(context) => const Precios(),));
 
                             },
-                         child: Column(
-                                          
-                                               children: [
-                                               const Text("Precios"),
-                          Image.network(
-                                      'https://www.fijaciondeprecios.com/wp-content/uploads/2017/01/Puedo-cobrar-un-precio-mas-alto-Conozcalo-por-5-se%C3%B1ales-clave.jpg', 
-                                        width: 100,
-                                        height: 100,
-                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        }
-                                        return CircularProgressIndicator(
-                                          value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                          : null,
+                         child: Column(        
+                               children: [
+                                  const Text("Precios"),
+                                    Image.network(
+                                                'https://www.fijaciondeprecios.com/wp-content/uploads/2017/01/Puedo-cobrar-un-precio-mas-alto-Conozcalo-por-5-se%C3%B1ales-clave.jpg', 
+                                                  width: 100,
+                                                  height: 100,
+                                                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                  if (loadingProgress == null) {
+                                                    return child;
+                                                  }
+                                                  return CircularProgressIndicator(
+                                                    value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                    : null,
                                         );
                                       },
                                       errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
@@ -326,13 +328,45 @@ class HomeState extends State<Home> {
                         ],
                                            ),
                      ),
-                     
+                       const SizedBox(width: 100),
+
+                       GestureDetector(
+                       onTap: () {
+                       
+                        Navigator.push(context, MaterialPageRoute(builder:(context) => const Retenciones(),));
+
+                       },
+                       child: Column(
+                        children: [
+                          const Text("Sincronizar"),
+                          Image.network('https://leadersadvantage.us/wp-content/uploads/Leaders-Advantage-synchronization-flow.png',
+                          width: 100,
+                          height: 100,
+                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
+                       
+                                if(loadingProgress == null){
+                                  return child;
+                                }
+                       
+                                return CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!: null,);
+                       
+                          },
+                          errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace){
+                       
+                            return const Text("No se pudo cargar la imagen"); 
+                          },
+                          )
+                        ],
+                                           ),
+                     ),
                
                   ],
                   
                   
+                  
                 ),
-                
+
+                    
 
                 
 

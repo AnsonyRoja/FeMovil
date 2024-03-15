@@ -177,14 +177,13 @@ Widget build(BuildContext context) {
                   elevation: 4, // Agrega una sombra al Card para un efecto visual
                   margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Margen alrededor del Card
                   child: ListTile(
-                    leading: product['image_path'] != "" ? Image.file(File(product['image_path'])) : const Text("Not found"), // Muestra la imagen del producto
                     title: Text(product['name']), // Muestra el nombre del producto
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Categoria: ${product['categoria']}'),
                         Text('Precio: \$${product['price']}'),
-                        Text('Vendidos: ${product['quantity_sold']}'),
+                        // Text('Vendidos: ${product['quantity_sold']}'),
                         Text('Cantidad disponible ${product['quantity']}'),
                         const Divider(),
                       ],

@@ -15,7 +15,6 @@ getUsers(username, password) async {
     ..badCertificateCallback = (X509Certificate cert, String host, int port) {
       return true;
     };
-
   var map = await getRuta();
 
   final uri = Uri.parse(

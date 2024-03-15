@@ -1,4 +1,5 @@
-  import 'package:sqflite/sqflite.dart';
+  import 'package:femovil/infrastructure/models/products.dart';
+import 'package:sqflite/sqflite.dart';
   import 'package:path/path.dart' as path;
 
 
@@ -41,15 +42,17 @@
         await db.execute('''
           CREATE TABLE products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cod_product INTEGER,
             name TEXT,
             quantity INTEGER,
-            image_path TEXT, 
             price REAL,
-            min_stock INTEGER,
-            max_stock INTEGER,
+            pro_cat_id INTEGER,
             categoria TEXT,
+            tax_cat_id INTEGER,
+            tax_cat_name STRING,
+            um_id INTEGER,
+            um_name STRING,
             quantity_sold INTEGER,
-            tax_id INTEGER,
             FOREIGN KEY(tax_id) REFERENCES tax(id)
 
           )
@@ -89,6 +92,7 @@
           fecha TEXT,
           descripcion TEXT,
           monto REAL,
+          saldo_neto,
           usuario_id INTEGER,
           FOREIGN KEY (cliente_id) REFERENCES clients(id),
           FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
@@ -119,7 +123,8 @@
           fecha TEXT,
           descripcion TEXT,
           monto REAL,
-          usuario_id,
+          saldo_neto REAL,
+          usuario_id INTEGER,
           FOREIGN KEY (proveedor_id) REFERENCES clients(id),
           FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 
@@ -205,7 +210,7 @@
     required String? paymentType,
     required String date,
     required String? coin,
-    required int amount,
+    required double amount,
     required String? bankAccount,
     required String observation,
     required int saleOrderId,
@@ -382,6 +387,7 @@
         'fecha': order['fecha'],
         'descripcion': order['descripcion'],
         'monto': order['monto'],
+        'saldo_neto': order['saldo_neto'],
       });
 
       // Recorrer la lista de productos y agregarlos a la tabla de unión 'orden_venta_producto'
@@ -434,6 +440,7 @@
         'fecha': order['fecha'],
         'descripcion': order['descripcion'],
         'monto': order['monto'],
+        'saldo_neto':order['saldo_neto'],
       });
 
       // Recorrer la lista de productos y agregarlos a la tabla de unión 'orden_venta_producto'
@@ -499,12 +506,14 @@
 
       if (orderResult.isNotEmpty) {
         // Consultar los productos asociados a la orden de venta
-        List<Map<String, dynamic>> productsResult = await db.rawQuery('''
-          SELECT p.id, p.name, p.price, p.quantity, ovp.cantidad
+       List<Map<String, dynamic>> productsResult = await db.rawQuery('''
+          SELECT p.id, p.name, p.price, p.quantity, ovp.cantidad, t.rate AS impuesto
           FROM products p
           INNER JOIN orden_venta_producto ovp ON p.id = ovp.producto_id
+          INNER JOIN tax t ON p.tax_id = t.id
           WHERE ovp.orden_venta_id = ?
         ''', [orderId]);
+
 
 
         int clienteId = orderResult[0]['cliente_id'];
@@ -640,6 +649,56 @@
 
     print('Datos de prueba insertados en la tabla tax.');
   }
+
+
+Future<void> syncProducts(List<Map<String, dynamic>> productsData) async {
+  final db = await database;
+  if (db != null) {
+    // Itera sobre los datos de los productos recibidos
+    for (Map<String, dynamic> productData in productsData) {
+      // Construye un objeto Product a partir de los datos recibidos
+      Product product = Product(
+        name: productData['name'],
+        price: productData['price'],
+        quantity: productData['quantity'],
+        categoria: productData['categoria'],
+        qtySold: productData['total_sold'],
+        taxId: productData['tax_id'],
+      );
+
+      // Convierte el objeto Product a un mapa
+      Map<String, dynamic> productMap = product.toMap();
+
+      // Consulta si el producto ya existe en la base de datos local por su nombre
+      List<Map<String, dynamic>> existingProducts = await db.query(
+        'products',
+        where: 'name = ?',
+        whereArgs: [product.name],
+      );
+
+      if (existingProducts.isNotEmpty) {
+        // Si el producto ya existe, actualiza sus datos
+        await db.update(
+          'products',
+          productMap,
+          where: 'name = ?',
+          whereArgs: [product.name],
+        );
+        print('Producto actualizado: ${product.name}');
+      } else {
+        // Si el producto no existe, inserta un nuevo registro en la tabla de productos
+        await db.insert('products', productMap);
+        print('Producto insertado: ${product.name}');
+      }
+    }
+    print('Sincronización de productos completada.');
+  } else {
+    // Manejar el caso en el que db sea null
+    print('Error: db is null');
+  }
+}
+
+   
 
 
 

@@ -11,3 +11,7 @@ aparecera en cobros
 agregar a la tabla de productos el impuesto 
 
 cada producto tiene propio impuesto es decir cada linea de la orden 
+
+
+3) el usuario al loguearse se insertara automaticamente en la tabla los datos de el 
+

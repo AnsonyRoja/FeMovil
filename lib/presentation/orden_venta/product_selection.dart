@@ -21,6 +21,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
   Future<void> _loadProducts() async {
     final productList = await DatabaseHelper.instance.getProductsAndTaxes(); // Obtener todos los productos
 
+      print('Esto es el productlist $productList');
     setState(() {
       products = productList;
       filteredProducts = productList;
@@ -63,7 +64,9 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Precio: \$${productPrice.toStringAsFixed(2)}'),
-                      Text('Cantidad: $quantity'),
+                      Text('Cantidad disponible: ${filteredProducts[index]['quantity']}'),
+                      Text('Cantidad Seleccionada: $quantity'),
+                      
                     ],
                   ),
                   trailing: isSelected
