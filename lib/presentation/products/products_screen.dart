@@ -2,6 +2,7 @@ import 'package:femovil/assets/nav_bottom_menu.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/presentation/products/add_products.dart';
 import 'package:femovil/presentation/products/filter_dialog.dart';
+import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/products/products_details.dart';
 import 'package:femovil/presentation/products/products_http.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,6 @@ class _ProductsState extends State<Products> {
     // final inserccion = await DatabaseHelper.instance.insertTaxData(); // Obtener todos los productos
     print("Estoy obteniendo products $products");
 
-
     setState(() {
       products = productos;
       filteredProducts = productos;
@@ -39,8 +39,8 @@ class _ProductsState extends State<Products> {
 
 
   Future<void> _deleteBaseDatos() async {
-    final productos = await DatabaseHelper.instance.deleteDatabases(); // Obtener todos los productos
-      
+   
+    final productos = await DatabaseHelper.instance.deleteDatabases();    
 
   }
 
@@ -69,6 +69,7 @@ class _ProductsState extends State<Products> {
   @override
   void initState(){
       _loadProducts();
+    
       // _deleteBaseDatos();
       super.initState();
       // sincronizationProducts();
@@ -87,7 +88,7 @@ class _ProductsState extends State<Products> {
     if (_filter != "" && input == "") {
         setState(() {
           if (_filter == "Todos") {
-            print("entre aqui");
+       
             searchController.clear();
             input = "";
 
@@ -219,7 +220,7 @@ class _ProductsState extends State<Products> {
                               children: [
                                 Text('Nombre: ${product['name']}'),
                                 Text('Precio: \$${product['price'] is double ? product['price'] :0}'),
-                                Text('Cantidad: ${product['quantity']}'),
+                                Text('Cantidad: ${product['quantity'] is int ? product['quantity']: 0}'),
                       
 
                               ],

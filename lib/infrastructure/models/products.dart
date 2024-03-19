@@ -1,6 +1,9 @@
 class Product {
   final dynamic codProd;
+  final dynamic mProductId;
   final String name;
+  final dynamic productType;
+  final dynamic productTypeName;
   final dynamic price;
   final dynamic quantity; 
   final dynamic prodCatId;
@@ -14,7 +17,10 @@ class Product {
 
   Product({
     required this.codProd,
+    required this.mProductId,
     required this.name,
+    required this.productType,
+    required this.productTypeName,
     required this.quantity,
     required this.price,
     required this.prodCatId,
@@ -31,9 +37,12 @@ class Product {
   Map<String, dynamic> toMap() {
     return {
       'cod_product': codProd,
+      'm_product_id':mProductId,
       'name': name,
       'quantity': quantity,
       'price': price,
+      'product_type': productType,
+      'product_type_name': productTypeName,
       'pro_cat_id': prodCatId,
       'categoria': categoria,
       'tax_cat_id': taxId,
@@ -47,6 +56,9 @@ class Product {
     factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
       codProd: map['cod_product'],
+      mProductId: map['m_product_id'],
+      productType: map['product_type'],
+      productTypeName: map['prodyct_type_name'],
       name: map['name'],
       quantity: map['quantity'],
       price: map['price'],

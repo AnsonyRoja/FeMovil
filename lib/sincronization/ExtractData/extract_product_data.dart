@@ -13,18 +13,29 @@ List<Map<String, dynamic>> extractProductData(String responseData) {
   // Crea una lista para almacenar los datos de los productos
   List<Map<String, dynamic>> productsData = [];
 
+  print('Esto es la respuesta del erp $dataRows');
+
   // Itera sobre cada DataRow y extrae los datos relevantes de los productos
 
 try {
   
   for (var row in dataRows) {
     Map<String, dynamic> productData = {
+      'cod_product': row['field'][0]['val'],
+      'm_product_id': row['field'][11]['val'],
       'name': row['field'][1]['val'],
       'price':row['field'][10]['val'],
       'quantity':row['field'][9]['val'],
+      'pro_cat_id':row['field'][3]['val'],
       'categoria':row['field'][4]['val'],
+      'product_type':row['field'][7]['val'],
+      'product_type_name':row['field'][8]['val'],
       'total_sold': 0,
-      'tax_id':row['field'][5]['val'],
+      'tax_cat_id':row['field'][5]['val'],
+      'tax_cat_name': row['field'][6]['val'],
+      'um_id':row['field'][12]['val'],
+      'um_name':row['field'][14]['val'],
+      'quantity_sold': 0,
      // Asegúrate de convertir la cantidad a un tipo numérico adecuado
       // Añade otros campos que necesites sincronizar
     };

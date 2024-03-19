@@ -1,11 +1,13 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:femovil/presentation/products/idempiere/create_product.dart';
+import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:sqflite/sqflite.dart';
+
 
 
 
@@ -20,37 +22,112 @@ class AddProductForm extends StatefulWidget {
 
 class _AddProductFormState extends State<AddProductForm> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _codProdController = TextEditingController();
+  String _prodCatText = '';
+  String _taxText = '';
+  String _umText = '';
+  String _productTypeText = '';
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _qtySoldController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
-  final TextEditingController _minStockController = TextEditingController();
-  final TextEditingController _maxStockController = TextEditingController();
-  final TextEditingController _categoriaController = TextEditingController();
-  XFile? _imageFile;
-  String imagePath = "";
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _qtySoldController = TextEditingController();
+ 
  List<Map<String, dynamic>> _taxList = []; // Lista para almacenar los impuestos disponibles
-  int _selectedTaxIndex = 1; // Índice del impuesto seleccionado por defecto
-
+ List<Map<String, dynamic>> _categoriesList = [];
+ List<Map<String, dynamic>> _umList = [];
+ List<Map<String, dynamic>> _productTpeList =[];
+  int _selectedTaxIndex = 0; // Índice del impuesto seleccionado por defecto
+  int _selectedCategoriesIndex = 0;
+  int _selectedUmIndex = 0;
+  String _selectedProductType = 'first';
 
      void _loadTaxs()async {
 
-        final getTaxs = await DatabaseHelper.instance.getTaxs();
-        print("esto es getTaxs $getTaxs");
+
+        final getTaxs = await  listarImpuestos();
+        final getCategories = await listarCategorias();
+        final getUm = await  listarUnidadesDeMedida();
+        final getProductType = await listarProductType();
+        print("Esto es getTaxs $getTaxs");
+        print('Esto es getCategories $getCategories');
+        print('Estas son las unidades de medidas $getUm');
+        print('Esto es la lista de los tipos de productos $getProductType');
+
+
+      print("esto es categoriesList con la nueva opcion 0 $_taxList");
+      _taxList.add({'tax_cat_id': 0, 'tax_cat_name': 'Selecciona un impuesto'});
+      _categoriesList.add({'pro_cat_id': 0, 'categoria': 'Selecciona una categoria'});
+      _umList.add({'um_id': 0, 'um_name': 'Unidad de medida'});
+      _productTpeList.add({'product_type': 'first', 'product_type_name': 'Selecciona un tipo de producto'});
+
 
         setState(() {
-            _taxList = getTaxs;
+        _taxList.addAll(getTaxs);
+        _categoriesList.addAll(getCategories);
+        _umList.addAll(getUm);
+        _productTpeList.addAll(getProductType);
 
         });
         print("esto es taxlist $_taxList");
       }
 
 
+
+      
+String obtenerNombreCategoria(int? id) {
+  // Buscar la categoría en _categoriesList que coincide con el ID dado
+  Map<String, dynamic>? categoria = _categoriesList.firstWhere(
+    (categoria) => categoria['pro_cat_id'] == id,
+  );
+
+  // Si se encuentra la categoría, devolver su nombre, de lo contrario devolver una cadena vacía
+  return categoria != null ? categoria['categoria'] : '';
+}
+
+      
+String obtenerNombreImpuesto(int? id) {
+  // Buscar la categoría en _categoriesList que coincide con el ID dado
+  Map<String, dynamic>? impuesto = _taxList.firstWhere(
+    (taxlist) => taxlist['tax_cat_id'] == id,
+  );
+
+  // Si se encuentra la categoría, devolver su nombre, de lo contrario devolver una cadena vacía
+  return impuesto != null ? impuesto['tax_cat_name'] : '';
+}
+
+String obtenerNombreUm(int? id) {
+  // Buscar la categoría en _categoriesList que coincide con el ID dado
+  Map<String, dynamic>? um = _umList.firstWhere(
+    (umList) => umList['um_id'] == id,
+  );
+
+print("Esto es el nombre umlist $um");
+
+  return um != null ? um['um_name'] : '';
+}
+
+
+String obtenerNombreProductType(String? type) {
+  // Buscar la categoría en _categoriesList que coincide con el ID dado
+  Map<String, dynamic>? productType = _productTpeList.firstWhere(
+    (productTypeList) => productTypeList['product_type'] == type,
+  );
+
+
+  return productType != null ? productType['product_type_name'] : '';
+}
+
+
+
+
   @override
   void initState()  {
     _loadTaxs();
+    setState(() {
+      
+    });
+
     super.initState();
+
     
   }
 
@@ -90,18 +167,6 @@ class _AddProductFormState extends State<AddProductForm> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _priceController,
-                    decoration: const InputDecoration(labelText: 'Precio del producto', filled: true, fillColor: Colors.white),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa el precio del producto';
-                      }
-                      return null;
-                    },
-                  ),
                   const SizedBox(height: 10,),
                   TextFormField(
                     controller: _quantityController,
@@ -114,23 +179,120 @@ class _AddProductFormState extends State<AddProductForm> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 5,),
+                  const SizedBox(height: 10,),
                   DropdownButtonFormField<int>(
                     value: _selectedTaxIndex,
                     items: _taxList.map<DropdownMenuItem<int>>((tax) {
                       print('tax $tax');
                       return DropdownMenuItem<int>(
-                        value: tax['id'] as int,
-                        child: Text(tax['name'] as String),
+                        value: tax['tax_cat_id'] as int,
+                        child: Text(tax['tax_cat_name'] as String),
                       );
                     }).toList(),
                     onChanged: (newValue) {
+
+                      print('esto es el taxList $_taxList');
+
+                    String nameTax = obtenerNombreImpuesto(newValue);
+                    print("esto es el nombre de impuesto $nameTax");
                       setState(() {
+                        _taxText = nameTax;
                         _selectedTaxIndex = newValue as int;
                       });
                     },
                     decoration: const InputDecoration(
-                      labelText: 'Selecciona un impuesto',
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    validator: (value) {
+                      if (value == null || value == 0) {
+                        return 'Por favor selecciona un impuesto';
+                      }
+                      return null;
+                    },
+                  ),
+                    SizedBox(height: 10,),
+                    DropdownButtonFormField<String>(
+                    value: _selectedProductType,
+                    items: _productTpeList.map<DropdownMenuItem<String>>((productType) {
+                      return DropdownMenuItem<String>(
+                        value: productType['product_type'] as String,
+                        child: Container(
+                          width: 200,
+                          child: Text(productType['product_type_name'] as String)),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+
+
+                String nameProductType = obtenerNombreProductType(newValue);
+         
+                      setState(() {
+                        _productTypeText = nameProductType;
+                        _selectedProductType = newValue as String;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    validator: (value) {
+                      if (value == null || value == 0) {
+                        return 'Por favor selecciona un tipo de producto';
+                      }
+                      return null;
+                    },
+                  ),
+                    const SizedBox(height:10,),
+                   DropdownButtonFormField<int>(
+                    value: _selectedCategoriesIndex,
+                    items: _categoriesList.map<DropdownMenuItem<int>>((categories) {
+                      return DropdownMenuItem<int>(
+                        value: categories['pro_cat_id'] as int,
+                        child: SizedBox(
+                            width: 200,
+                          child: Text(categories['categoria'] as String, style: const TextStyle(overflow: TextOverflow.clip),)),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                    String nombreCategoria = obtenerNombreCategoria(newValue);
+                      
+                      setState(() {
+                        _prodCatText = nombreCategoria;
+                        _selectedCategoriesIndex = newValue as int;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    validator: (value) {
+                      if (value == null || value == 0) {
+                        return 'Por favor selecciona una categoria';
+                      }
+                      return null;
+                    },
+                  ),
+                    const SizedBox(height: 10,),
+                   DropdownButtonFormField<int>(
+                    value: _selectedUmIndex,
+                    items: _umList.map<DropdownMenuItem<int>>((um) {
+                      print('Um $um');
+                      return DropdownMenuItem<int>(
+                        value: um['um_id'] as int,
+                        child: SizedBox(
+                            width: 200,
+                          child: Text(um['um_name'] as String, style: const TextStyle(overflow: TextOverflow.clip),)),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      String umName = obtenerNombreUm(newValue);
+                      setState(() {
+                        _umText = umName;
+                        _selectedUmIndex = newValue as int;
+                      });
+                    },
+                    decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
                     ),
@@ -141,100 +303,20 @@ class _AddProductFormState extends State<AddProductForm> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 5,),
-                Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Seleccione una imagen',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        if (_imageFile != null)
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              width: 250,
-                              height: 150,
-                              child: Image.file(File(_imageFile!.path)),
-                            ),
-                          ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            final imagePicker = ImagePicker();
-                            final XFile? image = await imagePicker.pickImage(source: ImageSource.gallery);
-                                            
-                            if (image != null) {
-                              setState(() {
-                                _imageFile = image;
-                                imagePath = image.path;
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100), // Hacer que los bordes sean cuadrados
-                            ),
-                          ),
-                          child: const Text('Tac'),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                   const SizedBox(height: 10,),
-                  TextFormField(
-                    controller: _minStockController,
-                    decoration: const InputDecoration(labelText: 'Stock mínimo', filled: true, fillColor: Colors.white),
-                    keyboardType: TextInputType.number,
-                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa el stock minimo del producto';
-                      }
-                      return null;
-                    },
-                  ),
-                   const SizedBox(height: 10,),
-                  TextFormField(
-                    controller: _maxStockController,
-                    decoration: const InputDecoration(labelText: 'Stock máximo', filled: true, fillColor: Colors.white),
-                    keyboardType: TextInputType.number,
-                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa el stock maximo del producto';
-                      }
-                      return null;
-                    },
-                  ),
+     
                   const SizedBox(height: 10,),
-                    TextFormField(
-                    controller: _categoriaController,
-                    decoration: const InputDecoration(labelText: 'Categoria', filled: true, fillColor: Colors.white),
-                     validator: (value) {
+                  TextFormField(
+                    controller: _priceController,
+                    decoration: const InputDecoration(labelText: 'Precio del producto', filled: true, fillColor: Colors.white),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa una categoria';
+                        return 'Por favor ingresa el precio del producto';
                       }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 10,),
-                   TextFormField(
-                    controller: _qtySoldController,
-                    decoration: const InputDecoration(labelText: 'Vendido', filled: true, fillColor: Colors.white),
-                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa la cantidad de ventas del producto';
-                      }
-                      return null;
-                    },
-                  ),
+  
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: SizedBox(
@@ -271,32 +353,60 @@ class _AddProductFormState extends State<AddProductForm> {
     String name = _nameController.text;
     double price = double.parse(_priceController.text);
     int quantity = int.parse(_quantityController.text);
-    String categoria = _categoriaController.text;
-    int qtySold = int.parse(_qtySoldController.text);
     int selectTax = _selectedTaxIndex;
+    int prodCatId = _selectedCategoriesIndex;
+    int umId = _selectedUmIndex;
+    String productTypeId = _selectedProductType;
+    int codProd = 0;
+
+    int qtySold = 0;
+
+    String categoria = _prodCatText;
+    String taxName = _taxText;
+    String uM= _umText;
+    String ptype = _productTypeText;
+
+
     // Crea una instancia del producto
     Product product = Product(
-      
+      mProductId: 0,
+      productType: productTypeId,
+      productTypeName: ptype ,
+      codProd: codProd,
+      prodCatId: prodCatId,
+      taxName: taxName ,
+      umId: umId,
       name: name,
       price: price,
       quantity: quantity,
       categoria:categoria,
       qtySold: qtySold,
-      taxId: selectTax
+      taxId: selectTax,
+      umName: uM,
       
     );
 
     // Llama a un método para guardar el producto en Sqflite
-    await saveProductToDatabase(product);
-
+    final id = await saveProductToDatabase(product);
+    print('Esto es el id $id');
+   dynamic result = await createProductIdempiere(product.toMap());
+    final mProductId = result['StandardResponse']['outputFields']['outputField'][0]['@value'];
+    final codProdc = result['StandardResponse']['outputFields']['outputField'][1]['@value'];
+    print('Este es el mp product id $mProductId && el codprop $codProdc');
     // Limpia los controladores de texto después de guardar el producto
-    _nameController.clear();
-    _priceController.clear();
-    _quantityController.clear();
-    _minStockController.clear();
-    _maxStockController.clear();
-    _categoriaController.clear();
-    _qtySoldController.clear();
+
+    await DatabaseHelper.instance.updateProductMProductIdAndCodProd(id, mProductId, codProdc);
+
+  //   _nameController.clear();
+  //   _priceController.clear();
+  //   _quantityController.clear();
+    
+  //     setState(() {
+  //       _selectedTaxIndex = 0;
+  //       _selectedCategoriesIndex = 0;
+  //       _selectedUmIndex = 0;
+  //  });
+    // _formKey.currentContext!.reset();
     // setState(() {
     // _imageFile = null;
     // });
@@ -309,22 +419,24 @@ class _AddProductFormState extends State<AddProductForm> {
 
 
   }
-
-  Future<void> saveProductToDatabase(Product product) async {
-    final db = await DatabaseHelper.instance.database;
-    if (db != null) {
-      int result = await db.insert('products', product.toMap());
-
-      if (result != -1) {
-        print('El producto se ha guardado correctamente en la base de datos con el id: $result');
-      } else {
-        print('Error al guardar el producto en la base de datos');
-      }
+Future<int> saveProductToDatabase(Product product) async {
+  final db = await DatabaseHelper.instance.database;
+  if (db != null) {
+    int result = await db.insert('products', product.toMap());
+    if (result != -1) {
+      print('El producto se ha guardado correctamente en la base de datos con el id: $result');
+      return result; // Devolver el ID del producto registrado
     } else {
-      // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
-      print('Error: db is null');
+      print('Error al guardar el producto en la base de datos');
+      return -1; // Opcional: devolver un valor de error
     }
+  } else {
+    // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
+    print('Error: db is null');
+    return -1; // Opcional: devolver un valor de error
   }
+}
+
 
   @override
   void dispose() {
@@ -332,8 +444,6 @@ class _AddProductFormState extends State<AddProductForm> {
     _nameController.dispose();
     _priceController.dispose();
     _quantityController.dispose();
-    _minStockController.dispose();
-    _maxStockController.dispose();
     _qtySoldController.dispose();
     super.dispose();
   }

@@ -74,15 +74,31 @@ void _showFilterOptions(BuildContext context) {
 
 void _filterByMaxPrice() {
   List<Map<String, dynamic>> sortedProducts = List.from(products); // Crear una nueva lista para evitar modificar la original
-  sortedProducts.sort((a, b) => b['price'].compareTo(a['price'])); // Ordena de forma descendente por precio
+  print('Sorted Products $sortedProducts');
+  sortedProducts.sort((a, b) {
+    // Parsea los valores de price a double antes de compararlos
+    double priceA = double.tryParse(a['price'].toString()) ?? 0.0;
+    double priceB = double.tryParse(b['price'].toString()) ?? 0.0;
+    return priceB.compareTo(priceA); // Ordena de forma descendente por precio
+  });
   setState(() {
     products = sortedProducts; // Actualiza la lista original con la lista ordenada
   });
 }
 
+
+
 void _filterByMinPrice() {
   List<Map<String, dynamic>> sortedProducts = List.from(products); // Crear una nueva lista para evitar modificar la original
-  sortedProducts.sort((a, b) => a['price'].compareTo(b['price'])); // Ordena de forma ascendente por precio
+  sortedProducts.sort((a, b) {
+
+    double priceA = double.tryParse(a['price'].toString()) ?? 0.0;
+    double priceB = double.tryParse(b['price'].toString()) ?? 0.0;
+
+
+    return priceA.compareTo(priceB);
+
+  }); // Ordena de forma ascendente por precio
   setState(() {
     products = sortedProducts; // Actualiza la lista original con la lista ordenada
   });

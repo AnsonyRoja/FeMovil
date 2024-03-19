@@ -43,9 +43,12 @@ import 'package:sqflite/sqflite.dart';
           CREATE TABLE products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             cod_product INTEGER,
+            m_product_id INTEGER,
             name TEXT,
             quantity INTEGER,
             price REAL,
+            product_type STRING,
+            product_type_name STRING,
             pro_cat_id INTEGER,
             categoria TEXT,
             tax_cat_id INTEGER,
@@ -53,7 +56,7 @@ import 'package:sqflite/sqflite.dart';
             um_id INTEGER,
             um_name STRING,
             quantity_sold INTEGER,
-            FOREIGN KEY(tax_id) REFERENCES tax(id)
+            FOREIGN KEY(tax_cat_id) REFERENCES tax(id)
 
           )
         ''');
@@ -251,17 +254,17 @@ import 'package:sqflite/sqflite.dart';
 }
 
 
-    Future<List<Map<String, dynamic>>> getProducts() async {
-    final db = await database;
-    if (db != null) {
-      // Realiza la consulta para recuperar todos los registros de la tabla "products"
-      return await db.query('products');
-    } else {
-      // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
-      print('Error: db is null');
-      return [];
-    }
+Future<List<Map<String, dynamic>>> getProducts() async {
+  final db = await database;
+  if (db != null) {
+    // Realiza la consulta para recuperar todos los registros de la tabla "products"
+    return await db.query('products');
+  } else {
+    // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
+    print('Error: db is null');
+    return [];
   }
+}
 
    Future<List<Map<String, dynamic>>> getTaxs() async {
     final db = await database;
@@ -650,55 +653,27 @@ import 'package:sqflite/sqflite.dart';
     print('Datos de prueba insertados en la tabla tax.');
   }
 
-
-Future<void> syncProducts(List<Map<String, dynamic>> productsData) async {
+Future<void> updateProductMProductIdAndCodProd(int productId, int newMProductId, int newCodProduct) async {
   final db = await database;
+  print("esto es el valor de me produc id $newMProductId y el valor de newcodprodu $newCodProduct");
   if (db != null) {
-    // Itera sobre los datos de los productos recibidos
-    for (Map<String, dynamic> productData in productsData) {
-      // Construye un objeto Product a partir de los datos recibidos
-      Product product = Product(
-        name: productData['name'],
-        price: productData['price'],
-        quantity: productData['quantity'],
-        categoria: productData['categoria'],
-        qtySold: productData['total_sold'],
-        taxId: productData['tax_id'],
-      );
-
-      // Convierte el objeto Product a un mapa
-      Map<String, dynamic> productMap = product.toMap();
-
-      // Consulta si el producto ya existe en la base de datos local por su nombre
-      List<Map<String, dynamic>> existingProducts = await db.query(
-        'products',
-        where: 'name = ?',
-        whereArgs: [product.name],
-      );
-
-      if (existingProducts.isNotEmpty) {
-        // Si el producto ya existe, actualiza sus datos
-        await db.update(
-          'products',
-          productMap,
-          where: 'name = ?',
-          whereArgs: [product.name],
-        );
-        print('Producto actualizado: ${product.name}');
-      } else {
-        // Si el producto no existe, inserta un nuevo registro en la tabla de productos
-        await db.insert('products', productMap);
-        print('Producto insertado: ${product.name}');
-      }
-    }
-    print('Sincronización de productos completada.');
+    await db.update(
+      'products',
+      {
+        'm_product_id': newMProductId,
+        'cod_product': newCodProduct,
+      },
+      where: 'id = ?',
+      whereArgs: [productId],
+    );
+    print('Product updated successfully');
   } else {
-    // Manejar el caso en el que db sea null
     print('Error: db is null');
   }
 }
 
-   
+    
+
 
 
 
