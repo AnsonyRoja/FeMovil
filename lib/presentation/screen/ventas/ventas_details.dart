@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class _VentasDetailsState extends State<VentasDetails> {
   }
 
   Future<Map<String, dynamic>> _loadVentasForId() async {
-    return await DatabaseHelper.instance.getOrderWithProducts(widget.ventaId);
+    return await getOrderWithProducts(widget.ventaId);
   }
 
   @override

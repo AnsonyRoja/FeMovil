@@ -1,5 +1,6 @@
 import 'package:femovil/assets/nav_bottom_menu.dart';
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/clients/add_clients.dart';
 import 'package:femovil/presentation/clients/clients_details.dart';
 import 'package:femovil/presentation/clients/filter_dialog_clients.dart';
@@ -26,14 +27,13 @@ class _ClientsState extends State<Clients> {
   String input = "";
 
   Future<void> _loadClients() async {
-    final clientes = await DatabaseHelper.instance.getClients(); // Obtener todos los productos
+    final clientes = await getClients(); // Obtener todos los productos
 
     print("Estoy obteniendo Clientes $clientes");
     setState(() {
       clients = clientes;
       searchClient = clientes;
     });
-
 
   }
 

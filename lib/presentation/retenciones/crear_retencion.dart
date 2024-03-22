@@ -1,4 +1,6 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/database/insert_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -33,10 +35,11 @@ class _CrearRetencionesState extends State<CrearRetenciones> {
 
 
   Future<void> _loadOrders() async {
-    ordenesCompra = await DatabaseHelper.instance.getAllOrdenesCompraWithProveedorNames();
+    ordenesCompra = await getAllOrdenesCompraWithProveedorNames();
+
     print("Esto es ordenes de compra $ordenesCompra");
       for (Map<String, dynamic> order in ordenesCompra) {
-    bool tieneRetencion = await DatabaseHelper.instance.facturaTieneRetencion(order['id']);
+    bool tieneRetencion = await facturaTieneRetencion(order['id']);
     if (!tieneRetencion) {
       ordenesSinRetencion.add(order);
     }
@@ -98,7 +101,8 @@ class _CrearRetencionesState extends State<CrearRetenciones> {
                             }).toList(),
                             onChanged: (String? newValue) async {
                               // Do something with the selected value
-                       bool tieneRetencion = await DatabaseHelper.instance.facturaTieneRetencion(int.parse(newValue!));
+                              
+                       bool tieneRetencion = await facturaTieneRetencion(int.parse(newValue!));
                             if (tieneRetencion) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -295,8 +299,7 @@ class _CrearRetencionesState extends State<CrearRetenciones> {
                                         
                                        _loadOrders();
                                       });
-                                      
-                                      DatabaseHelper.insertRetencion(nuevaRetencion);
+                                        insertRetencion(nuevaRetencion);
                                         _formKey.currentState?.reset();
 
                                         totalBdi.clear();

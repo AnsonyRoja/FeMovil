@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:flutter/material.dart';
 
 class ProductSelectionScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
   }
 
   Future<void> _loadProducts() async {
-    final productList = await DatabaseHelper.instance.getProductsAndTaxes(); // Obtener todos los productos
+    final productList = await getProductsAndTaxes(); // Obtener todos los productos
 
       print('Esto es el productlist $productList');
     setState(() {

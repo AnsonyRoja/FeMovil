@@ -39,7 +39,9 @@ class ProductDetailsScreen extends StatelessWidget {
                 // _buildImage(product['image_path'].toString()),
                 _buildTextFormField('Categoría', product['categoria'].toString()),
                 _buildTextFormField('Impuesto', product['tax_cat_name'].toString()),
+                _buildTextFormField('Grupo de producto', product['product_group_name'].toString()),
                 _buildTextFormField('Unidad de medida', product['um_name'].toString()),
+                _buildTextFormField('Tipo de producto', product['product_type_name']),
                 _buildTextFormField('Precio', '\$${product['price'] is double ? product['price']: 0}'),
                 _buildTextFormField('Cantidad Disponible', product['quantity'].toString()),
           

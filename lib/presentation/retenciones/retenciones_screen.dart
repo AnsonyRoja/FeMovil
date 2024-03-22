@@ -1,5 +1,6 @@
 import 'package:femovil/assets/nav_bottom_menu.dart';
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/retenciones/crear_retencion.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,8 @@ class _RetencionesState extends State<Retenciones> {
 
             Future<void>  _loadWithholdings() async{ 
 
-                      List<Map<String, dynamic>> retenciones = await DatabaseHelper.instance.getRetencionesWithProveedorNames();
+
+                      List<Map<String, dynamic>> retenciones = await getRetencionesWithProveedorNames();
 
                   setState(() {
                   filteredRetenciones = retenciones;

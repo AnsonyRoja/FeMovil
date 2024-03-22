@@ -1,4 +1,4 @@
-import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:flutter/material.dart';
 
 class ProductSelectionComprasScreen extends StatefulWidget {
@@ -17,14 +17,15 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
     super.initState();
     _loadProducts();
   }
-
+  
   Future<void> _loadProducts() async {
-    final productList = await DatabaseHelper.instance.getProductsAndTaxes(); // Obtener todos los productos
+    final productList = await getProductsAndTaxes(); // Obtener todos los productos
     print('esto es productList de ordenes de compras $productList');
     setState(() {
       products = productList;
       filteredProducts = productList;
     });
+
   }
 
   @override
@@ -62,8 +63,8 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Precio: \$${productPrice.toStringAsFixed(2)}'),
-                      Text('Cantidad: $quantity'),
+                      Text('Precio: \$${productPrice is !String ? productPrice.toStringAsFixed(2) : 0 }'),
+                      Text('Cantidad: ${quantity is int ? quantity : 0}'),
                     ],
                   ),
                   trailing: isSelected

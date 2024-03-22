@@ -1,5 +1,7 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/update_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
+import 'package:femovil/presentation/products/utils/switch_generated_names_select.dart';
 import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:flutter/material.dart';
 
@@ -20,29 +22,54 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _minStockController = TextEditingController();
   final _maxStockController = TextEditingController();
 
+ List<Map<String, dynamic>> _taxList = []; // Lista para almacenar los impuestos disponibles
+ List<Map<String, dynamic>> _categoriesList = [];
+ List<Map<String, dynamic>> _umList = [];
+ List<Map<String, dynamic>> _productTypeList = [];
+ List<Map<String, dynamic>> _productGroupList = [];
+  int _selectedTaxIndex = 0; // Índice del impuesto seleccionado por defecto
+  int _selectedCategoriesIndex = 0;
+  int _selectedProductGroupIndex = 0;
+  int _selectedUmIndex = 0;
+  String _selectedProductType = 'first';
+  
+  String _prodTypeText = '';
+  String _prodGroupText = '';
+  String _prodCatText = '';
+  String _taxText = '';
+  String _umText = '';
+
+
   void _loadTaxs()async {
 
        
         final getTaxs = await listarImpuestos();
         final getCategories = await listarCategorias();
         final getUm = await  listarUnidadesDeMedida();
-        print("Esto es getTaxs $getTaxs");
-        print('Esto es getCategories $getCategories');
-        print('Estas son las unidades de medidas $getUm');
+        final getProductGroup = await listarProductGroup();
+        final getProductType = await listarProductType();
+
+        // print('Esto es getProductGroup $getProductGroup');
+        // print('Esto es getProductType $getProductType');
+        // print("Esto es getTaxs $getTaxs");
+        // print('Esto es getCategories $getCategories');
+        // print('Estas son las unidades de medidas $getUm');
 
 
-      print("esto es categoriesList con la nueva opcion 0 $_taxList");
+
       _taxList.add({'tax_cat_id': 0, 'tax_cat_name': 'Selecciona un impuesto'});
       _categoriesList.add({'pro_cat_id': 0, 'categoria': 'Selecciona una categoria'});
       _umList.add({'um_id': 0, 'um_name': 'Unidad de medida'});
-      
-
+      _productTypeList.add({'product_type': 'first', 'product_type_name': 'Seleccione un tipo de producto'});
+      _productGroupList.add({'product_group_id': 0, 'product_group_name': 'Seleccione un grupo de producto'});
 
 
         setState(() {
         _taxList.addAll(getTaxs);
         _categoriesList.addAll(getCategories);
         _umList.addAll(getUm);
+        _productTypeList.addAll(getProductType);
+        _productGroupList.addAll(getProductGroup);
 
         });
         print("esto es taxlist $_taxList");
@@ -50,47 +77,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
 
 
- List<Map<String, dynamic>> _taxList = []; // Lista para almacenar los impuestos disponibles
- List<Map<String, dynamic>> _categoriesList = [];
- List<Map<String, dynamic>> _umList = [];
-  int _selectedTaxIndex = 0; // Índice del impuesto seleccionado por defecto
-  int _selectedCategoriesIndex = 0;
-  int _selectedUmIndex = 0;
-  String _prodCatText = '';
-  String _taxText = '';
-  String _umText = '';
 
-
-String obtenerNombreImpuesto(int? id) {
-  // Buscar la categoría en _categoriesList que coincide con el ID dado
-  Map<String, dynamic>? impuesto = _taxList.firstWhere(
-    (taxlist) => taxlist['tax_cat_id'] == id,
-  );
-
-  // Si se encuentra la categoría, devolver su nombre, de lo contrario devolver una cadena vacía
-  return impuesto != null ? impuesto['tax_cat_name'] : '';
-}
-
-String obtenerNombreCategoria(int? id) {
-  // Buscar la categoría en _categoriesList que coincide con el ID dado
-  Map<String, dynamic>? categoria = _categoriesList.firstWhere(
-    (categoria) => categoria['pro_cat_id'] == id,
-  );
-
-  // Si se encuentra la categoría, devolver su nombre, de lo contrario devolver una cadena vacía
-  return categoria != null ? categoria['categoria'] : '';
-}
-
-String obtenerNombreUm(int? id) {
-  // Buscar la categoría en _categoriesList que coincide con el ID dado
-  Map<String, dynamic>? um = _umList.firstWhere(
-    (umList) => umList['um_id'] == id,
-  );
-
-print("Esto es el nombre umlist $um");
-
-  return um != null ? um['um_name'] : '';
-}
 
 
   @override
@@ -98,18 +85,21 @@ print("Esto es el nombre umlist $um");
     super.initState();
     // Initialize controllers with existing product details
     _nameController.text = widget.product['name'].toString();
-    _categoryController.text = widget.product['categoria'].toString();
-    _priceController.text = widget.product['price'] is double ?  widget.product['price'].toString(): 0.toString();
-    _quantityController.text = widget.product['quantity'].toString();
-    _minStockController.text = widget.product['min_stock'].toString();
-    _maxStockController.text = widget.product['max_stock'].toString();
     _selectedTaxIndex = widget.product['tax_cat_id'];
     _selectedCategoriesIndex = widget.product['pro_cat_id'];
     _selectedUmIndex = widget.product['um_id'];
+    _selectedProductType = widget.product['product_type'];
+    _selectedProductGroupIndex = widget.product['product_group_id'];
     _taxText = widget.product['tax_cat_name'];
+    _prodGroupText = widget.product['product_group_name'];
     _prodCatText = widget.product['categoria'];
     _umText = widget.product['um_name'];
+    _prodTypeText = widget.product['product_type_name'];
+    _priceController.text = '0';
+    _quantityController.text = '0';
+    
      _loadTaxs();
+
      print('Estos son los productos ${widget.product}');
 
 
@@ -147,7 +137,6 @@ print("Esto es el nombre umlist $um");
                 children: [
                   const SizedBox(height: 25),
                   _buildTextFormField('Nombre', _nameController),
-                  _buildTextFormField('Precio', _priceController),
                      Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
@@ -163,7 +152,7 @@ print("Esto es el nombre umlist $um");
                         );
                       }).toList(),
                       onChanged: (newValue) {
-                        String nameTax = obtenerNombreImpuesto(newValue);
+                        String nameTax = invoke('obtenerNombreImpuesto', newValue, _taxList);
                         setState(() {
                           _taxText = nameTax;
                           _selectedTaxIndex = newValue as int;
@@ -201,7 +190,9 @@ print("Esto es el nombre umlist $um");
                         );
                       }).toList(),
                       onChanged: (newValue) {
-                        String nameCat = obtenerNombreCategoria(newValue);
+
+                        String nameCat = invoke('obtenerNombreCat', newValue, _categoriesList);
+
                         setState(() {
                           _prodCatText = nameCat;
                           _selectedCategoriesIndex = newValue as int;
@@ -220,6 +211,85 @@ print("Esto es el nombre umlist $um");
                       },
                     ),
                   ),
+                  const SizedBox(height: 5,),
+                    Container(
+                      width: 390,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
+                      border: Border.all(color: Colors.grey), // Color del borde
+                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedProductType,
+                      items: _productTypeList.map<DropdownMenuItem<String>>((productType) {
+                        return DropdownMenuItem<String>(
+                          value: productType['product_type'] as String,
+                          child: Text(productType['product_type_name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+
+                        String nameProductType = invoke('obtenerNombreProductType', newValue, _productTypeList);
+                       
+                        setState(() {
+                          _prodTypeText = nameProductType;
+                          _selectedProductType = newValue as String;
+                        });
+
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Tipo de Producto',
+                        border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      validator: (value) {
+                        if (value == null || value == 'first') {
+                          return 'Por favor selecciona un tipo de producto';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 5,),
+                   Container(
+                      width: 390,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
+                      border: Border.all(color: Colors.grey), // Color del borde
+                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                    ),
+                    child: DropdownButtonFormField<int>(
+                      value: _selectedProductGroupIndex,
+                      items: _productGroupList.map<DropdownMenuItem<int>>((productGroup) {
+                        return DropdownMenuItem<int>(
+                          value: productGroup['product_group_id'] as int,
+                          child: Text(productGroup['product_group_name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+
+                        
+                        String nameProductGroup = invoke('obtenerNombreProductGroup', newValue, _productGroupList);
+                        setState(() {
+                          _prodGroupText = nameProductGroup;
+                          _selectedProductGroupIndex = newValue as int;
+                        });
+
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Grupo del Producto',
+                        border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      validator: (value) {
+                        if (value == null || value == '') {
+                          return 'Por favor selecciona el grupo al que pertenece';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+
                     const SizedBox(height: 5,),
                     Container(
                       width: 390,
@@ -237,7 +307,9 @@ print("Esto es el nombre umlist $um");
                         );
                       }).toList(),
                       onChanged: (newValue) {
-                        String nameUm = obtenerNombreUm(newValue);
+                    
+                        String nameUm = invoke('obtenerNombreUm', newValue, _umList);
+
                         setState(() {
                           _umText = nameUm;
                           _selectedUmIndex= newValue as int;
@@ -258,7 +330,6 @@ print("Esto es el nombre umlist $um");
                   ),
 
 
-                  _buildTextFormField('Cantidad Disponible', _quantityController),
                
                 ],
               ),
@@ -328,7 +399,7 @@ print("Esto es el nombre umlist $um");
             };
 
             // Actualizar el producto en la base de datos
-            await DatabaseHelper.instance.updateProduct(updatedProduct);
+            await updateProduct(updatedProduct);
 
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

@@ -14,3 +14,44 @@ salgo abierto
 
 
 
+
+C_BPartner_ID
+val 1001691
+Value(codigo)
+1624
+Bpname 
+Astolfo Segundo Nuñez
+Bpname2
+nil true
+isCustomer 
+Y
+C_BP_Group_id
+1000000
+groupbpname
+Clientes
+LCO_TaxIdType_ID
+100003
+TaxIDTypeName
+Rif
+FTU_BpartnerType_ID
+nil
+BPartnerType
+nil
+Email 
+nil
+C_Bpartner_Location_ID
+1001611
+isBillTo
+Y
+Phone 
+nil
+C_Location_ID
+1002013
+Address_BillTo
+AV PRINCIPAL CALLE LOS SAUCES CASA NRO P-N60 SECTOR ALTOS DE, SAN CRISTOBAL, TACHIRA, Venezuela"
+
+
+
+
+
+

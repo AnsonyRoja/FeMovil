@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/insert_database.dart';
 import 'package:femovil/presentation/orden_compra/product_selection.dart';
 import 'package:femovil/presentation/orden_venta/product_selection.dart';
 import 'package:flutter/cupertino.dart';
@@ -272,7 +273,7 @@ void initState() {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Saldo Neto: ${calcularSaldoNetoProducto(product['quantity'], product['price'])}',
+                                'Saldo Neto: ${calcularSaldoNetoProducto(product['quantity'], product['price']).toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   color: Colors.green,
                                 ),
@@ -383,8 +384,9 @@ void initState() {
                     'saldo_neto':double.parse(saldoNetoController.text.substring(1)),
                     'productos': selectedProducts, // Esta lista contendría los detalles de los productos seleccionados
                   };
+                 
                   // Luego puedes guardar la orden de venta en la base de datos o enviarla al servidor
-                       DatabaseHelper.instance.insertOrderCompra(order).then((orderId) {
+                       insertOrderCompra(order).then((orderId) {
                    // Limpiar los campos después de guardar la orden
                             if (orderId is Map<String, dynamic> && orderId.containsKey('failure')) {
                               if ( orderId['failure'] == -1) {

@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
 import 'package:flutter/material.dart';
 
@@ -25,8 +26,8 @@ class _CobranzasState extends State<Cobranzas> {
   int? searchValue;
 
       Future<void> _loadCobranzas() async {
-        final CobranzasData = await DatabaseHelper.instance.getAllOrdersWithClientNames(); // Cambiar a la función de obtener Cobranzas
-
+        final CobranzasData = await getAllOrdersWithClientNames(); // Cambiar a la función de obtener Cobranzas
+        
             print("Esto es la venta Data $CobranzasData");
 
             setState(() {

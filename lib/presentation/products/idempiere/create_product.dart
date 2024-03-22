@@ -3,8 +3,6 @@ import 'dart:io';
 
 import 'package:femovil/config/url.dart';
 import 'package:femovil/presentation/perfil/perfil_http.dart';
-import 'package:femovil/sincronization/ExtractData/extract_product_data.dart';
-import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:path_provider/path_provider.dart';
 
 createProductIdempiere(product) async {
@@ -12,6 +10,9 @@ createProductIdempiere(product) async {
     ..badCertificateCallback = (X509Certificate cert, String host, int port) {
       return true;
     };
+    
+try {
+  
 
     print('Esto es producto ${product}');
 
@@ -36,6 +37,8 @@ createProductIdempiere(product) async {
   var clientId = jsonData["ClientID"];
   var wareHouseId = jsonData["WarehouseID"];
   var language = jsonData["Language"];
+  String encodedName = product['name'];
+
 
   // Configurar el cuerpo de la solicitud en formato JSON
 
@@ -50,7 +53,7 @@ createProductIdempiere(product) async {
                 "field": [
                     {
                         "@column": "Name",
-                        "val": product['name']
+                        "val": encodedName
                     },
                     {
                         "@column": "C_TaxCategory_ID",
@@ -62,7 +65,7 @@ createProductIdempiere(product) async {
                     },
                     {
                         "@column": "FTU_ProductGroup_ID",
-                        "val": "1000015"
+                        "val": product['product_group_id']
                     },
                     {
                         "@column": "ProductType",
@@ -107,12 +110,10 @@ createProductIdempiere(product) async {
 
   final jsonBody = jsonEncode(requestBody);
 
-  // Establecer las cabeceras de la solicitud
-  request.headers.set('Content-Type', 'application/json');
-  request.headers.set('Accept', 'application/json');
+    request.headers.set('Content-Type', 'application/json; charset=utf-8');
+    request.headers.set('Accept', 'application/json');
 
-  // Escribir el cuerpo en la solicitud
-  request.write(jsonBody);
+    request.write(jsonBody);
 
   final response = await request.close();
   final responseBody = await response.transform(utf8.decoder).join();
@@ -121,6 +122,11 @@ createProductIdempiere(product) async {
   final parsedJson = jsonDecode(responseBody);
 
 
-  print("esta es la respuesta $parsedJson");
-  return parsedJson;
+      print("esta es la respuesta $parsedJson");
+      return parsedJson;
+        } catch (e) {
+          return 'este es el error e $e';
+      }
+
+
 }

@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/update_database.dart';
 import 'package:flutter/material.dart';
 
 class EditClientScreen extends StatefulWidget {
@@ -92,7 +93,8 @@ class _EditClientScreenState extends State<EditClientScreen> {
     };
 
     // Actualizar el producto en la base de datos
-    await DatabaseHelper.instance.updateClient(updatedClient);
+      await updateClient(updatedClient);
+   
 
         ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

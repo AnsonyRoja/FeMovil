@@ -13,6 +13,8 @@ class Product {
   final String taxName;
   final dynamic umId;
   final String umName;
+  final dynamic productGroupId;
+  final String produtGroupName;
 
 
   Product({
@@ -30,6 +32,8 @@ class Product {
     required this.umId,
     required this.umName,
     required this.qtySold,
+    required this.productGroupId,
+    required this.produtGroupName,
 
   });
 
@@ -45,6 +49,8 @@ class Product {
       'product_type_name': productTypeName,
       'pro_cat_id': prodCatId,
       'categoria': categoria,
+      'product_group_id': productGroupId,
+      'product_group_name':produtGroupName,
       'tax_cat_id': taxId,
       'tax_cat_name':taxName,
       'um_id': umId,
@@ -64,6 +70,8 @@ class Product {
       price: map['price'],
       prodCatId: map['pro_cat_id'],
       categoria: map['categoria'],
+      productGroupId: map['product_group_id'],
+      produtGroupName: map['product_group_name'],
       taxId: map['tax_cat_id'],
       taxName: map['tax_cat_name'],
       umId: map['um_id'],

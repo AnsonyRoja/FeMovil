@@ -1,10 +1,9 @@
 import 'package:femovil/assets/nav_bottom_menu.dart';
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/products/add_products.dart';
 import 'package:femovil/presentation/products/filter_dialog.dart';
-import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/products/products_details.dart';
-import 'package:femovil/presentation/products/products_http.dart';
 import 'package:flutter/material.dart';
 
 
@@ -27,7 +26,7 @@ class _ProductsState extends State<Products> {
 
 
   Future<void> _loadProducts() async {
-    final productos = await DatabaseHelper.instance.getProducts(); // Obtener todos los productos
+    final productos = await getProducts(); // Obtener todos los productos
     // final inserccion = await DatabaseHelper.instance.insertTaxData(); // Obtener todos los productos
     print("Estoy obteniendo products $products");
 
@@ -35,12 +34,13 @@ class _ProductsState extends State<Products> {
       products = productos;
       filteredProducts = productos;
     });
+    
   }
 
 
   Future<void> _deleteBaseDatos() async {
    
-    final productos = await DatabaseHelper.instance.deleteDatabases();    
+    await DatabaseHelper.instance.deleteDatabases();    
 
   }
 
@@ -275,6 +275,8 @@ class _ProductsState extends State<Products> {
   }
 
     void _verMasProducto(String productId) async {
+        print('productId: $productId'); // Añade esta línea para depurar
+
     final db = await DatabaseHelper.instance.database;
     if (db != null) {
       final product = await db.query(

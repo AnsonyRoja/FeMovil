@@ -1,5 +1,6 @@
 import 'package:femovil/assets/nav_bottom_menu.dart';
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/screen/proveedores/add_proveedor.dart';
 import 'package:femovil/presentation/screen/proveedores/filter_dialog_providers.dart';
 import 'package:femovil/presentation/screen/proveedores/providers_details.dart';
@@ -26,13 +27,14 @@ class _ProvidersState extends State<Providers> {
   String input = "";
 
   Future<void> _loadProviders() async {
-    final proveedores = await DatabaseHelper.instance.getProviders(); // Obtener todos los productos
+    final proveedores = await getProviders(); // Obtener todos los productos
 
     print("Estoy obteniendo proveedores $proveedores");
     setState(() {
       providers = proveedores;
       searchProvider = proveedores;
     });
+
 
   }
 

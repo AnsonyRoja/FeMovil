@@ -1,4 +1,6 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/database/insert_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -49,7 +51,8 @@ void initState() {
 }
 
  Future<Map<String, dynamic>> _loadOrdenVentasForId() async {
-    return await DatabaseHelper.instance.getOrderWithProducts(widget.orderId);
+    return await getOrderWithProducts(widget.orderId);
+    
   }
   @override
   Widget build(BuildContext context) {
@@ -353,7 +356,7 @@ void initState() {
     );
   } else {
     // Si el monto del cobro es menor o igual al saldo total, insertar el cobro en la base de datos
-    await DatabaseHelper.instance.insertCobro(
+    await insertCobro(
       numberReference: numberReference,
       typeDocument: typeDocument,
       paymentType: paymentType,

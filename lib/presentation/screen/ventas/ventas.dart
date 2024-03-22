@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
 import 'package:femovil/presentation/screen/ventas/ventas_details.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _VentasState extends State<Ventas> {
   int? searchValue;
 
       Future<void> _loadVentas() async {
-        final ventasData = await DatabaseHelper.instance.getAllOrdersWithClientNames(); // Cambiar a la función de obtener ventas
+        final ventasData = await getAllOrdersWithClientNames(); // Cambiar a la función de obtener ventas
 
             print("Esto es la venta Data $ventasData");
 

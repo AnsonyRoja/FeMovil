@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/insert_database.dart';
 import 'package:femovil/presentation/orden_venta/product_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
@@ -342,7 +343,7 @@ void initState() {
                     'productos': selectedProducts, // Esta lista contendría los detalles de los productos seleccionados
                   };
                   // Luego puedes guardar la orden de venta en la base de datos o enviarla al servidor
-                       DatabaseHelper.instance.insertOrder(order).then((orderId) {
+                      insertOrder(order).then((orderId) {
                    // Limpiar los campos después de guardar la orden
                             if (orderId is Map<String, dynamic> && orderId.containsKey('failure')) {
                               if ( orderId['failure'] == -1) {

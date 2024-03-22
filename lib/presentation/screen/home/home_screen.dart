@@ -8,6 +8,7 @@ import 'package:femovil/presentation/retenciones/retenciones_screen.dart';
 import 'package:femovil/presentation/screen/login/progress_indicator.dart';
 import 'package:femovil/presentation/screen/proveedores/providers_screen.dart';
 import 'package:femovil/presentation/screen/ventas/ventas.dart';
+import 'package:femovil/sincronization/sincronization_screen.dart';
 import 'package:flutter/material.dart';
 
 dynamic documentosPorTipo = {};
@@ -334,7 +335,7 @@ class HomeState extends State<Home> {
                          GestureDetector(
                          onTap: () {
                          
-                          Navigator.push(context, MaterialPageRoute(builder:(context) => const Retenciones(),));
+                          Navigator.push(context, MaterialPageRoute(builder:(context) => const SynchronizationScreen(),));
               
                          },
                          child: Column(

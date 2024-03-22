@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:femovil/config/url.dart';
 import 'package:femovil/presentation/perfil/perfil_http.dart';
-import 'package:femovil/sincronization/ExtractData/extract_product_data.dart';
+import 'package:femovil/sincronization/ExtractData/extract_impuesto_data.dart';
 import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:path_provider/path_provider.dart';
 
-sincronizationProducts(setState) async {
+sincronizationImpuestos(setState) async {
   HttpClient httpClient = HttpClient()
     ..badCertificateCallback = (X509Certificate cert, String host, int port) {
       return true;
@@ -40,7 +40,7 @@ sincronizationProducts(setState) async {
   final requestBody = {
     "ModelCRUDRequest": {
       "ModelCRUD": {
-        "serviceType": "getProductAPP",
+        "serviceType": "getTaxAPP",
       },
       "ADLoginRequest": {
         "user": variablesLogin['user'],
@@ -68,8 +68,8 @@ sincronizationProducts(setState) async {
 
   final response = await request.close();
   final responseBody = await response.transform(utf8.decoder).join();
-  dynamic products =  extractProductData(responseBody);
-  await syncProducts(products,setState); // Obtener todos los productos
+  dynamic impuesto =  extractImpuestoData(responseBody);
+  await syncImpuestos(impuesto,setState); // Obtener todos los productos
   
 
   final parsedJson = jsonDecode(responseBody);
