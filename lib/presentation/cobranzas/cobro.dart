@@ -1,16 +1,21 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/database/insert_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 
 
+  
 
 
 
 class Cobro extends StatefulWidget {
   final int orderId;
+  final double saldoTotal;
+  final Function loadCobranzas;
   
-  const Cobro({super.key, required this.orderId});
+  const Cobro({super.key, required this.orderId, required this.saldoTotal, required this.loadCobranzas});
 
   @override
   State<Cobro> createState() => _CobroState();
@@ -27,7 +32,6 @@ class _CobroState extends State<Cobro> {
   String? coinValue = "\$";
   String? typeDocumentValue = "Cobro";
   String? bankAccountValue = "123456";
-
 
 
 void _loadCurrentDate() {
@@ -47,7 +51,8 @@ void initState() {
 }
 
  Future<Map<String, dynamic>> _loadOrdenVentasForId() async {
-    return await DatabaseHelper.instance.getOrderWithProducts(widget.orderId);
+    return await getOrderWithProducts(widget.orderId);
+    
   }
   @override
   Widget build(BuildContext context) {
@@ -125,10 +130,13 @@ void initState() {
                                                  label: "Ruc",
                                                  value: clientData['ruc'].toString(),
                                                ),
-                                            
-                                                                                      ],
-                                                                                      ),
-                                                                                    ),
+                                                CustomTextInfo(
+                                                 label: "Saldo Total",
+                                                 value: widget.saldoTotal.toString(),
+                                               ),
+                                               ],
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       const SizedBox(height: 10,),
@@ -283,7 +291,7 @@ void initState() {
                                               ElevatedButton(
                                                 onPressed:  () async {
                                                   // Aquí puedes agregar la lógica para crear el cobro
-                                                           await _createCobro();
+                                                           await _createCobro(widget.loadCobranzas);
   
                                                 },
                                                 style: ElevatedButton.styleFrom(
@@ -313,37 +321,65 @@ void initState() {
     );
   }
 
-  Future<void> _createCobro() async {
-  // Aquí puedes obtener los valores de los controladores y guardarlos en la base de datos
+ Future<void> _createCobro(loadCobranzas) async {
   final int numberReference = int.parse(numRefController.text);
   final String? typeDocument = typeDocumentValue;
-  final String? paymentType = paymentTypeValue; 
+  final String? paymentType = paymentTypeValue;
   final String date = dateController.text;
-  final String? coin = coinValue; // Hardcoded para DropdownButtonFormField de moneda
-  final int amount = int.parse(montoController.text);
-  final String? bankAccount = bankAccountValue; // Hardcoded para DropdownButtonFormField de cuenta bancaria
+  final String? coin = coinValue;
+  final double amount = double.parse(montoController.text);
+  final String? bankAccount = bankAccountValue;
   final String observation = observacionController.text;
   final int saleOrderId = widget.orderId;
 
-  print("Type document $typeDocument");
-  // Inserta los datos en la base de datos
-  await DatabaseHelper.instance.insertCobro(
-    numberReference: numberReference,
-    typeDocument: typeDocument,
-    paymentType: paymentType, // Valor obtenido del DropdownButtonFormField de tipo de pago
-    date: date,
-    coin: coin, // Valor obtenido del DropdownButtonFormField de moneda
-    amount: amount,
-    bankAccount: bankAccount, // Valor obtenido del DropdownButtonFormField de cuenta bancaria
-    observation: observation,
-    saleOrderId: saleOrderId,
-  );
-      numRefController.clear();
-      montoController.clear();
-      observacionController.clear();
-  // Muestra un mensaje de éxito o realiza alguna otra acción después de crear el cobro
-  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cobro creado con éxito')));
+  // Obtener el saldo total de la orden
+  final double saldoTotal = widget.saldoTotal;
+
+  if (amount > saldoTotal) {
+    // Si el monto del cobro es mayor al saldo total, mostrar mensaje de diálogo
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const Text('El cobro no puede ser mayor al saldo total de la orden.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  } else {
+    // Si el monto del cobro es menor o igual al saldo total, insertar el cobro en la base de datos
+    await insertCobro(
+      numberReference: numberReference,
+      typeDocument: typeDocument,
+      paymentType: paymentType,
+      date: date,
+      coin: coin,
+      amount: amount,
+      bankAccount: bankAccount,
+      observation: observation,
+      saleOrderId: saleOrderId,
+    );
+
+    loadCobranzas();
+
+    // Limpiar los campos de texto después de insertar el cobro
+    numRefController.clear();
+    montoController.clear();
+    observacionController.clear();
+
+    // Mostrar un mensaje de éxito
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cobro creado con éxito')));
+  }
 }
+
 
 }
 

@@ -1,4 +1,5 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/insert_database.dart';
 import 'package:femovil/presentation/orden_venta/product_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
 class OrdenDeVentaScreen extends StatefulWidget {
   final int clientId;
   final String clientName;
+ 
 
   const OrdenDeVentaScreen({super.key, required this.clientId, required this.clientName});
 
@@ -19,17 +21,50 @@ class _OrdenDeVentaScreenState extends State<OrdenDeVentaScreen> {
   TextEditingController fechaController = TextEditingController();
   TextEditingController descripcionController = TextEditingController();
   TextEditingController montoController = TextEditingController();
+  TextEditingController saldoNetoController = TextEditingController();
   List<Map<String, dynamic>> selectedProducts = [];
   bool _validateDescription = false;
    DateTime selectedDate = DateTime.now();
-
+  double? saldoNeto;
+  double? totalImpuesto;
 
      double calcularMontoTotal() {
     double total = 0;
+    double totalNeto = 0;
+    double suma = 0;
+
     for (var product in selectedProducts) {
-      total += product['price'] * product['quantity'];
+        total += product['price'] * product['quantity']*(product['impuesto']/100);
+        totalNeto += product['price'] * product['quantity'];
+
     }
-    return total;
+    saldoNetoController.text = '\$${totalNeto.toString()}';
+    suma = total + totalNeto;
+
+    print('productos totales $selectedProducts');
+
+    return suma;
+
+  }
+
+  double calcularSaldoNetoProducto(cantidadProducts, price){
+
+        double multi = cantidadProducts * price;
+
+        
+          saldoNeto = multi;
+      
+
+      return multi;
+  }
+  double calcularMontoImpuesto(impuesto, monto){
+
+      double montoImpuesto =  monto * impuesto/100;
+
+            totalImpuesto = montoImpuesto;
+
+            print('El monto $monto y el impuesto $impuesto y el monto impuesto seria $montoImpuesto');
+    return montoImpuesto;
   }
 
 Future<void> _selectDate(BuildContext context) async {
@@ -104,10 +139,11 @@ void _removeProduct(int index) {
 
 @override
 void initState() {
+   
     fechaController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
-
-    print("Esto es el id ${widget.clientId}");
+     print("Esto es el id ${widget.clientId}");
      print("Esto es el name ${widget.clientName}");
+
     super.initState();
   
 }
@@ -176,8 +212,28 @@ void initState() {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Cantidad: ${product["quantity"]}'),
-                          Text('Precio: ${product['price']}'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Cantidad: ${product["quantity"]}'),
+                              Text('Precio: ${product['price']}'),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Impuesto: ${product['impuesto']}%'),
+                              Text('Monto Impuesto: ${calcularMontoImpuesto(product['impuesto'],product['quantity']*product['price'])}')
+                            ],
+                          ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Saldo Neto ${ calcularSaldoNetoProducto(product['quantity'], product['price']) }'),
+                                  Text('Monto Total ${ saldoNeto! + totalImpuesto! }'),
+
+                                ],
+                              ) 
                         ],
                       ),
                       trailing: IconButton(
@@ -194,13 +250,17 @@ void initState() {
                   },
                 ),
               ),
+               TextField(
+                  readOnly: true,
+                controller: saldoNetoController,
+                decoration: const InputDecoration(labelText: 'Saldo Neto'),
+                keyboardType: TextInputType.number,
+              ),
                 TextField(
                   readOnly: true,
                 controller: montoController,
-                decoration: const InputDecoration(labelText: 'Monto'),
+                decoration: const InputDecoration(labelText: 'Monto Total'),
                 keyboardType: TextInputType.number,
-                
-              
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -221,7 +281,7 @@ void initState() {
                         _addOrUpdateProduct(selectedProductsResult);
                         
         
-                      montoController.text = calcularMontoTotal().toString();
+                      montoController.text = '\$${calcularMontoTotal().toStringAsFixed(2)}';
                       
                     });
                   }
@@ -277,11 +337,13 @@ void initState() {
                     'numero_referencia': numeroReferenciaController.text,
                     'fecha': fechaController.text,
                     'descripcion': descripcionController.text,
-                    'monto': double.parse(montoController.text),
+                    'monto': double.parse(montoController.text.substring(1)),
+                    'saldo_neto': double.parse(saldoNetoController.text.substring(1)),
+
                     'productos': selectedProducts, // Esta lista contendría los detalles de los productos seleccionados
                   };
                   // Luego puedes guardar la orden de venta en la base de datos o enviarla al servidor
-                       DatabaseHelper.instance.insertOrder(order).then((orderId) {
+                      insertOrder(order).then((orderId) {
                    // Limpiar los campos después de guardar la orden
                             if (orderId is Map<String, dynamic> && orderId.containsKey('failure')) {
                               if ( orderId['failure'] == -1) {
@@ -306,6 +368,7 @@ void initState() {
                         numeroReferenciaController.clear();
                         descripcionController.clear();
                         montoController.clear();
+                        saldoNetoController.clear();
         
                   // Limpiar la lista de productos seleccionados después de guardar la orden
                   setState(() {

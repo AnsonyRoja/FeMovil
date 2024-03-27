@@ -1,11 +1,15 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/presentation/cobranzas/cobro.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class VentasDetails extends StatefulWidget {
   final int ventaId;
   final String nameClient;
-
-  const VentasDetails({Key? key, required this.ventaId, required this.nameClient});
+  final double saldoTotal;
+  const VentasDetails({super.key, required this.ventaId, required this.nameClient, required this.saldoTotal});
 
   @override
   State<VentasDetails> createState() => _VentasDetailsState();
@@ -21,7 +25,7 @@ class _VentasDetailsState extends State<VentasDetails> {
   }
 
   Future<Map<String, dynamic>> _loadVentasForId() async {
-    return await DatabaseHelper.instance.getOrderWithProducts(widget.ventaId);
+    return await getOrderWithProducts(widget.ventaId);
   }
 
   @override
@@ -53,6 +57,7 @@ class _VentasDetailsState extends State<VentasDetails> {
               final ventaData = snapshot.data!['order'];
               final productsData = snapshot.data!['products'];
               print("Esto es lo que hay productsData ${snapshot.data}");
+              print("esto es ventas data $ventaData");
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
@@ -166,6 +171,9 @@ class _VentasDetailsState extends State<VentasDetails> {
                               children: [
                                 Text('Name', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                                 Text('Cantidad', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                Text('Precio', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                                Text('Impuesto', textAlign: TextAlign.start, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+
                               ],
                             ),
                           ),
@@ -193,8 +201,12 @@ class _VentasDetailsState extends State<VentasDetails> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                        Text(product['name'],),
-                                        Text(product['cantidad'].toString()),
+                                        Expanded(child: Text('${product['name']}',)),
+                                        const SizedBox(width: 50,),
+                                        Expanded(child: Text(product['cantidad'].toString())),
+                                        Expanded(child: Text(product['price'].toString())),
+                                        const SizedBox(width: 15,),
+                                        Expanded(child: Text('${product['impuesto'].toString()}%'))
                                         
                                     ] 
                                                          
@@ -218,12 +230,24 @@ class _VentasDetailsState extends State<VentasDetails> {
                         ),
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
                           children: [
-                            const Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
-                            
-                            Text(' \$ ${ventaData['monto'].toString()}'),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Saldo Neto', style: TextStyle(fontWeight: FontWeight.bold)),
+                                
+                                Text(' \$ ${ventaData['saldo_neto'].toString()}'),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
+                                
+                                Text(' \$ ${ventaData['monto'].toString()}'),
+                              ],
+                            ),
                           ],
                         ),
                       )),
@@ -232,12 +256,18 @@ class _VentasDetailsState extends State<VentasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.green, // Color verde para el fondo del botón
+                    color: widget.saldoTotal > 0 ? Colors.green: Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Acción al presionar el botón "Cobrar"
-                    },
+                    onPressed:widget.saldoTotal > 0 ? () {
+
+                        Navigator.of(context).push(
+                         MaterialPageRoute(
+                            builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId),
+                          ),
+                         );
+
+                    }: null,
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(

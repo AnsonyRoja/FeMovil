@@ -1,13 +1,12 @@
-import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:flutter/material.dart';
 
-class ProductSelectionScreen extends StatefulWidget {
+class ProductSelectionComprasScreen extends StatefulWidget {
   @override
-  _ProductSelectionScreenState createState() => _ProductSelectionScreenState();
+  _ProductSelectionComprasScreenState createState() => _ProductSelectionComprasScreenState();
 }
 
-class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
+class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasScreen> {
   List<Map<String, dynamic>>? products;  // Lista de productos
   List<Map<String, dynamic>> filteredProducts = []; // Lista de productos filtrados
   List<Map<String, dynamic>> selectedProducts = []; // Lista de productos seleccionados
@@ -18,15 +17,15 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
     super.initState();
     _loadProducts();
   }
-
+  
   Future<void> _loadProducts() async {
     final productList = await getProductsAndTaxes(); // Obtener todos los productos
-
-      print('Esto es el productlist $productList');
+    print('esto es productList de ordenes de compras $productList');
     setState(() {
       products = productList;
       filteredProducts = productList;
     });
+
   }
 
   @override
@@ -64,10 +63,8 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Precio: \$${productPrice.toStringAsFixed(2)}'),
-                      Text('Cantidad disponible: ${filteredProducts[index]['quantity']}'),
-                      Text('Cantidad Seleccionada: $quantity'),
-                      
+                      Text('Precio: \$${productPrice is !String ? productPrice.toStringAsFixed(2) : 0 }'),
+                      Text('Cantidad: ${quantity is int ? quantity : 0}'),
                     ],
                   ),
                   trailing: isSelected
@@ -88,6 +85,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                         "quantity": newQuantity, // Usar la nueva cantidad calculada
                         "price": productPrice,
                         "impuesto": filteredProducts[index]['tax_rate']
+
                       };
 
                       setState(() {
@@ -96,7 +94,7 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                           // Si el producto ya estaba seleccionado, actualiza su cantidad en lugar de eliminarlo
                           selectedProducts[selectedProductIndex] = selectedProduct;
                         } else {
-                          if (newQuantity > 0 && newQuantity <= filteredProducts[index]['quantity']) {
+                          if (newQuantity > 0) {
                             selectedProducts.add(selectedProduct);
                           } else {
                             // Aquí puedes agregar una notificación o manejar la situación de otra manera
@@ -130,79 +128,82 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
     );
   }
 
-  Future<int?> _showQuantityPickerDialog(BuildContext context, String productName, dynamic quantity) {
-    int selectedQuantity = quantity; // Inicializar selectedQuantity con la cantidad pasada por parámetro
+Future<int?> _showQuantityPickerDialog(BuildContext context, String productName, dynamic quantity) {
+  int selectedQuantity = quantity; // Inicializar selectedQuantity con la cantidad pasada por parámetro
 
-    return showModalBottomSheet<int>(
-      context: context,
-      isScrollControlled: true, // Permitir que el contenido haga scroll si es necesario
-      builder: (BuildContext context) {
-        return SingleChildScrollView( // Envolver el contenido con SingleChildScrollView
-          child: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Container(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Seleccione la cantidad de $productName',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: () {
+  return showModalBottomSheet<int>(
+    context: context,
+    isScrollControlled: true,
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Seleccione la cantidad de $productName',
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (selectedQuantity > 1) {
+                              selectedQuantity--;
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.remove),
+                      ),
+                      SizedBox(
+                        width: 100,
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          controller: TextEditingController(text: selectedQuantity.toString()),
+                          onChanged: (value) {
                             setState(() {
-                              if (selectedQuantity > 0) {
-                                selectedQuantity--;
-                              }
+                              selectedQuantity = int.tryParse(value) ?? 1;
                             });
                           },
-                          icon: const Icon(Icons.remove),
                         ),
-                        Text(
-                          selectedQuantity.toString(),
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              final availableQuantity = filteredProducts.firstWhere((product) => product['name'] == productName)['quantity'];
-                              if (selectedQuantity < availableQuantity) {
-                                selectedQuantity++;
-                              } else {
-                                // ScaffoldMessenger.of(context).showSnackBar(
-                                //   SnackBar(
-                                //     content: Text('No se puede incrementar más. No hay suficientes productos disponibles.'),
-                                //   ),
-                                // );
-                              }
-                            });
-                          },
-                          icon: const Icon(Icons.add),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context, selectedQuantity);
-                      },
-                      child: const Text('Confirmar'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedQuantity++;
+                          });
+                        },
+                        icon: const Icon(Icons.add),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context, selectedQuantity);
+                    },
+                    child: const Text('Confirmar'),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    },
+  );
+}
+
+
 
   void _filterProducts(String searchText) {
     setState(() {

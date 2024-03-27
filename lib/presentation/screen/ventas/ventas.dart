@@ -1,4 +1,6 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/presentation/cobranzas/cobro.dart';
 import 'package:femovil/presentation/screen/ventas/ventas_details.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -26,7 +28,7 @@ class _VentasState extends State<Ventas> {
   int? searchValue;
 
       Future<void> _loadVentas() async {
-        final ventasData = await DatabaseHelper.instance.getAllOrdersWithClientNames(); // Cambiar a la función de obtener ventas
+        final ventasData = await getAllOrdersWithClientNames(); // Cambiar a la función de obtener ventas
 
             print("Esto es la venta Data $ventasData");
 
@@ -211,6 +213,13 @@ void _showFilterOptions(BuildContext context) {
                       _showFilterOptions(context);
                     },
                   ),
+       actions: [
+            IconButton(onPressed: () {
+                Navigator.pop(context);
+            }, icon:const Icon(Icons.arrow_back_sharp) )
+       ],
+       iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -296,40 +305,42 @@ void _showFilterOptions(BuildContext context) {
                         Container(
                           width: screenMax,
                           child:  Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  ElevatedButton(
-                                                     style: ButtonStyle(
-                                                      backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
-                                                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                                    ),
-                                                    onPressed: () {
-                                                      // Acción al presionar el botón "Ver más"
-                                                        Navigator.of(context).push(
-                                                          MaterialPageRoute(
-                                                            builder: (context) => VentasDetails(ventaId: venta['id'], nameClient: venta['nombre_cliente']),
-                                                          ),
-                                                        );
-                                                    },
-                                                    child: const Text('Ver más'),
-                                                  ),
-                                                  ElevatedButton(
-                                                     style: ButtonStyle(
-                                                      backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
-                                                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                                    ),
-                                                    onPressed: () {
-                                                      // Acción al presionar el botón "Cobrar"
-                                                    },
-                                                    child: const Text('Cobrar'),
-                                                  ),
-                                                ],
-                                              ),
-
-                        ),  
-                                                const SizedBox(height: 5,),
-
-                 
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ElevatedButton(
+                                      style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all<Color>(Colors.grey),
+                                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                    ),
+                                    onPressed: () {
+                                      // Acción al presionar el botón "Ver más"
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => VentasDetails(ventaId: venta['id'], nameClient: venta['nombre_cliente'], saldoTotal: venta['saldo_total']),
+                                          ),
+                                        );
+                                    },
+                                    child: const Text('Ver más'),
+                                  ),
+                                  ElevatedButton(
+                                      style: ButtonStyle(
+                                      backgroundColor:venta['saldo_total'] > 0 ? MaterialStateProperty.all<Color>(Colors.green) : MaterialStateProperty.all<Color>(Colors.grey),
+                                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                    ),
+                                    onPressed: venta['saldo_total'] > 0 ? () {
+                                      // Acción al presionar el botón "Cobrar"
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => Cobro(orderId: venta['id'], loadCobranzas: _loadVentas,saldoTotal: venta['saldo_total'], ),
+                                          ),
+                                        );
+                                    }: null,
+                                    child: const Text('Cobrar'),
+                                  ),
+                                ],
+                              ),
+                            ),  
+                          const SizedBox(height: 5,),
                       ],
                     );
                   },

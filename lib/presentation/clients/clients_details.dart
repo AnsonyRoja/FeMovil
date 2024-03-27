@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class ClientDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> client;
 
+
   const ClientDetailsScreen({super.key, required this.client});
 
   @override
@@ -16,8 +17,8 @@ class ClientDetailsScreen extends StatelessWidget {
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 105, 102, 102),
           ),),
-              backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-              iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
+            backgroundColor: const Color.fromARGB(255, 236, 247, 255),
+            iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
               
           ),
       backgroundColor: const Color.fromARGB(255, 236, 247, 255),
@@ -32,11 +33,11 @@ class ClientDetailsScreen extends StatelessWidget {
               children: [
                 const SizedBox( height: 25,),
           
-                _buildTextFormField('Nombre', client['name'].toString()),
+                _buildTextFormField('Nombre', client['bp_name'].toString()),
                 _buildTextFormField('Ruc', client['ruc'].toString()),
-                _buildTextFormField('Correo', '${client['correo']}'),
-                _buildTextFormField('Telefono', client['telefono'].toString()),
-                _buildTextFormField('Grupo', client['grupo'].toString()),
+                _buildTextFormField('Correo', '${client['email'] != '{@nil: true}' ? client['email'] : 'Sin registro' }'),
+                _buildTextFormField('Telefono', client['phone'] != '{@nil: true}' ? client['phone'].toString() : 'Sin registro'),
+                _buildTextFormField('Grupo', client['group_bp_name'].toString()),
                 const SizedBox(height: 29,),
                SizedBox(
                 

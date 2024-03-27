@@ -1,9 +1,7 @@
-import 'dart:io';
 
-import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 
 
 
@@ -74,15 +72,31 @@ void _showFilterOptions(BuildContext context) {
 
 void _filterByMaxPrice() {
   List<Map<String, dynamic>> sortedProducts = List.from(products); // Crear una nueva lista para evitar modificar la original
-  sortedProducts.sort((a, b) => b['price'].compareTo(a['price'])); // Ordena de forma descendente por precio
+  print('Sorted Products $sortedProducts');
+  sortedProducts.sort((a, b) {
+    // Parsea los valores de price a double antes de compararlos
+    double priceA = double.tryParse(a['price'].toString()) ?? 0.0;
+    double priceB = double.tryParse(b['price'].toString()) ?? 0.0;
+    return priceB.compareTo(priceA); // Ordena de forma descendente por precio
+  });
   setState(() {
     products = sortedProducts; // Actualiza la lista original con la lista ordenada
   });
 }
 
+
+
 void _filterByMinPrice() {
   List<Map<String, dynamic>> sortedProducts = List.from(products); // Crear una nueva lista para evitar modificar la original
-  sortedProducts.sort((a, b) => a['price'].compareTo(b['price'])); // Ordena de forma ascendente por precio
+  sortedProducts.sort((a, b) {
+
+    double priceA = double.tryParse(a['price'].toString()) ?? 0.0;
+    double priceB = double.tryParse(b['price'].toString()) ?? 0.0;
+
+
+    return priceA.compareTo(priceB);
+
+  }); // Ordena de forma ascendente por precio
   setState(() {
     products = sortedProducts; // Actualiza la lista original con la lista ordenada
   });
@@ -100,12 +114,13 @@ void _filterByMostSold() {
 
 
  Future<void> _loadProducts() async {
-    final productos = await DatabaseHelper.instance.getProducts(); // Obtener todos los productos
+    final productos = await getProducts(); // Obtener todos los productos
 
     print("Estoy obteniendo products $products");
     setState(() {
       products = productos;
     });
+   
   }
 
 @override
@@ -137,7 +152,12 @@ Widget build(BuildContext context) {
               color: Color.fromARGB(255, 105, 102, 102),
             ),),
                     backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-    
+              actions: [
+                IconButton(onPressed: () {
+                    Navigator.pop(context);
+                }, icon: const Icon(Icons.arrow_back))
+              ],
+               iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
                     ),
                     backgroundColor: const Color.fromARGB(255, 236, 247, 255),
     
@@ -172,15 +192,14 @@ Widget build(BuildContext context) {
                   elevation: 4, // Agrega una sombra al Card para un efecto visual
                   margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16), // Margen alrededor del Card
                   child: ListTile(
-                    leading: product['image_path'] != "" ? Image.file(File(product['image_path'])) : const Text("Not found"), // Muestra la imagen del producto
                     title: Text(product['name']), // Muestra el nombre del producto
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Categoria: ${product['categoria']}'),
-                        Text('Precio: \$${product['price']}'),
-                        Text('Vendidos: ${product['quantity_sold']}'),
-                        Text('Cantidad disponible ${product['quantity']}'),
+                        Text('Precio: \$ ${product['price'] is double ? product['price']: 0}'),
+                        // Text('Vendidos: ${product['quantity_sold']}'),
+                        Text('Cantidad disponible ${product['quantity'] is double || product['quantity'] is int ? product['quantity']: 0}'),
                         const Divider(),
                       ],
                     ), 
@@ -195,20 +214,6 @@ Widget build(BuildContext context) {
         ],
       ),
     ),
-     Positioned(
-        left: 16,
-        bottom: 20,
-        child: IconButton(
-  icon: const Icon(
-    FeatherIcons.arrowLeftCircle, // Ícono de flecha hacia atrás de la biblioteca Flutter Feather Icons
-    color: Colors.blue, // Cambia el color del ícono
-    size: 40, // Cambia el tamaño del ícono
-  ),
-  onPressed: () {
-    Navigator.pop(context);
-  },
-),)
-
 
   ]
   );

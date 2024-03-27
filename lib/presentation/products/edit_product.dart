@@ -1,4 +1,9 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/list_database.dart';
+import 'package:femovil/database/update_database.dart';
+import 'package:femovil/infrastructure/models/products.dart';
+import 'package:femovil/presentation/products/utils/switch_generated_names_select.dart';
+import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:flutter/material.dart';
 
 class EditProductScreen extends StatefulWidget {
@@ -18,16 +23,86 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _minStockController = TextEditingController();
   final _maxStockController = TextEditingController();
 
+ List<Map<String, dynamic>> _taxList = []; // Lista para almacenar los impuestos disponibles
+ List<Map<String, dynamic>> _categoriesList = [];
+ List<Map<String, dynamic>> _umList = [];
+ List<Map<String, dynamic>> _productTypeList = [];
+ List<Map<String, dynamic>> _productGroupList = [];
+  int _selectedTaxIndex = 0; // Índice del impuesto seleccionado por defecto
+  int _selectedCategoriesIndex = 0;
+  int _selectedProductGroupIndex = 0;
+  int _selectedUmIndex = 0;
+  String _selectedProductType = 'first';
+  
+  String _prodTypeText = '';
+  String _prodGroupText = '';
+  String _prodCatText = '';
+  String _taxText = '';
+  String _umText = '';
+
+
+  void _loadTaxs()async {
+
+       
+        final getTaxs = await listarImpuestos();
+        final getCategories = await listarCategorias();
+        final getUm = await  listarUnidadesDeMedida();
+        final getProductGroup = await listarProductGroup();
+        final getProductType = await listarProductType();
+
+        // print('Esto es getProductGroup $getProductGroup');
+        // print('Esto es getProductType $getProductType');
+        // print("Esto es getTaxs $getTaxs");
+        // print('Esto es getCategories $getCategories');
+        // print('Estas son las unidades de medidas $getUm');
+
+
+
+      _taxList.add({'tax_cat_id': 0, 'tax_cat_name': 'Selecciona un impuesto'});
+      _categoriesList.add({'pro_cat_id': 0, 'categoria': 'Selecciona una categoria'});
+      _umList.add({'um_id': 0, 'um_name': 'Unidad de medida'});
+      _productTypeList.add({'product_type': 'first', 'product_type_name': 'Seleccione un tipo de producto'});
+      _productGroupList.add({'product_group_id': 0, 'product_group_name': 'Seleccione un grupo de producto'});
+
+
+        setState(() {
+        _taxList.addAll(getTaxs);
+        _categoriesList.addAll(getCategories);
+        _umList.addAll(getUm);
+        _productTypeList.addAll(getProductType);
+        _productGroupList.addAll(getProductGroup);
+
+        });
+        print("esto es taxlist $_taxList");
+      }
+
+
+
+
+
+
   @override
   void initState() {
     super.initState();
     // Initialize controllers with existing product details
     _nameController.text = widget.product['name'].toString();
-    _categoryController.text = widget.product['categoria'].toString();
-    _priceController.text = widget.product['price'].toString();
-    _quantityController.text = widget.product['quantity'].toString();
-    _minStockController.text = widget.product['min_stock'].toString();
-    _maxStockController.text = widget.product['max_stock'].toString();
+    _selectedTaxIndex = widget.product['tax_cat_id'];
+    _selectedCategoriesIndex = widget.product['pro_cat_id'];
+    _selectedUmIndex = widget.product['um_id'];
+    _selectedProductType = widget.product['product_type'];
+    _selectedProductGroupIndex = widget.product['product_group_id'];
+    _taxText = widget.product['tax_cat_name'];
+    _prodGroupText = widget.product['product_group_name'];
+    _prodCatText = widget.product['categoria'];
+    _umText = widget.product['um_name'];
+    _prodTypeText = widget.product['product_type_name'];
+    _priceController.text = '0';
+    _quantityController.text = '0';
+    
+     _loadTaxs();
+
+     print('Estos son los productos ${widget.product}');
+
 
   }
 
@@ -63,53 +138,285 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 children: [
                   const SizedBox(height: 25),
                   _buildTextFormField('Nombre', _nameController),
-                  _buildTextFormField('Categoría', _categoryController),
-                  _buildTextFormField('Precio', _priceController),
-                  _buildTextFormField('Cantidad Disponible', _quantityController),
-                  _buildTextFormField('Stock Mínimo', _minStockController),
-                  _buildTextFormField('Stock Máximo', _maxStockController),
+                     Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
+                      border: Border.all(color: Colors.grey), // Color del borde
+                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                    ),
+                    child: DropdownButtonFormField<int>(
+                      value: _selectedTaxIndex,
+                      items: _taxList.map<DropdownMenuItem<int>>((tax) {
+                        return DropdownMenuItem<int>(
+                          value: tax['tax_cat_id'] as int,
+                          child: Text(tax['tax_cat_name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        String nameTax = invoke('obtenerNombreImpuesto', newValue, _taxList);
+                        setState(() {
+                          _taxText = nameTax;
+                          _selectedTaxIndex = newValue as int;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Impuesto',
+                        border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      validator: (value) {
+                        if (value == null || value == 0) {
+                          return 'Por favor selecciona un impuesto';
+                        }
+                        return null;
+                      },
+                    ),
+
+                  ),
+
+                  const SizedBox(height: 5,),
+                    Container(
+                      width: 390,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
+                      border: Border.all(color: Colors.grey), // Color del borde
+                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                    ),
+                    child: DropdownButtonFormField<int>(
+                      value: _selectedCategoriesIndex,
+                      items: _categoriesList.map<DropdownMenuItem<int>>((categories) {
+                        return DropdownMenuItem<int>(
+                          value: categories['pro_cat_id'] as int,
+                          child: Text(categories['categoria'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+
+                        String nameCat = invoke('obtenerNombreCat', newValue, _categoriesList);
+
+                        setState(() {
+                          _prodCatText = nameCat;
+                          _selectedCategoriesIndex = newValue as int;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Categoria',
+                        border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      validator: (value) {
+                        if (value == null || value == 0) {
+                          return 'Por favor selecciona un impuesto';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 5,),
+                    Container(
+                      width: 390,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
+                      border: Border.all(color: Colors.grey), // Color del borde
+                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedProductType,
+                      items: _productTypeList.map<DropdownMenuItem<String>>((productType) {
+                        return DropdownMenuItem<String>(
+                          value: productType['product_type'] as String,
+                          child: Text(productType['product_type_name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+
+                        String nameProductType = invoke('obtenerNombreProductType', newValue, _productTypeList);
+                       
+                        setState(() {
+                          _prodTypeText = nameProductType;
+                          _selectedProductType = newValue as String;
+                        });
+
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Tipo de Producto',
+                        border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      validator: (value) {
+                        if (value == null || value == 'first') {
+                          return 'Por favor selecciona un tipo de producto';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 5,),
+                   Container(
+                      width: 390,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
+                      border: Border.all(color: Colors.grey), // Color del borde
+                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                    ),
+                    child: DropdownButtonFormField<int>(
+                      value: _selectedProductGroupIndex,
+                      items: _productGroupList.map<DropdownMenuItem<int>>((productGroup) {
+                        return DropdownMenuItem<int>(
+                          value: productGroup['product_group_id'] as int,
+                          child: Text(productGroup['product_group_name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+
+                        
+                        String nameProductGroup = invoke('obtenerNombreProductGroup', newValue, _productGroupList);
+                        setState(() {
+                          _prodGroupText = nameProductGroup;
+                          _selectedProductGroupIndex = newValue as int;
+                        });
+
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Grupo del Producto',
+                        border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      validator: (value) {
+                        if (value == null || value == '') {
+                          return 'Por favor selecciona el grupo al que pertenece';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+
+                    const SizedBox(height: 5,),
+                    Container(
+                      width: 390,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
+                      border: Border.all(color: Colors.grey), // Color del borde
+                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                    ),
+                    child: DropdownButtonFormField<int>(
+                      value: _selectedUmIndex,
+                      items: _umList.map<DropdownMenuItem<int>>((um) {
+                        return DropdownMenuItem<int>(
+                          value: um['um_id'] as int,
+                          child: Text(um['um_name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                    
+                        String nameUm = invoke('obtenerNombreUm', newValue, _umList);
+
+                        setState(() {
+                          _umText = nameUm;
+                          _selectedUmIndex= newValue as int;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Unidad de Medida',
+                        border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                      ),
+                      validator: (value) {
+                        if (value == null || value == 0) {
+                          return 'Por favor selecciona un impuesto';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+
+
+               
                 ],
               ),
             ),
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async{
-           String newName = _nameController.text;
-    String newCategory = _categoryController.text;
-    double newPrice = double.parse(_priceController.text);
-    int newQuantity = int.parse(_quantityController.text);
-    int newMinStock = int.parse(_minStockController.text);
-    int newMaxStock = int.parse(_maxStockController.text);
+          onPressed: () async {
+            String newName = _nameController.text;
+            double newPrice = double.parse(_priceController.text);
+            int newQuantity = int.parse(_quantityController.text);
+            int taxIndex = _selectedTaxIndex;
+            String taxString = _taxText;
+            int prodCat = _selectedCategoriesIndex;
+            String catProd = _prodCatText;
+            int umId = _selectedUmIndex;
+            String umName = _umText;
 
-    // Crear un mapa con los datos actualizados del producto
-    Map<String, dynamic> updatedProduct = {
-      'id': widget.product['id'], // Asegúrate de incluir el ID del producto
-      'name': newName,
-      'categoria': newCategory,
-      'price': newPrice,
-      'quantity': newQuantity,
-      'min_stock': newMinStock,
-      'max_stock': newMaxStock,
-    };
+            // Validar que se haya seleccionado un impuesto
+            if (taxIndex == 0 || taxString.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Por favor selecciona un impuesto'),
+                  duration: Duration(seconds: 2),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return; // Salir de la función sin guardar si no se ha seleccionado un impuesto
+            }
 
-    // Actualizar el producto en la base de datos
-    await DatabaseHelper.instance.updateProduct(updatedProduct);
+            // Validar que se haya seleccionado una categoría
+            if (prodCat == 0 || catProd.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Por favor selecciona una categoría'),
+                  duration: Duration(seconds: 2),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return; // Salir de la función sin guardar si no se ha seleccionado una categoría
+            }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Producto actualizado satisfactoriamente'),
-            duration: Duration(seconds: 2), 
-            backgroundColor: Colors.green,
-          ),
-        );
+            // Validar que se haya seleccionado una unidad de medida
+            if (umId == 0 || umName.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Por favor selecciona una unidad de medida'),
+                  duration: Duration(seconds: 2),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              return; // Salir de la función sin guardar si no se ha seleccionado una unidad de medida
+            }
 
-    // Cerrar la pantalla de edición después de actualizar el producto
-    Navigator.pop(context);
+            // Crear un mapa con los datos actualizados del producto
+            Map<String, dynamic> updatedProduct = {
+              'id': widget.product['id'], // Asegúrate de incluir el ID del producto
+              'name': newName,
+              'categoria': catProd,
+              'price': newPrice,
+              'quantity': newQuantity,
+              'tax_cat_id': taxIndex,
+              'tax_cat_name': taxString,
+              'pro_cat_id': prodCat,
+              'um_id': umId,
+              'um_name': umName,
+            };
+
+            // Actualizar el producto en la base de datos
+            await updateProduct(updatedProduct);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Producto actualizado satisfactoriamente'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            // Cerrar la pantalla de edición después de actualizar el producto
+            Navigator.pop(context);
           },
-          backgroundColor: Colors.blue, // Color del botón
+          backgroundColor: Colors.blue,
           child: const Icon(Icons.save),
         ),
+
       ),
     );
   }

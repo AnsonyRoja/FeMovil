@@ -1,4 +1,6 @@
+import 'package:femovil/assets/nav_bottom_menu.dart';
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/clients/add_clients.dart';
 import 'package:femovil/presentation/clients/clients_details.dart';
 import 'package:femovil/presentation/clients/filter_dialog_clients.dart';
@@ -10,6 +12,7 @@ import 'package:flutter/material.dart';
 
 
 class Clients extends StatefulWidget {
+
   const Clients({super.key});
 
   @override
@@ -24,14 +27,13 @@ class _ClientsState extends State<Clients> {
   String input = "";
 
   Future<void> _loadClients() async {
-    final clientes = await DatabaseHelper.instance.getClients(); // Obtener todos los productos
+    final clientes = await getClients(); // Obtener todos los productos
 
     print("Estoy obteniendo Clientes $clientes");
     setState(() {
       clients = clientes;
       searchClient = clientes;
     });
-
 
   }
 
@@ -76,13 +78,13 @@ class _ClientsState extends State<Clients> {
     if (_filter != "" && input == "") {
         setState(() {
           if (_filter == "Todos") {
-            print("entre aqui");
+
             searchController.clear();
             input = "";
 
             searchClient = clients.toList();
           } else {
-            searchClient = clients.where((client) => client['grupo'] == _filter).toList();
+            searchClient = clients.where((client) => client['group_bp_name'] == _filter).toList();
             print("Este es el searchClient $searchClient");
           }
           input = ""; // Limpiar el campo de búsqueda al filtrar por categoría
@@ -91,7 +93,7 @@ class _ClientsState extends State<Clients> {
         print("Estoy entrando en el input cuando no esta vacio ");
         setState(() {
           searchClient = clients.where((client) {
-            final name = client['name'].toString().toLowerCase();
+            final name = client['bp_name'].toString().toLowerCase();
             final ruc = client['ruc'].toString().toLowerCase();
             final inputLower = input.toLowerCase();
             return name.contains(inputLower) || ruc.contains(inputLower);
@@ -102,7 +104,7 @@ class _ClientsState extends State<Clients> {
 
       if(_filter != "" && _filter != "Todos"){
           
-          searchClient = clients.where((client) => client['grupo'] == _filter).toList();
+          searchClient = clients.where((client) => client['group_bp_name'] == _filter).toList();
           searchController.clear();
           input = "";
       }else if(_filter == "Todos"){
@@ -176,7 +178,7 @@ class _ClientsState extends State<Clients> {
                     return ruc.contains(valueLower);
                   } else {
                     // Si no se puede convertir a un número entero, buscar por nombre
-                    final name = client['name'].toString().toLowerCase();
+                    final name = client['bp_name'].toString().toLowerCase();
                     return name.contains(valueLower);
                   }
                 }).toList();
@@ -199,9 +201,7 @@ class _ClientsState extends State<Clients> {
                 itemBuilder: (context, index) {
       
                   final client = searchClient[index];
-      
-      
-      
+
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -215,7 +215,7 @@ class _ClientsState extends State<Clients> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(' RUC ${client['ruc'].toString()}',
+                            child: Text(' ${client['tax_id_type_name']} ${client['ruc'].toString()}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -229,11 +229,12 @@ class _ClientsState extends State<Clients> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Nombre: ${client['name']}'),
-                                Text('Ruc: ${client['ruc'].toString()}'),
-                                Text('Correo: ${client['correo']}'),
-                                Text('Telefono: ${client['telefono'].toString()}'),
-                                Text('Grupo: ${client['grupo']}'),
+                                Text('Nombre: ${client['bp_name']}'),
+                                Text('${client['tax_id_type_name']}: ${client['ruc'].toString()}'),
+                                Text('Correo: ${client['email'] != '{@nil: true}' ? client['email'] : 'Sin registro'}'),
+                                Text('Teléfono: ${client['phone'] != '{@nil: true}' ? client['phone'] : 'Sin registro'}'),
+
+                                Text('Grupo: ${client['group_bp_name']}'),
                               ],
                             ),
                           ),
@@ -268,58 +269,20 @@ class _ClientsState extends State<Clients> {
       ),
         
       ),
-      bottomNavigationBar: Container(
-  width: double.infinity, // Ancho máximo igual al ancho total de la pantalla
-  decoration: BoxDecoration(
-    borderRadius: const BorderRadius.only(
-      topLeft: Radius.circular(20), // Ajusta el radio de los bordes superiores izquierdos según sea necesario
-      topRight: Radius.circular(20), // Ajusta el radio de los bordes superiores derechos según sea necesario
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.grey.withOpacity(0.5), // Color de la sombra
-        spreadRadius: 5, // Radio de expansión de la sombra
-        blurRadius: 15, // Radio de desenfoque de la sombra
-        offset: const Offset(0, 5), // Desplazamiento de la sombra
-      ),
-    ],
-  ),
-  child: BottomAppBar(
-    shape:  const CircularNotchedRectangle(), // Utilizamos CircularNotchedRectangle para crear una forma de muesca redondeada
-
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        FloatingActionButton(
-          heroTag: "btn2",
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddClientsForm()),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
-        const SizedBox(width: 20),
-        FloatingActionButton(
-          heroTag: "btn3",
-          onPressed: () {
-            _loadClients();
-          },
-          child: const Icon(Icons.refresh),
-        ),
-        const SizedBox(width: 20),
-        FloatingActionButton(
-          heroTag: "btn4",
-              onPressed: () {
-                Navigator.pop(context);
-              },
-             child: const Icon(Icons.arrow_back),
-            ),
-          ],
-        ),
-      ),
-    ),
+      bottomNavigationBar:  CustomBottomNavigationBar(
+          onAddPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddClientsForm()),
+              );
+            },
+            onRefreshPressed: () {
+              _loadClients();
+            },
+            onBackPressed: () {
+              Navigator.pop(context);
+            },
+          ),
     );
   }
 

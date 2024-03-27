@@ -22,7 +22,7 @@ class _FilterGroupsState extends State<FilterGroups> {
   Widget build(BuildContext context) {
     print("Products ${widget.clients}");
          List<String> clients = widget.clients
-        .map<String>((clients) => clients['grupo'] as String) 
+        .map<String>((clients) => clients['group_bp_name'] as String) 
         .toSet() // Elimina duplicados
         .toList(); //
         clients.insert(0, "Todos");

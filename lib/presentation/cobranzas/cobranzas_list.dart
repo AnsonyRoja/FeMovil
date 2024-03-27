@@ -1,7 +1,7 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 
 
@@ -26,13 +26,16 @@ class _CobranzasState extends State<Cobranzas> {
   int? searchValue;
 
       Future<void> _loadCobranzas() async {
-        final CobranzasData = await DatabaseHelper.instance.getAllOrdersWithClientNames(); // Cambiar a la función de obtener Cobranzas
-
+        final CobranzasData = await getAllOrdersWithClientNames(); // Cambiar a la función de obtener Cobranzas
+        
             print("Esto es la venta Data $CobranzasData");
 
             setState(() {
               Cobranzas = CobranzasData;
-              filteredCobranzas = CobranzasData;
+              // filteredCobranzas = CobranzasData;
+              filteredCobranzas = Cobranzas.where((venta) => venta['saldo_total'] > 0).toList();
+
+              
             });
       }
 
@@ -64,6 +67,12 @@ void _showFilterOptions(BuildContext context) {
           title: const Text('Filtrar Por Ordenes con saldo abierto'),
           onTap: () {
             Navigator.pop(context);
+            
+              setState(() {
+                
+              filteredCobranzas = Cobranzas.where((venta) => venta['saldo_total'] > 0).toList();
+              });
+
 
           },
         ),
@@ -73,7 +82,11 @@ void _showFilterOptions(BuildContext context) {
           title: const Text('Filtrar Por Ordenes con saldo pagado'),
           onTap: () {
             Navigator.pop(context);
-        
+            setState(() {
+              
+             filteredCobranzas = Cobranzas.where((venta) => venta['saldo_total'] == 0).toList();
+            });
+
         },
         ),
       ),
@@ -107,6 +120,13 @@ void _showFilterOptions(BuildContext context) {
                       _showFilterOptions(context);
                     },
                   ),
+        actions: [
+          IconButton(onPressed: () {
+              Navigator.pop(context);
+          }, icon: const Icon(Icons.arrow_back))
+        ],
+       iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -146,8 +166,9 @@ void _showFilterOptions(BuildContext context) {
                 child: ListView.builder(
                   itemCount: filteredCobranzas.length,
                   itemBuilder: (context, index) {
+                  
                     final venta = filteredCobranzas[index];
-                    return Column(
+                    return  Column(
                       children: [
                         Container(  
 
@@ -190,6 +211,7 @@ void _showFilterOptions(BuildContext context) {
                         ),
                         const SizedBox(height: 10,),
                         Container(
+
                           width: screenMax,
                           child:  Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -199,10 +221,9 @@ void _showFilterOptions(BuildContext context) {
                                 height: 50,
                                 child: GestureDetector(
                                   onTap: venta['saldo_total'] > 0 ?   () {
-
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                          builder: (context) =>  Cobro(orderId: venta['id']),
+                                          builder: (context) =>  Cobro(orderId: venta['id'],saldoTotal: venta['saldo_total'], loadCobranzas: _loadCobranzas),
                                         ),
                                       );
 

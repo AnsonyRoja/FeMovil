@@ -44,7 +44,13 @@ class _FilterCategoriesState extends State<FilterCategories> {
             items: categories.map((category) {
               return DropdownMenuItem<String>(
                 value: category,
-                child: Text(category),
+                child:  Container(
+                      width: 220, // Ancho máximo deseado para el texto
+                          child: Text(
+                            category,
+                            overflow: TextOverflow.clip,
+                          ),
+                        ),
               );
             }).toList(),
           ),
