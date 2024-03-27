@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-// Supongamos que tienes la clase Product definida como antes
-
 // Función para procesar la respuesta de iDempiere y extraer los datos de los productos
 List<Map<String, dynamic>> extractImpuestoData(String responseData) {
   // Decodifica la respuesta JSON

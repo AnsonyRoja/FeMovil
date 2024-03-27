@@ -152,3 +152,276 @@
         }
     }
 }
+
+
+https://165.227.197.236:1201/ADInterface/services/rest/model_adservice/create_data
+
+{
+    "ModelCRUDRequest": {
+        "ModelCRUD": {
+            "serviceType": "CreateBPAPP",
+            "TableName": "C_BPartner_Tercero",
+            "RecordID": "0",
+            "Action": "CreateUpdate",
+            "DataRow": {
+                "field": [
+                    {
+                        "@column": "IsCustomer_Cliente",
+                        "val": "Y"
+                    },
+                    {
+                        "@column": "M_PriceList_ID_Lista de Precios",
+                        "val": "2930"
+                    },
+                    {
+                        "@column": "TaxID_Número Identificación",
+                        "val": "2909"
+                    },
+                    {
+                        "@column": "FTU_ProductGroup_ID",
+                        "val": "1000015"
+                    },
+                    {
+                        "@column": "ProductType",
+                        "val": "I"
+                    },
+                    {
+                        "@column": "C_UOM_ID",
+                        "val": "1000000"
+                    },
+                    {
+                        "@column": "SKU",
+                        "val": "034619849"
+                    },
+                    {
+                        "@column": "IsStocked",
+                        "val": "Y"
+                    },
+                    {
+                        "@column": "IsPurchased",
+                        "val": "Y"
+                    },
+                    {
+                        "@column": "IsSold",
+                        "val": "Y"
+                    }
+                ]
+            }
+        },
+        "ADLoginRequest": {
+            "user": "DEMO",
+            "pass": "DEMO",
+            "lang": "es_VE",
+            "ClientID": "1000000",
+            "RoleID": "1000000",
+            "OrgID": "1000000",
+            "WarehouseID": "1000017",
+            "stage": "9"
+        }
+    }
+}
+
+
+
+{
+    "ModelCRUDRequest": {
+        "ModelCRUD": {
+            "serviceType": "getPosProperties",
+           
+        },
+        "ADLoginRequest": {
+            "user": "DEMO",
+            "pass": "DEMO",
+            "lang": "es_VE",
+            "ClientID": 1000000,
+            "RoleID": "1000000",
+            "OrgID": "1000000",
+            "WarehouseID": "1000017",
+            "stage": 9
+        }
+    }
+}
+
+
+
+
+https://165.227.197.236:1201/ADInterface/services/rest/composite_service/composite_operation
+
+{
+
+    "CompositeRequest":{
+        
+         "ADLoginRequest": {
+        "user": "DEMO",
+        "pass": "DEMO",
+        "lang": "es_VE",
+        "ClientID": 1000000,
+        "RoleID": "1000000",
+        "OrgID": "1000000",
+        "WarehouseID": "1000017",
+        "stage": 9
+      },
+    "serviceType": "UCCompositeBPartner",
+        "operations":{
+            "operation":[
+                {
+                "TargetPort": "createUpdateData",
+                "ModelCRUD": {
+                    "serviceType":"CreateBPAPP",
+                    "TableName": "C_BPartner_Tercero",
+                    "RecordID": "0",
+                    "Action":"CreateUpdate",
+                    "DataRow": {
+                "field": [
+                    {
+                        "@column": "IsCustomer",
+                        "val": "Y"
+                    },
+                    {
+                        "@column": "M_PriceList_ID",
+                        "val": "1000003"
+                    },
+                    {
+                        "@column": "TaxID",
+                        "val": "V20000003"
+                    },
+                    {
+                        "@column": "C_BP_Group_ID",
+                        "val": "1000000"
+                    },
+                    {
+                        "@column": "Name",
+                        "val": "Juliana Gomez"
+                    },
+                    {
+                        "@column": "AD_Client_ID",
+                        "val": "1000000"
+                    },
+                    {
+                        "@column": "AD_Org_ID",
+                        "val": "1000000"
+                    },
+                    {
+                        "@column": "LCO_TaxIdType_ID",
+                        "val": "1000003"
+                    },
+                    {
+                        "@column": "LCO_TaxPayerType_ID",
+                        "val": "1000003"
+                    },
+                    {
+                        "@column": "LVE_PersonType_ID",
+                        "val": "1000000"
+                    },
+                    {
+                        "@column": "EMail",
+                        "val": "julianagomez@gmail.com"
+                    }
+             
+                ]
+                }
+
+                }
+
+                },
+                {
+                "TargetPort": "createUpdateData",
+                "ModelCRUD": {
+                "serviceType" : "CreateLocationAPP",
+                "TableName" : "C_Location",
+                "RecordID" : "0",
+                "Action": "CreateUpdate",
+                 "DataRow": {
+                "field": [
+                    {
+                        "@column": "Address1",
+                        "val": "Calle 5 casa # 190"
+                    },
+                    {
+                        "@column": "City",
+                        "val": "Araure"
+                    },
+                    {
+                        "@column": "Address2",
+                        "val": "Urbanismo las palmas"
+                    },
+                    {
+                        "@column": "C_Country_ID",
+                        "val": "339"
+                    },
+                    {
+                        "@column": "Postal",
+                        "val": "3301"
+                    }
+                 
+                ]
+                }
+
+
+                }
+
+                
+                
+                },
+                {
+                "TargetPort": "createUpdateData",
+                "ModelCRUD": {
+                "serviceType" : "CreateBPLocationAPP",
+                "TableName" : "C_BPartner_Location",
+                "RecordID" : "0",
+                "Action": "CreateUpdate",
+                 "DataRow": {
+                "field": [
+                    {
+                        "@column": "C_BPartner_ID",
+                        "val": "@C_BPartner.C_BPartner_ID"
+                    },
+                     {
+                        "@column": "IsShipTo",
+                        "val": "Y"
+                    },
+                       {
+                        "@column": "IsBillTo",
+                        "val": "Y"
+                    },
+                       {
+                        "@column": "Phone",
+                        "val": "04128091232"
+                    },
+                    {
+                        //quisiera que tome el nombre de @C_Location que se genera en createlocationapp
+                        "@column": "Name",
+                        "val":"Araure"
+                    },
+                    {
+                        "@column": "C_Location_ID",
+                        "val": "@C_Location.C_Location_ID"
+                    },
+                    {
+                        "@column": "IsRemitTo",
+                        "val": "Y"
+                    },
+                    {
+                        "@column": "IsPayFrom",
+                        "val": "Y"
+                    }
+                 
+                ]
+                }
+
+
+                }
+
+                
+                
+                }
+
+            ]
+        }
+
+
+
+    }
+
+
+}

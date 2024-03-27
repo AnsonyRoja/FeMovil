@@ -18,6 +18,7 @@ Future<List<Map<String, dynamic>>> getProductsAndTaxes() async {
 }
 
 
+
 Future<List<Map<String, dynamic>>> getProducts() async {
       final db = await DatabaseHelper.instance.database;
   if (db != null) {
@@ -92,7 +93,7 @@ Future<List<Map<String, dynamic>>> getProducts() async {
     if (db != null) {
       // Consultar todas las órdenes de venta con el nombre del cliente asociado
       List<Map<String, dynamic>> orders = await db.rawQuery('''
-        SELECT o.*, c.name AS nombre_cliente, c.ruc as ruc,
+        SELECT o.*, c.bp_name AS nombre_cliente, c.ruc as ruc,
         (o.monto - COALESCE((SELECT SUM(amount) FROM cobros WHERE sale_order_id = o.id), 0)) AS saldo_total
         FROM orden_venta o
         INNER JOIN clients c ON o.cliente_id = c.id
@@ -239,3 +240,14 @@ Future<List<Map<String, dynamic>>> getProducts() async {
 
 
 
+
+   Future<List<Map<String, dynamic>>> getProductsWithZeroValues() async {
+        final db = await DatabaseHelper.instance.database;
+        if (db != null) {
+          return await db.rawQuery('''
+            SELECT * FROM products 
+            WHERE cod_product = 0 AND m_product_id = 0
+          ''');
+        }
+        return [];
+      }

@@ -62,7 +62,6 @@ import 'package:sqflite/sqflite.dart';
           )
         ''');
       await db.execute('''
-
         CREATE TABLE clients(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             c_bpartner_id INTEGER,
@@ -72,11 +71,24 @@ import 'package:sqflite/sqflite.dart';
             group_bp_name STRING,
             lco_tax_id_typeid INTEGER,
             tax_id_type_name STRING,
-      
-            ruc INTEGER,
-            correo TEXT,
-            telefono INTEGER,
-            grupo TEXT
+            email STRING,
+            c_bpartner_location_id INTEGER,
+            is_bill_to STRING,
+            phone STRING,
+            c_location_id INTEGER,
+            city STRING,
+            region STRING,
+            country STRING,
+            code_postal INTEGER,
+            c_city_id INTEGER,
+            c_region_id INTEGER,
+            c_country_id INTEGER,
+            ruc STRING,
+            address STRING,
+            lco_tax_payer_typeid INTEGER,
+            tax_payer_type_name STRING,
+            lve_person_type_id INTEGER,
+            person_type_name STRING
         )
 
     ''');
@@ -196,6 +208,28 @@ import 'package:sqflite/sqflite.dart';
             ad_user_id TEXT,
             email TEXT,
             phone TEXT
+            )
+        ''');
+
+             await db.execute('''
+          CREATE TABLE posproperties(
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            country_id INTEGER,
+            tax_payer_type_natural INTEGER,
+            tax_payer_type_juridic INTEGER,
+            person_type_juridic INTEGER,
+            person_type_natural INTEGER,
+            m_warehouse_id INTEGER,
+            c_doc_type_order_id INTEGER,
+            c_conversion_type_id INTEGER,
+            c_paymentterm_id INTEGER,
+            c_bankaccount_id INTEGER,
+            c_bpartner_id INTEGER,
+            c_doctypepayment_id INTEGER,
+            c_doctypereceipt_id INTEGER,
+            city STRING,
+            address1 STRING, 
+            m_pricelist_id INTEGER
             )
         ''');
 

@@ -48,11 +48,35 @@ invoke(option, newValue, data){
             (umList) => umList['um_id'] == newValue,
           );
 
-       
-
+    
           return um != null ? um['um_name'] : '';
-        
-      
+        case  'obtenerNombreCountry':
+
+              Map<String, dynamic>? country = data.firstWhere(
+            (countryList) => countryList['c_country_id'] == newValue,
+          );
+
+          return country != null ? country['country'] : '';
+          case 'obtenerNombreGroup': 
+               Map<String, dynamic>? groupTercero = data.firstWhere(
+            (group) => group['c_bp_group_id'] == newValue,
+          );
+
+          return groupTercero != null ? groupTercero['group_bp_name'] : '';
+          case 'obtenerNombreTax':
+
+            Map<String, dynamic>? nombreTaxType = data.firstWhere(
+            (taxType) => taxType['lco_tax_id_typeid'] == newValue,
+          );
+
+          return nombreTaxType != null ? nombreTaxType['tax_id_type_name'] : '';
+          case 'obtenerNombreTaxPayer':
+              Map<String, dynamic>? nombreTaxPayer = data.firstWhere(
+            (taxPayer) => taxPayer['lco_tax_payer_typeid'] == newValue,
+          );
+
+          return nombreTaxPayer != null ? nombreTaxPayer['tax_payer_type_name'] : '';
+
       default:
     }
 

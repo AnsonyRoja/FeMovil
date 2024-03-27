@@ -1,13 +1,10 @@
-import 'dart:io';
-import 'dart:math';
 
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/database/list_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
-import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/products/utils/switch_generated_names_select.dart';
 import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 
 
@@ -47,8 +44,8 @@ class _AddProductFormState extends State<AddProductForm> {
 
      void _loadTaxs()async {
 
-
-        final getTaxs = await  listarImpuestos();
+   
+        final getTaxs = await listarImpuestos();
         final getCategories = await listarCategorias();
         final getUm = await  listarUnidadesDeMedida();
         final getProductType = await listarProductType();
@@ -147,7 +144,7 @@ class _AddProductFormState extends State<AddProductForm> {
                   const SizedBox(height: 10,),
                   DropdownButtonFormField<int>(
                     value: _selectedTaxIndex,
-                    items: _taxList.map<DropdownMenuItem<int>>((tax) {
+                    items: _taxList.where((tax) => tax['tax_cat_id'] is int).map<DropdownMenuItem<int>>((tax) {
                       print('tax $tax');
                       return DropdownMenuItem<int>(
                         value: tax['tax_cat_id'] as int,
@@ -178,7 +175,7 @@ class _AddProductFormState extends State<AddProductForm> {
                     const SizedBox(height: 10,),
                     DropdownButtonFormField<String>(
                     value: _selectedProductType,
-                    items: _productTpeList.map<DropdownMenuItem<String>>((productType) {
+                    items: _productTpeList.where((prodType) => prodType['product_type'] != '{@nil=true}').map<DropdownMenuItem<String>>((productType) {
                       return DropdownMenuItem<String>(
                         value: productType['product_type'] as String,
                         child: Container(

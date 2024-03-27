@@ -78,13 +78,13 @@ class _ClientsState extends State<Clients> {
     if (_filter != "" && input == "") {
         setState(() {
           if (_filter == "Todos") {
-            print("entre aqui");
+
             searchController.clear();
             input = "";
 
             searchClient = clients.toList();
           } else {
-            searchClient = clients.where((client) => client['grupo'] == _filter).toList();
+            searchClient = clients.where((client) => client['group_bp_name'] == _filter).toList();
             print("Este es el searchClient $searchClient");
           }
           input = ""; // Limpiar el campo de búsqueda al filtrar por categoría
@@ -93,7 +93,7 @@ class _ClientsState extends State<Clients> {
         print("Estoy entrando en el input cuando no esta vacio ");
         setState(() {
           searchClient = clients.where((client) {
-            final name = client['name'].toString().toLowerCase();
+            final name = client['bp_name'].toString().toLowerCase();
             final ruc = client['ruc'].toString().toLowerCase();
             final inputLower = input.toLowerCase();
             return name.contains(inputLower) || ruc.contains(inputLower);
@@ -104,7 +104,7 @@ class _ClientsState extends State<Clients> {
 
       if(_filter != "" && _filter != "Todos"){
           
-          searchClient = clients.where((client) => client['grupo'] == _filter).toList();
+          searchClient = clients.where((client) => client['group_bp_name'] == _filter).toList();
           searchController.clear();
           input = "";
       }else if(_filter == "Todos"){
@@ -178,7 +178,7 @@ class _ClientsState extends State<Clients> {
                     return ruc.contains(valueLower);
                   } else {
                     // Si no se puede convertir a un número entero, buscar por nombre
-                    final name = client['name'].toString().toLowerCase();
+                    final name = client['bp_name'].toString().toLowerCase();
                     return name.contains(valueLower);
                   }
                 }).toList();
@@ -201,9 +201,7 @@ class _ClientsState extends State<Clients> {
                 itemBuilder: (context, index) {
       
                   final client = searchClient[index];
-      
-      
-      
+
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -217,7 +215,7 @@ class _ClientsState extends State<Clients> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(' RUC ${client['ruc'].toString()}',
+                            child: Text(' ${client['tax_id_type_name']} ${client['ruc'].toString()}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -231,11 +229,12 @@ class _ClientsState extends State<Clients> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Nombre: ${client['name']}'),
-                                Text('Ruc: ${client['ruc'].toString()}'),
-                                Text('Correo: ${client['correo']}'),
-                                Text('Telefono: ${client['telefono'].toString()}'),
-                                Text('Grupo: ${client['grupo']}'),
+                                Text('Nombre: ${client['bp_name']}'),
+                                Text('${client['tax_id_type_name']}: ${client['ruc'].toString()}'),
+                                Text('Correo: ${client['email'] != '{@nil: true}' ? client['email'] : 'Sin registro'}'),
+                                Text('Teléfono: ${client['phone'] != '{@nil: true}' ? client['phone'] : 'Sin registro'}'),
+
+                                Text('Grupo: ${client['group_bp_name']}'),
                               ],
                             ),
                           ),

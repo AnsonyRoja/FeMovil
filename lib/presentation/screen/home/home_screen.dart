@@ -1,4 +1,5 @@
 import 'package:femovil/assets/nav_bar_bottom.dart';
+import 'package:femovil/config/getPosProperties.dart';
 import 'package:femovil/infrastructure/models/info_perfil.dart';
 import 'package:femovil/presentation/cobranzas/cobranzas_list.dart';
 import 'package:femovil/presentation/clients/clients_screen.dart';
@@ -11,13 +12,12 @@ import 'package:femovil/presentation/screen/ventas/ventas.dart';
 import 'package:femovil/sincronization/sincronization_screen.dart';
 import 'package:flutter/material.dart';
 
-dynamic documentosPorTipo = {};
 bool flag = false;
 bool processingApproval = false;
 bool actualizando = false;
 String mensaje = '';
 InfPerfil? perfilData;
-
+List<Map<dynamic, dynamic>> variablesG = [];
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -37,10 +37,23 @@ class HomeState extends State<Home> {
   String mensajeSuc = "Se ha Aprobado correctamente";
 
 
+      initV() async {
+        
+         List<Map<String, dynamic>> response = await getPosPropertiesV();
+
+         setState(() {
+            variablesG = response;
+         });
+
+      }
+
 
   @override
-  void initState() {
-    super.initState();
+  void initState(){
+    getPosPropertiesInit();
+    initV();
+    print('Esto es la variable global de country_id ${variablesG}');
+      super.initState();
     print("me monte");
 
   }
@@ -51,7 +64,7 @@ class HomeState extends State<Home> {
   @override
   void dispose() {
     print("me desmonte");
-
+    
     super.dispose();
   }
 
@@ -121,11 +134,11 @@ class HomeState extends State<Home> {
                                           }
                                           return CircularProgressIndicator(
                                             value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                            : null,
+                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                            : null,
                                           );
                                         },
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                          errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                                           return const Text('No se pudo cargar la imagen');
                                         },
                                       ),

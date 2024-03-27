@@ -185,7 +185,6 @@ class _PerfilState extends State<Perfil> {
 
 
                   setState(() {
-                    documentosPorTipo = {};
                     flag = true;
                     isSelected = true;
                     perfilIsSelected = false;

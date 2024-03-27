@@ -33,11 +33,11 @@ class ClientDetailsScreen extends StatelessWidget {
               children: [
                 const SizedBox( height: 25,),
           
-                _buildTextFormField('Nombre', client['name'].toString()),
+                _buildTextFormField('Nombre', client['bp_name'].toString()),
                 _buildTextFormField('Ruc', client['ruc'].toString()),
-                _buildTextFormField('Correo', '${client['correo']}'),
-                _buildTextFormField('Telefono', client['telefono'].toString()),
-                _buildTextFormField('Grupo', client['grupo'].toString()),
+                _buildTextFormField('Correo', '${client['email'] != '{@nil: true}' ? client['email'] : 'Sin registro' }'),
+                _buildTextFormField('Telefono', client['phone'] != '{@nil: true}' ? client['phone'].toString() : 'Sin registro'),
+                _buildTextFormField('Grupo', client['group_bp_name'].toString()),
                 const SizedBox(height: 29,),
                SizedBox(
                 

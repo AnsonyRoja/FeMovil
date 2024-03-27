@@ -1,7 +1,99 @@
 import 'package:femovil/database/create_database.dart';
+import 'package:femovil/infrastructure/models/clients.dart';
 import 'package:femovil/infrastructure/models/impuestos.dart';
 import 'package:femovil/infrastructure/models/products.dart';
 import 'package:femovil/sincronization/sincronization_screen.dart';
+
+
+
+
+Future<void> syncCustomers( customersData,setState) async {
+      final db = await DatabaseHelper.instance.database;
+    
+       double contador = 0;
+
+
+
+      if (db != null) {
+        // Itera sobre los datos de los productos recibidos
+        for (Map<String, dynamic> customerData in customersData) {
+          // Construye un objeto Product a partir de los datos recibidos
+          Customer customer = Customer(
+              cbPartnerId: customerData['c_bpartner_id'],
+              codClient: customerData['cod_client'],
+              bpName: customerData['bp_name'].toString(),
+              cBpGroupId: customerData['c_bp_group_id'],
+              cBpGroupName: customerData['group_bp_name'].toString(),
+              lcoTaxIdTypeId: customerData['lco_tax_id_typeid'],
+              taxIdTypeName: customerData['tax_id_type_name'].toString(),
+              email: customerData['email'].toString(),
+              cBparnetLocationId: customerData['c_bpartner_location_id'],
+              isBillTo: customerData['is_bill_to'].toString(),
+              phone: customerData['phone'].toString(),
+              cLocationId: customerData['c_location_id'],
+              city: customerData['city'].toString(),
+              region: customerData['region'].toString(),
+              country: customerData['country'].toString(),
+              codePostal: customerData['code_postal'] ?? 0 ,
+              cCityId: customerData['c_city_id'],
+              cRegionId: customerData['c_region_id'],
+              cCountryId: customerData['c_country_id'],
+              ruc: customerData['ruc'].toString(),
+              address: customerData['address'].toString(),
+              lcoTaxPayerTypeId: customerData['lco_tax_payer_typeid'],
+              taxPayerTypeName: customerData['tax_payer_type_name'].toString(),
+              lvePersonTypeId: customerData['lve_person_type_id'],
+              personTypeName: customerData['person_type_name'].toString(),
+            
+          );
+          
+            contador++;
+
+         
+            
+                    setState(() {
+                      
+                          syncPercentageClient = (contador / customersData.length) * 100;
+
+                    });
+
+          
+          
+                   
+
+
+          // Convierte el objeto Product a un mapa
+          Map<String, dynamic> customerMap = customer.toMap();
+
+
+          // Consulta si el producto ya existe en la base de datos local por su nombre
+          List<Map<String, dynamic>> existingCustomer= await db.query(
+            'clients',
+            where: 'bp_name = ?',
+            whereArgs: [customer.bpName],
+          );
+
+          if (existingCustomer.isNotEmpty) {
+            // Si el producto ya existe, actualiza sus datos
+            await db.update(
+              'clients',
+              customerMap,
+              where: 'bp_name = ?',
+              whereArgs: [customer.bpName],
+            );
+            print('cliente actualizado: ${customer.bpName}');
+          } else {
+            // Si el producto no existe, inserta un nuevo registro en la tabla de productos
+            await db.insert('clients', customerMap);
+            print('cliente insertado: ${customer.bpName}');
+          }
+        }
+        print('Sincronización de Impuestos completada.');
+      } else {
+        // Manejar el caso en el que db sea null
+        print('Error: db is null');
+      }
+    }
 
 
 
@@ -152,70 +244,5 @@ Future<void> syncProducts(List<Map<String, dynamic>> productsData,setState) asyn
     }
 
 
-     Future<List<Map<String, dynamic>>> listarCategorias() async {
-          final db = await DatabaseHelper.instance.database;
-          if(db != null) {
-            return await db.rawQuery('''
-              SELECT DISTINCT pro_cat_id, categoria
-              FROM products
-            ''');
-          }
-          return []; 
-        }
 
-
-        Future<List<Map<String, dynamic>>> listarUnidadesDeMedida() async {
-          final db = await DatabaseHelper.instance.database;
-          if(db != null) {
-            return await db.rawQuery('''
-            SELECT DISTINCT um_id, um_name
-               FROM products
-            ''');
-          }
-          return [];
-        }
-
-        Future<List<Map<String, dynamic>>> listarImpuestos() async {
-          final db = await DatabaseHelper.instance.database;
-          if(db != null) {
-            return await db.rawQuery('''
-            SELECT DISTINCT tax_cat_id, tax_cat_name
-               FROM products
-            ''');
-          }
-          return [];
-        }
-
-                Future<List<Map<String, dynamic>>> listarProductType() async {
-          final db = await DatabaseHelper.instance.database;
-          if(db != null) {
-            return await db.rawQuery('''
-            SELECT DISTINCT product_type, product_type_name
-               FROM products
-            ''');
-          }
-          return [];
-        }
-
-          Future<List<Map<String, dynamic>>> listarProductGroup() async {
-          final db = await DatabaseHelper.instance.database;
-          if(db != null) {
-            return await db.rawQuery('''
-            SELECT DISTINCT product_group_id, product_group_name
-               FROM products
-            ''');
-          }
-          return [];
-        }
-
-
-        Future<List<Map<String, dynamic>>> getProductsWithZeroValues() async {
-        final db = await DatabaseHelper.instance.database;
-        if (db != null) {
-          return await db.rawQuery('''
-            SELECT * FROM products 
-            WHERE cod_product = 0 AND m_product_id = 0
-          ''');
-        }
-        return [];
-      }
+     
