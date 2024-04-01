@@ -77,6 +77,15 @@ invoke(option, newValue, data){
 
           return nombreTaxPayer != null ? nombreTaxPayer['tax_payer_type_name'] : '';
 
+          case 'obtenerNombreTypePerson':
+
+                Map<String, dynamic>? nombreTypePerson = data.firstWhere(
+            (typePerson) => typePerson['lve_person_type_id'] == newValue,
+          );
+
+          return nombreTypePerson != null ? nombreTypePerson['person_type_name'] : '';
+
+
       default:
     }
 

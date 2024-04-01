@@ -105,3 +105,16 @@ Future<List<Map<String, dynamic>>> listarCategorias() async {
           }
           return [];
         }
+
+
+
+           Future<List<Map<String, dynamic>>> listarTypePerson() async {
+          final db = await DatabaseHelper.instance.database;
+          if(db != null) {
+            return await db.rawQuery('''
+            SELECT DISTINCT lve_person_type_id, person_type_name
+               FROM clients
+            ''');
+          }
+          return [];
+        }

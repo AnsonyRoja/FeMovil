@@ -36,43 +36,36 @@ class HomeState extends State<Home> {
   String messageErrorCon = "Hay problemas de conexion";
   String mensajeSuc = "Se ha Aprobado correctamente";
 
+  initV() async {
+    if (variablesG.isEmpty) {
+      List<Map<String, dynamic>> response = await getPosPropertiesV();
 
-      initV() async {
-        
-         List<Map<String, dynamic>> response = await getPosPropertiesV();
-
-         setState(() {
-            variablesG = response;
-         });
-
-      }
-
+      setState(() {
+        variablesG = response;
+      });
+    }
+  }
 
   @override
-  void initState(){
+  void initState() {
     getPosPropertiesInit();
     initV();
     print('Esto es la variable global de country_id ${variablesG}');
-      super.initState();
+    super.initState();
     print("me monte");
-
   }
-
-
-
 
   @override
   void dispose() {
     print("me desmonte");
-    
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width * 0.8 ;
+    double screenWidth = MediaQuery.of(context).size.width * 0.8;
     final colors = Theme.of(context).colorScheme;
-
 
     if (closeScreen == false) {
       return Scaffold(
@@ -86,7 +79,7 @@ class HomeState extends State<Home> {
                   'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
               fontSize: 20.0, // Tamaño de la fuente
               fontWeight:
-                   FontWeight.w400, // Peso de la fuente (por ejemplo, bold)
+                  FontWeight.w400, // Peso de la fuente (por ejemplo, bold)
               color: Color.fromARGB(255, 105, 102, 102), // Color del texto
             ),
           ),
@@ -105,7 +98,7 @@ class HomeState extends State<Home> {
                 ])
               : CustomProgressIndicator(),
         ),
-        body:  Padding(
+        body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: SingleChildScrollView(
               child: Column(
@@ -115,285 +108,344 @@ class HomeState extends State<Home> {
                     children: [
                       const SizedBox(height: 150),
                       GestureDetector(
-                        onTap: (){
-              
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => const Products(),));
-              
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Products(),
+                              ));
                         },
                         child: Column(
-                        
                           children: [
-                          const Text("Productos"),
+                            const Text("Productos"),
                             Image.network(
-                                        'https://thefoodtech.com/wp-content/uploads/2023/04/Productos-nestle.jpg', 
-                                          width: 100,
-                                          height: 100,
-                                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          }
-                                          return CircularProgressIndicator(
-                                            value: loadingProgress.expectedTotalBytes != null
-                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                            : null,
-                                          );
-                                        },
-                                          errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return const Text('No se pudo cargar la imagen');
-                                        },
-                                      ),
+                              'https://thefoodtech.com/wp-content/uploads/2023/04/Productos-nestle.jpg',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    'No se pudo cargar la imagen');
+                              },
+                            ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 100),
-                       GestureDetector(
-                        onTap: (){
-              
-                         Navigator.push(context, MaterialPageRoute(builder:(context) =>  const Clients(),));
-              
-              
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Clients(),
+                              ));
                         },
-                         child: Column(
-                         
+                        child: Column(
                           children: [
-                          const Text("Clientes"),
+                            const Text("Clientes"),
                             Image.network(
-                                        'https://www.clienteindiscreto.com/wp/wp-content/uploads/2018/10/tipos-de-clientes-parte-ii.jpg', 
-                                          width: 100,
-                                          height: 100,
-                                          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                          if (loadingProgress == null) {
-                                            return child;
-                                          }
-                                          return CircularProgressIndicator(
-                                            value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                            : null,
-                                          );
-                                        },
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return const Text('No se pudo cargar la imagen');
-                                        },
-                                      ),
+                              'https://www.clienteindiscreto.com/wp/wp-content/uploads/2018/10/tipos-de-clientes-parte-ii.jpg',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    'No se pudo cargar la imagen');
+                              },
+                            ),
                           ],
-                                             ),
-                       ),
+                        ),
+                      ),
                     ],
                   ),
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 150),
-                         GestureDetector(
-                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder:(context) => const Precios(),));
-              
-                              },
-                           child: Column(        
-                                 children: [
-                                    const Text("Precios"),
-                                      Image.network(
-                                                  'https://www.fijaciondeprecios.com/wp-content/uploads/2017/01/Puedo-cobrar-un-precio-mas-alto-Conozcalo-por-5-se%C3%B1ales-clave.jpg', 
-                                                    width: 100,
-                                                    height: 100,
-                                                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                                    if (loadingProgress == null) {
-                                                      return child;
-                                                    }
-                                                    return CircularProgressIndicator(
-                                                      value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Precios(),
+                              ));
+                        },
+                        child: Column(
+                          children: [
+                            const Text("Precios"),
+                            Image.network(
+                              'https://www.fijaciondeprecios.com/wp-content/uploads/2017/01/Puedo-cobrar-un-precio-mas-alto-Conozcalo-por-5-se%C3%B1ales-clave.jpg',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
                                       : null,
-                                          );
-                                        },
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return const Text('No se pudo cargar la imagen');
-                                        },
-                                      ),
-                                                 ],
-                                               ),
-                         ),
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    'No se pudo cargar la imagen');
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(width: 100),
                       GestureDetector(
-                              onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => const Ventas(),));
-              
-                          },
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Ventas(),
+                              ));
+                        },
                         child: Column(
                           children: [
                             const Text("Ventas"),
-                            Image.network('https://www.cloudtalk.io/wp-content/uploads/2021/12/Article-202105-ImproveSalesEfforts-2x-1024x538.png',
-                            width: 100,
-                            height: 100,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
-                                         
-                                  if(loadingProgress == null){
-                                    return child;
-                                  }
-                                         
-                                  return CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!: null,);
-                                         
-                            },
-                            errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace){
-                                         
-                              return const Text("No se pudo cargar la imagen"); 
-                            },
+                            Image.network(
+                              'https://www.cloudtalk.io/wp-content/uploads/2021/12/Article-202105-ImproveSalesEfforts-2x-1024x538.png',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    "No se pudo cargar la imagen");
+                              },
                             )
                           ],
                         ),
                       ),
-                    ],  
+                    ],
                   ),
-                     Row(
-                                       mainAxisAlignment: MainAxisAlignment.center,
-                                       children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       const SizedBox(height: 150),
                       GestureDetector(
-                         onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder:(context) => const Providers(),));
-                          },
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Providers(),
+                              ));
+                        },
                         child: Column(
                           children: [
                             const Text("Compras"),
-                            Image.network('https://cdn-3.expansion.mx/dims4/default/5339ade/2147483647/strip/true/crop/8409x5945+0+0/resize/1200x848!/format/webp/quality/60/?url=https%3A%2F%2Fcdn-3.expansion.mx%2Fd8%2F15%2F97756b4a444287dbf850dee43121%2Fistock-1292443598.jpg',
-                            width: 100,
-                            height: 100,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
-                                           
-                                  if(loadingProgress == null){
-                                    return child;
-                                  }
-                                           
-                                  return CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!: null,);
-                                           
-                            },
-                            errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace){
-                                           
-                              return const Text("No se pudo cargar la imagen"); 
-                            },
+                            Image.network(
+                              'https://cdn-3.expansion.mx/dims4/default/5339ade/2147483647/strip/true/crop/8409x5945+0+0/resize/1200x848!/format/webp/quality/60/?url=https%3A%2F%2Fcdn-3.expansion.mx%2Fd8%2F15%2F97756b4a444287dbf850dee43121%2Fistock-1292443598.jpg',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    "No se pudo cargar la imagen");
+                              },
                             )
                           ],
                         ),
                       ),
                       const SizedBox(width: 100),
-                       GestureDetector(
-                          onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder:(context) => const Cobranzas(),));
-              
-                          },
-                         child: Column(
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Cobranzas(),
+                              ));
+                        },
+                        child: Column(
                           children: [
                             const Text("Cobranzas"),
-                            Image.network('https://www.g-talent.net/cdn/shop/articles/img-1659972637173_d775bd22-cd61-445a-aa42-48c0832b7472.jpg?v=1675217410',
-                            width: 100,
-                            height: 100,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
-                                            
-                                  if(loadingProgress == null){
-                                    return child;
-                                  }
-                                            
-                                  return CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!: null,);
-                                            
-                            },
-                            errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace){
-                                            
-                              return const Text("No se pudo cargar la imagen"); 
-                            },
+                            Image.network(
+                              'https://www.g-talent.net/cdn/shop/articles/img-1659972637173_d775bd22-cd61-445a-aa42-48c0832b7472.jpg?v=1675217410',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    "No se pudo cargar la imagen");
+                              },
                             )
                           ],
-                                             ),
-                       ),
-                     
-                                       ],
-                                       
-                                       
-                                     ),
-                     Row(
-                
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 150),
-                       GestureDetector(
-                         onTap: () {
-                         
-                          Navigator.push(context, MaterialPageRoute(builder:(context) => const Retenciones(),));
-              
-                         },
-                         child: Column(
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Retenciones(),
+                              ));
+                        },
+                        child: Column(
                           children: [
                             const Text("Retenciones"),
-                            Image.network('https://static.wixstatic.com/media/b21422_23a906f84cfc45d5ba8d3a422f0847e7~mv2.jpg/v1/fill/w_640,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/b21422_23a906f84cfc45d5ba8d3a422f0847e7~mv2.jpg',
-                            width: 100,
-                            height: 100,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
-                         
-                                  if(loadingProgress == null){
-                                    return child;
-                                  }
-                         
-                                  return CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!: null,);
-                         
-                            },
-                            errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace){
-                         
-                              return const Text("No se pudo cargar la imagen"); 
-                            },
+                            Image.network(
+                              'https://static.wixstatic.com/media/b21422_23a906f84cfc45d5ba8d3a422f0847e7~mv2.jpg/v1/fill/w_640,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_auto/b21422_23a906f84cfc45d5ba8d3a422f0847e7~mv2.jpg',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    "No se pudo cargar la imagen");
+                              },
                             )
                           ],
-                                             ),
-                       ),
-                         const SizedBox(width: 100),
-              
-                         GestureDetector(
-                         onTap: () {
-                         
-                          Navigator.push(context, MaterialPageRoute(builder:(context) => const SynchronizationScreen(),));
-              
-                         },
-                         child: Column(
+                        ),
+                      ),
+                      const SizedBox(width: 100),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const SynchronizationScreen(),
+                              ));
+                        },
+                        child: Column(
                           children: [
                             const Text("Sincronizar"),
-                            Image.network('https://leadersadvantage.us/wp-content/uploads/Leaders-Advantage-synchronization-flow.png',
-                            width: 100,
-                            height: 100,
-                            loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
-                         
-                                  if(loadingProgress == null){
-                                    return child;
-                                  }
-                         
-                                  return CircularProgressIndicator(value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!: null,);
-                         
-                            },
-                            errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace){
-                         
-                              return const Text("No se pudo cargar la imagen"); 
-                            },
+                            Image.network(
+                              'https://leadersadvantage.us/wp-content/uploads/Leaders-Advantage-synchronization-flow.png',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    "No se pudo cargar la imagen");
+                              },
                             )
                           ],
-                                             ),
-                       ),
-                 
+                        ),
+                      ),
                     ],
-                    
-                    
-                    
                   ),
-              
-                      
-              
-                  
-              
                 ],
               ),
-            )
-            
-            ),
-                  bottomNavigationBar: const NavBarBottom(),
-      
+            )),
+        bottomNavigationBar: const NavBarBottom(),
       );
-      
     } else {
       // authenticated.logout();
       // return const Configuracion();

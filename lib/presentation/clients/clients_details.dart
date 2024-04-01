@@ -29,15 +29,42 @@ class ClientDetailsScreen extends StatelessWidget {
           scrollDirection: Axis.vertical,
           child: Form(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                
                 const SizedBox( height: 25,),
-          
-                _buildTextFormField('Nombre', client['bp_name'].toString()),
-                _buildTextFormField('Ruc', client['ruc'].toString()),
-                _buildTextFormField('Correo', '${client['email'] != '{@nil: true}' ? client['email'] : 'Sin registro' }'),
-                _buildTextFormField('Telefono', client['phone'] != '{@nil: true}' ? client['phone'].toString() : 'Sin registro'),
-                _buildTextFormField('Grupo', client['group_bp_name'].toString()),
+                  Container(
+                      width: 300,
+                      color: Colors.blue,
+                      child: const Text(
+                        "Datos Personales",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                 const SizedBox(height: 10,),
+                _buildTextFormField('Nombre', client['bp_name'].toString(), 1),
+                _buildTextFormField('Ruc', client['ruc'].toString(), 1),
+                _buildTextFormField('Correo', '${client['email'] != '{@nil: true}' ? client['email'] : 'Sin registro' }', 1),
+                _buildTextFormField('Telefono', client['phone'] != '{@nil: true}' ? client['phone'].toString() : 'Sin registro', 1),
+                _buildTextFormField('Grupo', client['group_bp_name'].toString(), 1),
+                _buildTextFormField('Tipo de cliente', client['person_type_name'], 1),
+                _buildTextFormField('Tipo de contribuyente', client['tax_payer_type_name'], 1),
+                _buildTextFormField('Tipo de impuesto', client['tax_id_type_name'], 1),
+                const SizedBox(height: 10,),
+                Container(
+                      width: 300,
+                      color: Colors.blue,
+                      child: const Text(
+                        "Direccion Fiscal",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox( height: 10,),
+                _buildTextFormField('Dirección', client['address'].toString(), 2),
+                _buildTextFormField('Pais', client['country'], 1),
+                _buildTextFormField('Ciudad', client['city'], 1),
                 const SizedBox(height: 29,),
                SizedBox(
                 
@@ -81,7 +108,7 @@ class ClientDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTextFormField(String label, String value) {
+  Widget _buildTextFormField(String label, String value, int maxLin) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -92,6 +119,7 @@ class ClientDetailsScreen extends StatelessWidget {
           border: const OutlineInputBorder(),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         ),
+        maxLines: maxLin,
       ),
     );
   }
