@@ -18,16 +18,16 @@ class _EditClientScreenState extends State<EditClientScreen> {
   final _rucController = TextEditingController();
   final _correoController = TextEditingController();
   final _telefonoController = TextEditingController();
-  final  _direccionController = TextEditingController();
-  final  _cityController = TextEditingController(); 
-  final  _codePostalController = TextEditingController();
- 
- //List
+  final _direccionController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _codePostalController = TextEditingController();
+
+  //List
   List<Map<String, dynamic>> _countryList = [];
   List<Map<String, dynamic>> _groupList = [];
   List<Map<String, dynamic>> _taxTypeList = [];
   List<Map<String, dynamic>> _taxPayerList = [];
-  List<Map<String, dynamic>> _typePersonList =[];
+  List<Map<String, dynamic>> _typePersonList = [];
 
   // SELECTED
   int _selectedCountryIndex = 0;
@@ -43,9 +43,7 @@ class _EditClientScreenState extends State<EditClientScreen> {
   String _taxPayerText = '';
   String _typePersonText = '';
 
-
   loadList() async {
-   
     List<Map<String, dynamic>> getCountryGroup = await listarCountryGroup();
     List<Map<String, dynamic>> getGroupTercero = await listarGroupTercero();
     List<Map<String, dynamic>> getTaxType = await listarTaxType();
@@ -81,28 +79,31 @@ class _EditClientScreenState extends State<EditClientScreen> {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
     // Initialize controllers with existing product details
+    print("this client ${widget.client}");
     loadList();
+    _seletectedTypePerson = widget.client['lve_person_type_id'];
+    _taxTypeText = widget.client['person_type_name'];
+    _selectedTaxPayer = widget.client['lco_tax_payer_typeid'];
+    _taxPayerText = widget.client['tax_payer_type_name'];
     _selectedGroupIndex = widget.client['c_bp_group_id'];
+    _groupText = widget.client['group_bp_name'];
     _selectedTaxType = widget.client['lco_tax_id_typeid'];
+    _taxTypeText = widget.client['tax_id_type_name'];
     _nameController.text = widget.client['bp_name'].toString();
     _rucController.text = widget.client['ruc'].toString();
     _correoController.text = widget.client['email'].toString();
     _telefonoController.text = widget.client['phone'].toString();
-
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-
-       FocusScope.of(context).requestFocus(FocusNode());
-
+        FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Scaffold(
         appBar: AppBar(
@@ -115,7 +116,8 @@ class _EditClientScreenState extends State<EditClientScreen> {
             ),
           ),
           backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-          iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
+          iconTheme:
+              const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
         ),
         backgroundColor: const Color.fromARGB(255, 236, 247, 255),
         body: Padding(
@@ -131,69 +133,116 @@ class _EditClientScreenState extends State<EditClientScreen> {
                   _buildTextFormField('Ruc', _rucController),
                   _buildTextFormField('Correo', _correoController),
                   _buildTextFormField('Telefono', _telefonoController),
-                  CustomDropdownButtonFormField(identifier: 'groupBp', selectedIndex: _selectedGroupIndex, dataList: _groupList, text: _groupText, onSelected: (newValue, groupText) {
+                  CustomDropdownButtonFormField(
+                    identifier: 'groupBp',
+                    selectedIndex: _selectedGroupIndex,
+                    dataList: _groupList,
+                    text: _groupText,
+                    onSelected: (newValue, groupText) {
                       setState(() {
                         _selectedGroupIndex = newValue ?? 0;
                         _groupText = groupText;
                       });
-                  },),
-                  const SizedBox(height: 10,),
-                  CustomDropdownButtonFormField(identifier: 'taxType', selectedIndex: _selectedTaxType, dataList: _taxTypeList, text: _taxTypeText, onSelected: (newValue, taxTypeText) {
-
+                    },
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  CustomDropdownButtonFormField(
+                    identifier: 'taxType',
+                    selectedIndex: _selectedTaxType,
+                    dataList: _taxTypeList,
+                    text: _taxTypeText,
+                    onSelected: (newValue, taxTypeText) {
                       setState(() {
                         _selectedTaxType = newValue ?? 0;
                         _taxTypeText = taxTypeText;
                       });
-
-                  },)
-
-              
+                    },
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  CustomDropdownButtonFormField(
+                    identifier: 'taxPayer',
+                    selectedIndex: _selectedTaxPayer,
+                    dataList: _taxPayerList,
+                    text: _taxPayerText,
+                    onSelected: (newValue, taxPayerText) {
+                      setState(() {
+                        _selectedTaxPayer = newValue ?? 0;
+                        _taxPayerText = taxPayerText;
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  CustomDropdownButtonFormField(
+                    identifier: 'typePerson',
+                    selectedIndex: _seletectedTypePerson,
+                    dataList: _typePersonList,
+                    text: _typePersonText,
+                    onSelected: (newValue, tyPersonText) {
+                      setState(() {
+                        _seletectedTypePerson = newValue ?? 0;
+                        _typePersonText = tyPersonText;
+                      });
+                    },
+                  )
                 ],
-
               ),
             ),
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async{
-          String newName = _nameController.text;
-          dynamic newRuc = _rucController.text;
-          String newCorreo = _correoController.text;
-          dynamic newTelefono = _telefonoController.text;
-          String newGrupo = _groupText;
-          String taxType = _taxTypeText;
+          onPressed: () async {
+            String newName = _nameController.text;
+            dynamic newRuc = _rucController.text;
+            String newCorreo = _correoController.text;
+            dynamic newTelefono = _telefonoController.text;
+            String newGrupo = _groupText;
+            String taxType = _taxTypeText;
+            String taxPayer = _taxPayerText;
+            String personType = _typePersonText;
 
-          // selected 
+            // selected
 
-          int selectedGroupId = _selectedGroupIndex;
-          int selectedTaxId = _selectedTaxType;
-    // Crear un mapa con los datos actualizados del producto
-    Map<String, dynamic> updatedClient = {
-      'id': widget.client['id'], // Asegúrate de incluir el ID del producto
-      'bp_name': newName,
-      'ruc': newRuc,
-      'email': newCorreo,
-      'phone': newTelefono,
-      'c_bp_group_id': selectedGroupId,
-      'group_bp_name': newGrupo,
-      'lco_tax_id_typeid' : selectedTaxId,
-      'tax_id_type_name': taxType,
-    };
+            int selectedGroupId = _selectedGroupIndex;
+            int selectedTaxId = _selectedTaxType;
+            int selectedTaxPayerId = _selectedTaxPayer;
+            int selectedPersonType = _seletectedTypePerson;
+            // Crear un mapa con los datos actualizados del producto
+            Map<String, dynamic> updatedClient = {
+              'id': widget
+                  .client['id'], // Asegúrate de incluir el ID del producto
+              'bp_name': newName,
+              'ruc': newRuc,
+              'email': newCorreo,
+              'phone': newTelefono,
+              'c_bp_group_id': selectedGroupId,
+              'group_bp_name': newGrupo,
+              'lco_tax_id_typeid': selectedTaxId,
+              'tax_id_type_name': taxType,
+              'lco_tax_payer_typeid': selectedTaxPayerId,
+              'tax_payer_type_name': taxPayer,
+              'lve_person_type_id': selectedPersonType,
+              'person_type_name': selectedPersonType
+            };
 
-    // Actualizar el producto en la base de datos
-      await updateClient(updatedClient);
-   
+            // Actualizar el producto en la base de datos
+            await updateClient(updatedClient);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cliente actualizado satisfactoriamente'),
-          duration: Duration(seconds: 2), 
-          backgroundColor: Colors.green,
-        ),
-      );
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Cliente actualizado satisfactoriamente'),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.green,
+              ),
+            );
 
-    // Cerrar la pantalla de edición después de actualizar el producto
-    Navigator.pop(context);
+            // Cerrar la pantalla de edición después de actualizar el producto
+            Navigator.pop(context);
           },
           backgroundColor: Colors.blue, // Color del botón
           child: const Icon(Icons.save),
@@ -210,7 +259,8 @@ class _EditClientScreenState extends State<EditClientScreen> {
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         ),
       ),
     );
