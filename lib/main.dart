@@ -3,6 +3,7 @@ import 'package:femovil/presentation/perfil/perfil.dart';
 import 'package:femovil/presentation/products/products_screen.dart';
 import 'package:femovil/presentation/screen/configuracion/config_screen.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
+import 'package:femovil/presentation/screen/informacion/informacion.dart';
 import 'package:femovil/presentation/screen/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -64,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         '/perfil':(context) =>  const Perfil(),
         '/products':(context) =>  const Products(),
 
-        '/informacion':(context) =>  const Perfil(),
+        '/informacion':(context) =>  const Informacion(),
       },
     );
   }

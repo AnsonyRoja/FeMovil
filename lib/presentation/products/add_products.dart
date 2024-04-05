@@ -381,6 +381,7 @@ class _AddProductFormState extends State<AddProductForm> {
         umName: uM,
         productGroupId: prodructGroupId,
         produtGroupName: productGroupName,
+        priceListSales: 0
       );
 
     // Llama a un método para guardar el producto en Sqflite

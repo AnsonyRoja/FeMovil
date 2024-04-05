@@ -77,19 +77,37 @@ Future<void> insertTaxData() async {
       // Insertar la orden de venta en la tabla 'orden_venta'
       int orderId = await db.insert('orden_venta', {
         'cliente_id': order['cliente_id'],
-        'numero_referencia': order['numero_referencia'],
+        'documentno': order['documentno'],
         'fecha': order['fecha'],
         'descripcion': order['descripcion'],
         'monto': order['monto'],
         'saldo_neto': order['saldo_neto'],
+        'c_bpartner_id': order['c_bpartner_id'],
+        'c_bpartner_location_id': order['c_bpartner_location_id'],
+        'c_doctypetarget_id': order['c_doctypetarget_id'],
+        'ad_client_id': order['ad_client_id'],
+        'ad_org_id':order['ad_org_id'],
+        'm_warehouse_id': order['m_warehouse_id'],
+        'paymentrule' : order['paymentrule'],
+        'date_ordered':order['date_ordered'],
+        'salesrep_id': order['salesrep_id'],
+        'usuario_id': order['usuario_id'],
+        'status_sincronized': order['status_sincronized'],
       });
 
       // Recorrer la lista de productos y agregarlos a la tabla de unión 'orden_venta_producto'
       for (Map<String, dynamic> product in order['productos']) {
-        await db.insert('orden_venta_producto', {
+        await db.insert('orden_venta_lines', {
           'orden_venta_id': orderId,
           'producto_id': product['id'],
-          'cantidad': product['quantity'], // Agrega la cantidad del producto si es necesario
+          'qty_entered': product['quantity'],
+          'price_entered': product['price'],
+          'price_actual': product['price'],
+          'm_product_id': product['m_product_id'],
+          'ad_client_id': order['ad_client_id'],
+          'ad_org_id': order['ad_org_id'],
+          'c_order_id': order['c_order_id']
+
         });
 
         // Actualizar la cantidad disponible del producto en la tabla 'products'
@@ -173,3 +191,13 @@ Future<void> insertTaxData() async {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     }
+
+
+ Future<void> insertUser(Map<String, dynamic> user) async {
+    final db = await DatabaseHelper.instance.database;
+    await db?.insert(
+      'usuarios',
+      user,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }

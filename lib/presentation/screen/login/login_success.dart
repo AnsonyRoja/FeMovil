@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:femovil/config/get_users.dart';
+import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/database/insert_database.dart';
 import 'package:path_provider/path_provider.dart';
 
 class AuthenticationService {
   bool isAuthenticated = false; // Inicialmente, el usuario no está autenticado.
 
   Future login({required String username, required String password}) async {
+     dynamic response;
     try {
       final info = await getApplicationSupportDirectory();
       final String filePath = '${info.path}/.login.json';
@@ -18,7 +21,9 @@ class AuthenticationService {
           const Duration(seconds: 2)); // Simulación de tiempo de espera.
 
       // Configurar el cuerpo de la solicitud en formato JSON
-      dynamic response = await getUsers(username, password);
+        response = await getUsers(username, password);
+
+
 
       if (response.statusCode == 200) {
         // La solicitud fue exitosa, puedes procesar la respuesta aquí.
@@ -46,6 +51,24 @@ class AuthenticationService {
           final String newContent = json.encode(jsonData);
           await configFile.writeAsString(newContent);
 
+    //  name TEXT,
+    //         password INTEGER,
+    //         ad_user_id TEXT,
+    //         email TEXT,
+    //         phone TEXT
+
+          Map<String, dynamic>  user = {
+            "name": username,
+            "password": password,
+            "ad_user_id": windowTabData['DataSet']['DataRow']['field'][0]['val'],
+            "email": windowTabData['DataSet']['DataRow']['field'][2]['val'],
+            "phone": windowTabData['DataSet']['DataRow']['field'][3]['val']
+
+          };
+
+         await  insertUser(user);
+
+
           return true; // Inicio de sesión exitoso.
         } else {
           isAuthenticated = false;
@@ -63,10 +86,37 @@ class AuthenticationService {
       } else {
         // La solicitud falló con un código de estado diferente de 200.
         print('Error en la solicitud: ${response.statusCode}');
+
         return "No se encontro datos de registros de usuario";
       }
     } catch (e) {
       print("este es el error de login $e");
+      response = await getUserByLogin(username, password);
+      if (response is! Map<String, dynamic>) {
+      // No se pudo obtener una respuesta válida ni de la red ni de la base de datos local
+      return "hay problemas con el internet";
+    }
+
+     if (response['name'] == username && response['password'] == password) {
+      // Usuario autenticado
+          final info = await getApplicationSupportDirectory();
+       final String filePath = '${info.path}/.login.json';
+       final File configFile = File(filePath);
+        final Map<String, dynamic> jsonData = {
+            "user": username,
+            "password": password,
+            "auth": true,
+          }; // Usuario o contraseña incorrectos.
+
+          final String newContent = json.encode(jsonData);
+          await configFile.writeAsString(newContent);
+      isAuthenticated = true;
+
+      // Resto del código...
+      return true;
+     } 
+  
+
       print(
           'Error en la solicitud: ${e.toString().contains("Cannot open file")}');
       if (e.toString().contains('SocketException') ||

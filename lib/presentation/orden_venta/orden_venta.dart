@@ -1,16 +1,27 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:femovil/config/getPosProperties.dart';
+import 'package:femovil/config/get_users.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/insert_database.dart';
 import 'package:femovil/presentation/orden_venta/product_selection.dart';
+import 'package:femovil/presentation/perfil/perfil_http.dart';
+import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart'; // Importa la librería de formateo de fechas
 
 
 class OrdenDeVentaScreen extends StatefulWidget {
   final int clientId;
   final String clientName;
- 
+  final int cBPartnerId; 
+  final int cBPartnerLocationId;
 
-  const OrdenDeVentaScreen({super.key, required this.clientId, required this.clientName});
+  const OrdenDeVentaScreen({super.key, required this.clientId, required this.clientName, required this.cBPartnerId, required this.cBPartnerLocationId});
 
   @override
   _OrdenDeVentaScreenState createState() => _OrdenDeVentaScreenState();
@@ -19,6 +30,7 @@ class OrdenDeVentaScreen extends StatefulWidget {
 class _OrdenDeVentaScreenState extends State<OrdenDeVentaScreen> {
   TextEditingController numeroReferenciaController = TextEditingController();
   TextEditingController fechaController = TextEditingController();
+  TextEditingController fechaIdempiereController = TextEditingController();
   TextEditingController descripcionController = TextEditingController();
   TextEditingController montoController = TextEditingController();
   TextEditingController saldoNetoController = TextEditingController();
@@ -27,6 +39,7 @@ class _OrdenDeVentaScreenState extends State<OrdenDeVentaScreen> {
    DateTime selectedDate = DateTime.now();
   double? saldoNeto;
   double? totalImpuesto;
+  Map<String, dynamic> infoUserForOrder = {};
 
      double calcularMontoTotal() {
     double total = 0;
@@ -48,8 +61,9 @@ class _OrdenDeVentaScreenState extends State<OrdenDeVentaScreen> {
   }
 
   double calcularSaldoNetoProducto(cantidadProducts, price){
+      
 
-        double multi = cantidadProducts * price;
+        double multi = (cantidadProducts as num).toDouble() *  (price as num).toDouble();
 
         
           saldoNeto = multi;
@@ -111,7 +125,7 @@ void _addOrUpdateProduct(List<Map<String, dynamic>> products) {
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // Cerrar el diálogo
+                    Navigator.pop(context); 
                   },
                   child: const Text('OK'),
                 ),
@@ -137,19 +151,63 @@ void _removeProduct(int index) {
   });
 }
 
+ initGetUser()async{
+    final info = await getApplicationSupportDirectory();
+  print("esta es la ruta ${info.path}");
+
+  final String filePathEnv = '${info.path}/.env';
+  final File archivo = File(filePathEnv);
+  String contenidoActual = await archivo.readAsString();
+
+    Map<String, dynamic> infoLogin =  await getLogin();
+     Map<String, dynamic> jsonData = jsonDecode(contenidoActual);
+
+
+  var orgId = jsonData["OrgID"];
+  var clientId = jsonData["ClientID"];
+  var wareHouseId = jsonData["WarehouseID"];
+
+    print('Esto es infologin $infoLogin');
+
+    // Map<String, dynamic> getUser = await getUsers(username, password);
+
+    setState(() {
+     infoUserForOrder = {'orgid': orgId, 'clientid': clientId, 'warehouseid': wareHouseId, 'userId': infoLogin['userId'] } ;
+    });
+
+print('infouserFororder $infoUserForOrder');
+
+}
+
+  initV() async {
+    if (variablesG.isEmpty) {
+       await getPosPropertiesInit();
+      List<Map<String, dynamic>> response = await getPosPropertiesV();
+      setState(() { 
+        variablesG = response;
+      });
+
+    }
+  }
+
+
 @override
-void initState() {
-   
-    fechaController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+void initState()  {
+     
+      initV();
+      initGetUser();
+      print('infouser $variablesG');
+     fechaController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
      print("Esto es el id ${widget.clientId}");
      print("Esto es el name ${widget.clientName}");
-
+     fechaIdempiereController.text = DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedDate);
+  
     super.initState();
   
 }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Orden de Venta'),
@@ -161,8 +219,9 @@ void initState() {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
+                readOnly: true,
                 controller: numeroReferenciaController,
-                decoration: const InputDecoration(labelText: 'Número de Referencia'),
+                decoration: const InputDecoration(labelText: 'Número de Documento'),
               ),
              TextField(
                 controller: fechaController,
@@ -185,15 +244,15 @@ void initState() {
                 decoration: const InputDecoration(labelText: 'Descripción'),
                 onChanged: (value) {
         
-                      if (value.trim().isEmpty) {
-                        setState(() {
-                          _validateDescription = true;
-                        });
-                      } else {
-                        setState(() {
-                          _validateDescription = false;
-                        });
-                      }
+                      // if (value.trim().isEmpty) {
+                      //   setState(() {
+                      //     _validateDescription = true;
+                      //   });
+                      // } else {
+                      //   setState(() {
+                      //     _validateDescription = false;
+                      //   });
+                      // }
                 },
               ),
               const SizedBox(height: 20),
@@ -201,17 +260,31 @@ void initState() {
                 'Productos:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Container(
-                height: 100,
+            Container(
+                height: 300,
                 child: ListView.builder(
                   itemCount: selectedProducts.length,
                   itemBuilder: (context, index) {
                     final product = selectedProducts[index];
-                    return ListTile(
-                      title: Text(product['name']),
-                      subtitle: Column(
+                    print('Esto es products $product');
+                    return Container(
+                      padding: const EdgeInsets.all(10),
+                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            product['name'],
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -219,32 +292,50 @@ void initState() {
                               Text('Precio: ${product['price']}'),
                             ],
                           ),
+                          const SizedBox(height: 4),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Impuesto: ${product['impuesto']}%'),
-                              Text('Monto Impuesto: ${calcularMontoImpuesto(product['impuesto'],product['quantity']*product['price'])}')
+                              Text(
+                                'Monto Impuesto: ${calcularMontoImpuesto(product['impuesto'], product['quantity'] * product['price'])}',
+                                style: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
                             ],
                           ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('Saldo Neto ${ calcularSaldoNetoProducto(product['quantity'], product['price']) }'),
-                                  Text('Monto Total ${ saldoNeto! + totalImpuesto! }'),
-
-                                ],
-                              ) 
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Saldo Neto: ${calcularSaldoNetoProducto(product['quantity'], product['price']).toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: Colors.green,
+                                ),
+                              ),
+                              Text(
+                                'Monto Total: ${(calcularSaldoNetoProducto(product['quantity'], product['price']) + calcularMontoImpuesto(product['impuesto'], product['quantity'] * product['price'])).toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() {
+                                  _removeProduct(index);
+                                });
+                              },
+                            ),
+                          ),
                         ],
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                        
-                          setState(() {
-                                _removeProduct(index);
-                        
-                          });
-                        },
                       ),
                     );
                   },
@@ -296,17 +387,22 @@ void initState() {
                   // Aquí puedes realizar la transacción y guardar la orden de venta en la base de datos
                   // con los datos proporcionados
                   // Por ejemplo:
+
+
+                          if(infoUserForOrder.isNotEmpty) {
+                            
+  
+
+                            //  if (descripcionController.text.isEmpty) {
+                            //           setState(() {
+                            //             _validateDescription = true; // Marcar como campo inválido si está vacío
+                            //           });
         
-                             if (descripcionController.text.isEmpty) {
-                                      setState(() {
-                                        _validateDescription = true; // Marcar como campo inválido si está vacío
-                                      });
-        
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:  Text('Por favor ingrese una descripción.')));
+                            //                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:  Text('Por favor ingrese una descripción.')));
         
         
-                                      return; // Detener el proceso de agregar la orden si el campo está vacío
-                                }
+                            //           return; // Detener el proceso de agregar la orden si el campo está vacío
+                            //     }
         
         
         
@@ -332,19 +428,32 @@ void initState() {
         
                             return;
                           }
+                  
+
                   final order = {
                     'cliente_id': widget.clientId,
-                    'numero_referencia': numeroReferenciaController.text,
+                    'documentno': numeroReferenciaController.text,
                     'fecha': fechaController.text,
                     'descripcion': descripcionController.text,
                     'monto': double.parse(montoController.text.substring(1)),
                     'saldo_neto': double.parse(saldoNetoController.text.substring(1)),
-
-                    'productos': selectedProducts, // Esta lista contendría los detalles de los productos seleccionados
+                    'productos': selectedProducts,
+                    'c_bpartner_id': widget.cBPartnerId,
+                    'c_bpartner_location_id':widget.cBPartnerLocationId,
+                    'c_doctypetarget_id': variablesG[0]['c_doc_type_order_id'],
+                    'ad_client_id':infoUserForOrder['clientid'],
+                    'ad_org_id':infoUserForOrder['orgid'],
+                    'm_warehouse_id': infoUserForOrder['warehouseid'],
+                    'paymentrule': 'P',
+                    'date_ordered': fechaIdempiereController.text,
+                    'salesrep_id': infoUserForOrder['userId'],
+                    'usuario_id': infoUserForOrder['userId'],
+                    'status_sincronized': 'Borrador',
                   };
+        
                   // Luego puedes guardar la orden de venta en la base de datos o enviarla al servidor
                       insertOrder(order).then((orderId) {
-                   // Limpiar los campos después de guardar la orden
+
                             if (orderId is Map<String, dynamic> && orderId.containsKey('failure')) {
                               if ( orderId['failure'] == -1) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -376,9 +485,9 @@ void initState() {
                   });
         
                   // Notificar al usuario que la orden se ha guardado exitosamente
-        
                 
                 });
+                }
                 },
                 child: const Text('Agregar Orden'),
               ),

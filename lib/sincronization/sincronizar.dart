@@ -13,7 +13,6 @@ Future<void> syncCustomers( customersData,setState) async {
        double contador = 0;
 
 
-
       if (db != null) {
         // Itera sobre los datos de los productos recibidos
         for (Map<String, dynamic> customerData in customersData) {
@@ -195,7 +194,7 @@ Future<void> syncProducts(List<Map<String, dynamic>> productsData,setState) asyn
             categoria: productData['categoria'].toString(),
             qtySold: productData['total_sold'].toString(),
             taxId: productData['tax_cat_id'].toString(),
-            
+            priceListSales: productData['pricelistsales'],
           );
           
             contador++;

@@ -38,6 +38,7 @@ import 'package:sqflite/sqflite.dart';
     // Abre la base de datos o crea una nueva si no existe
     Database database = await openDatabase(dbPath, version: 1,
       onCreate: (Database db, int version) async {
+
         await db.execute('''
           CREATE TABLE products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,6 +58,7 @@ import 'package:sqflite/sqflite.dart';
             um_id INTEGER,
             um_name STRING,
             quantity_sold INTEGER,
+            pricelistsales INTEGER,
             FOREIGN KEY(tax_cat_id) REFERENCES tax(id)
 
           )
@@ -110,13 +112,23 @@ import 'package:sqflite/sqflite.dart';
       await db.execute('''
           CREATE TABLE orden_venta (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          cliente_id INTEGER,
-          numero_referencia TEXT,
+          c_doctypetarget_id INTEGER,
+          ad_client_id INTEGER,
+          ad_org_id INTEGER,
+          m_warehouse_id INTEGER,
+          documentno INTEGER,
+          paymentrule INTEGER,
+          date_ordered TEXT,
+          salesrep_id INTEGER,
+          c_bpartner_id INTEGER,
+          c_bpartner_location_id INTEGER,
           fecha TEXT,
           descripcion TEXT,
           monto REAL,
-          saldo_neto,
+          saldo_neto REAL,
           usuario_id INTEGER,
+          cliente_id INTEGER,
+          status_sincronized STRING,
           FOREIGN KEY (cliente_id) REFERENCES clients(id),
           FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 
@@ -125,11 +137,17 @@ import 'package:sqflite/sqflite.dart';
 
       await db.execute('''
 
-        CREATE TABLE orden_venta_producto (
+        CREATE TABLE orden_venta_lines (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             orden_venta_id INTEGER,
             producto_id INTEGER,
-            cantidad INTEGER,
+            ad_client_id INTEGER,
+            ad_org_id INTEGER,
+            c_order_id INTEGER,
+            price_entered INTEGER,
+            price_actual INTEGER,
+            m_product_id INTEGER,
+            qty_entered INTEGER,
             FOREIGN KEY (orden_venta_id) REFERENCES orden_venta(id),
             FOREIGN KEY (producto_id) REFERENCES products(id)
         )
@@ -205,6 +223,7 @@ import 'package:sqflite/sqflite.dart';
           CREATE TABLE usuarios(
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
             name TEXT,
+            password INTEGER,
             ad_user_id TEXT,
             email TEXT,
             phone TEXT
@@ -229,7 +248,8 @@ import 'package:sqflite/sqflite.dart';
             c_doctypereceipt_id INTEGER,
             city STRING,
             address1 STRING, 
-            m_pricelist_id INTEGER
+            m_pricelist_id INTEGER,
+            c_currency_id INTEGER
             )
         ''');
 

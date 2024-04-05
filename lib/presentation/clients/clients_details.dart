@@ -52,11 +52,11 @@ class ClientDetailsScreen extends StatelessWidget {
                 _buildTextFormField('Tipo de contribuyente', client['tax_payer_type_name'], 1),
                 _buildTextFormField('Tipo de impuesto', client['tax_id_type_name'], 1),
                 const SizedBox(height: 10,),
-                Container(
+               Container(
                       width: 300,
                       color: Colors.blue,
                       child: const Text(
-                        "Direccion Fiscal",
+                        "Domicilio Fiscal",
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.white),
                       ),
@@ -65,6 +65,8 @@ class ClientDetailsScreen extends StatelessWidget {
                 _buildTextFormField('Dirección', client['address'].toString(), 2),
                 _buildTextFormField('Pais', client['country'], 1),
                 _buildTextFormField('Ciudad', client['city'], 1),
+                _buildTextFormField('Codigo Postal', client['code_postal'].toString() == '{@nil=true}' ? 'Sin registro': client['code_postal'].toString() , 1),
+
                 const SizedBox(height: 29,),
                SizedBox(
                 
@@ -74,7 +76,7 @@ class ClientDetailsScreen extends StatelessWidget {
                   onPressed: () {
                     // Aquí puedes manejar la acción de agregar orden
                     // Por ejemplo, puedes navegar a una pantalla de agregar orden
-                   Navigator.push(context,MaterialPageRoute(builder: (context) => OrdenDeVentaScreen(clientId: client["id"] ,clientName: client["name"])),
+                   Navigator.push(context,MaterialPageRoute(builder: (context) => OrdenDeVentaScreen(clientId: client["id"] ,clientName: client["bp_name"], cBPartnerId: client['c_bpartner_id'], cBPartnerLocationId: client['c_bpartner_location_id'], )),
                   );
 
                   },

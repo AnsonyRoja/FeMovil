@@ -15,7 +15,7 @@ class Product {
   final String umName;
   final dynamic productGroupId;
   final String produtGroupName;
-
+  final dynamic priceListSales;
 
   Product({
     required this.codProd,
@@ -34,7 +34,7 @@ class Product {
     required this.qtySold,
     required this.productGroupId,
     required this.produtGroupName,
-
+    required this.priceListSales,
   });
 
   // Método para convertir un producto a un mapa para ser almacenado en la base de datos
@@ -56,6 +56,7 @@ class Product {
       'um_id': umId,
       'um_name':umName,
       'quantity_sold': qtySold, 
+      'pricelistsales': priceListSales
     };
   }
 
@@ -77,6 +78,7 @@ class Product {
       umId: map['um_id'],
       umName: map['um_name'],
       qtySold: map['quantity_sold'],
+      priceListSales: map['pricelistsales'],
     );
   }
 }

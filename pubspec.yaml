@@ -40,6 +40,7 @@ dependencies:
   permission_handler: ^11.3.0
   shared_preferences: ^2.2.2
   sqflite: ^2.3.2
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   flutter_lints: ^3.0.0
@@ -67,6 +68,9 @@ flutter:
     - lib/assets/foto_grandep.png
     - lib/assets/Cerrar_Sesión.png
     - lib/assets/Check.png
+    - lib/assets/FB@3x.png
+    - lib/assets/WhatsApp.png
+    - lib/assets/IG@3x.png
     # - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

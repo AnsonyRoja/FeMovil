@@ -242,7 +242,7 @@ void _showFilterOptions(BuildContext context) {
                     }
                     setState(() {
                   filteredVentas = ventas.where((venta) {
-                  final numeroReferencia = venta['numero_referencia'].toString();
+                  final numeroReferencia = venta['id'].toString();
                   final nombreCliente = venta['nombre_cliente'].toString();
                   return numeroReferencia.contains(value) || nombreCliente.contains(value);
                 }).toList();
@@ -272,7 +272,7 @@ void _showFilterOptions(BuildContext context) {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("N° ${venta['numero_referencia']}",
+                            child: Text("N° ${venta['id']}",
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -324,10 +324,10 @@ void _showFilterOptions(BuildContext context) {
                                   ),
                                   ElevatedButton(
                                       style: ButtonStyle(
-                                      backgroundColor:venta['saldo_total'] > 0 ? MaterialStateProperty.all<Color>(Colors.green) : MaterialStateProperty.all<Color>(Colors.grey),
+                                      backgroundColor:venta['saldo_total'] > 0 && venta['status_sincronized'] == 'Completado' ? MaterialStateProperty.all<Color>(Colors.green) : MaterialStateProperty.all<Color>(Colors.grey),
                                       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                                     ),
-                                    onPressed: venta['saldo_total'] > 0 ? () {
+                                    onPressed: venta['saldo_total'] > 0 && venta['status_sincronized'] == 'Completado' ? () {
                                       // Acción al presionar el botón "Cobrar"
                                         Navigator.of(context).push(
                                           MaterialPageRoute(

@@ -1,6 +1,8 @@
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/database/update_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
+import 'package:femovil/presentation/screen/ventas/idempiere/create_orden_sales.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,15 +19,37 @@ class VentasDetails extends StatefulWidget {
 
 class _VentasDetailsState extends State<VentasDetails> {
   late Future<Map<String, dynamic>> _ventaData;
+  dynamic ventasDate = [];
 
   @override
   void initState() {
     super.initState();
     _ventaData = _loadVentasForId();
+
+    _loadOrdenesConLineas();
+
   }
 
+
+   _loadOrdenesConLineas() async {
+
+     dynamic response = await obtenerOrdenesDeVentaConLineas();
+
+                setState(() {
+
+                    ventasDate = response;
+
+                });
+
+        print('Estas son las ordenes de ventas con sus respectivas lineas $response');
+        
+  }
+
+
   Future<Map<String, dynamic>> _loadVentasForId() async {
+  
     return await getOrderWithProducts(widget.ventaId);
+  
   }
 
   @override
@@ -93,7 +117,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                                      children: [
                                       const Text("N°"),
                                       const SizedBox(height: 5,),
-                                       Text(ventaData['numero_referencia'], textAlign: TextAlign.start,),
+                                       Text(ventaData['id'].toString(), textAlign: TextAlign.start,),
                                      ],
                                    ),
                                  ),
@@ -194,6 +218,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                           itemCount: productsData.length,
                           itemBuilder: (context, index) {
                             final product = productsData[index];
+                            print('Estos son los productos $product');
                             return Padding(
                               padding: const EdgeInsets.all(15.0),
                               child: Column(
@@ -203,8 +228,8 @@ class _VentasDetailsState extends State<VentasDetails> {
                                     children: [
                                         Expanded(child: Text('${product['name']}',)),
                                         const SizedBox(width: 50,),
-                                        Expanded(child: Text(product['cantidad'].toString())),
-                                        Expanded(child: Text(product['price'].toString())),
+                                        Expanded(child: Text(product['qty_entered'].toString())),
+                                        Expanded(child: Text(product['price_actual'].toString())),
                                         const SizedBox(width: 15,),
                                         Expanded(child: Text('${product['impuesto'].toString()}%'))
                                         
@@ -252,20 +277,144 @@ class _VentasDetailsState extends State<VentasDetails> {
                         ),
                       )),
                 const SizedBox(height: 10,),
+                  Container(
+                  width: screenMax,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: ventaData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                  ),
+                  child: ElevatedButton(
+                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  {
+
+                        String newValue = 'Completado';
+                        updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+
+                        setState(() {
+                          
+                        _ventaData =  _loadVentasForId();
+                        });
+
+
+                    }: null,
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: Text(
+                        'Completar',
+                        style: TextStyle(
+                          color: Colors.white, // Texto blanco para que se destaque sobre el fondo verde
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15,),
+                   Container(
+                  width: screenMax,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: ventaData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                  ),
+                  child: ElevatedButton(
+                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  {
+
+                        String newValue = 'Completado';
+                        updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+
+                        setState(() {
+                          
+                        _ventaData =  _loadVentasForId();
+                        });
+
+
+                    }: null,
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: Text(
+                        'Comp y Enviar',
+                        style: TextStyle(
+                          color: Colors.white, // Texto blanco para que se destaque sobre el fondo verde
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15,),
+                     Container(
+                  width: screenMax,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: ventaData['status_sincronized'] == 'Completado' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                  ),
+                  child: ElevatedButton(
+                    onPressed:ventaData['status_sincronized'] == 'Completado' ? ()  {
+
+                        String newValue = 'Enviado';
+                        updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+                        createOrdenSalesIdempiere(ventasDate);
+
+                        setState(() {
+                          
+                        _ventaData =  _loadVentasForId();
+                        });
+
+
+                    }: null,
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: Text(
+                        'Enviar',
+                        style: TextStyle(
+                          color: Colors.white, // Texto blanco para que se destaque sobre el fondo verde
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15,),
                 Container(
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: widget.saldoTotal > 0 ? Colors.green: Colors.grey, // Color verde para el fondo del botón
+                    color: widget.saldoTotal > 0 && ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Enviado' ? Colors.green: Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:widget.saldoTotal > 0 ? () {
+                    onPressed:widget.saldoTotal > 0  && ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Enviado' ? () {
 
-                        Navigator.of(context).push(
-                         MaterialPageRoute(
-                            builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId),
-                          ),
-                         );
+                        // Navigator.of(context).push(
+                        //  MaterialPageRoute(
+                        //     builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId),
+                        //   ),
+                        //  );
+                              print('Estas son las ventas dates $ventasDate');
+                                    createOrdenSalesIdempiere(ventasDate);
+
 
                     }: null,
                     style: ButtonStyle(

@@ -1,4 +1,3 @@
-import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/list_database.dart';
 import 'package:femovil/database/update_database.dart';
 import 'package:femovil/presentation/clients/select_customer.dart';
@@ -84,19 +83,25 @@ class _EditClientScreenState extends State<EditClientScreen> {
     super.initState();
     // Initialize controllers with existing product details
     print("this client ${widget.client}");
+    
     loadList();
+    _selectedCountryIndex = widget.client['c_country_id'];
+    _countryText = widget.client['country'];
     _seletectedTypePerson = widget.client['lve_person_type_id'];
-    _taxTypeText = widget.client['person_type_name'];
+    _typePersonText = widget.client['person_type_name'].toString();
     _selectedTaxPayer = widget.client['lco_tax_payer_typeid'];
-    _taxPayerText = widget.client['tax_payer_type_name'];
+    _taxPayerText = widget.client['tax_payer_type_name'].toString();
     _selectedGroupIndex = widget.client['c_bp_group_id'];
-    _groupText = widget.client['group_bp_name'];
+    _groupText = widget.client['group_bp_name'].toString();
     _selectedTaxType = widget.client['lco_tax_id_typeid'];
-    _taxTypeText = widget.client['tax_id_type_name'];
+    _taxTypeText = widget.client['tax_id_type_name'].toString();
     _nameController.text = widget.client['bp_name'].toString();
     _rucController.text = widget.client['ruc'].toString();
-    _correoController.text = widget.client['email'].toString();
-    _telefonoController.text = widget.client['phone'].toString();
+    _correoController.text = widget.client['email'].toString() == '{@nil: true}' ? 'Sin registro' : widget.client['email'].toString();
+    _telefonoController.text = widget.client['phone'].toString() == '{@nil: true}' ? 'Sin registro' : widget.client['phone'].toString();
+    _direccionController.text = widget.client['address'].toString();
+    _cityController.text = widget.client['city'].toString();
+    _codePostalController.text = widget.client['code_postal'].toString();
   }
 
   @override
@@ -126,13 +131,23 @@ class _EditClientScreenState extends State<EditClientScreen> {
             scrollDirection: Axis.vertical,
             child: Form(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 25),
-                  _buildTextFormField('Nombre', _nameController),
-                  _buildTextFormField('Ruc', _rucController),
-                  _buildTextFormField('Correo', _correoController),
-                  _buildTextFormField('Telefono', _telefonoController),
+                  Container(
+                      width: 300,
+                      color: Colors.blue,
+                      child: const Text(
+                        "Datos Personales",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                  _buildTextFormField('Nombre', _nameController,1),
+                  _buildTextFormField('Ruc', _rucController, 1),
+                  _buildTextFormField('Correo', _correoController, 1),
+                  _buildTextFormField('Telefono', _telefonoController, 1),
                   CustomDropdownButtonFormField(
                     identifier: 'groupBp',
                     selectedIndex: _selectedGroupIndex,
@@ -189,7 +204,30 @@ class _EditClientScreenState extends State<EditClientScreen> {
                         _typePersonText = tyPersonText;
                       });
                     },
-                  )
+                  ),
+                  const SizedBox(height: 10,),
+                     Container(
+                      width: 300,
+                      color: Colors.blue,
+                      child: const Text(
+                        "Domicilio Fiscal",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 10,),
+                    CustomDropdownButtonFormField(identifier: 'selectCountry', selectedIndex: _selectedCountryIndex, dataList: _countryList, text: _countryText, onSelected: (newValue, countryTex) {
+                        setState(() {
+                          _selectedCountryIndex = newValue ?? 0;
+                          _countryText = countryTex;
+                        });
+                    },),
+                  const SizedBox(height: 10,),
+                _buildTextFormField('Dirección', _direccionController, 2),
+                _buildTextFormField('Ciudad', _cityController, 1),
+                _buildTextFormField('Codigo Postal', _codePostalController, 1),
+
+
                 ],
               ),
             ),
@@ -205,6 +243,8 @@ class _EditClientScreenState extends State<EditClientScreen> {
             String taxType = _taxTypeText;
             String taxPayer = _taxPayerText;
             String personType = _typePersonText;
+            String newDireccion = _direccionController.text;
+            String newCity = _cityController.text;
 
             // selected
 
@@ -227,7 +267,9 @@ class _EditClientScreenState extends State<EditClientScreen> {
               'lco_tax_payer_typeid': selectedTaxPayerId,
               'tax_payer_type_name': taxPayer,
               'lve_person_type_id': selectedPersonType,
-              'person_type_name': selectedPersonType
+              'person_type_name': personType,
+              'address': newDireccion,
+              'city':newCity,
             };
 
             // Actualizar el producto en la base de datos
@@ -251,7 +293,7 @@ class _EditClientScreenState extends State<EditClientScreen> {
     );
   }
 
-  Widget _buildTextFormField(String label, TextEditingController controller) {
+  Widget _buildTextFormField(String label, TextEditingController controller, int maxLin) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -262,6 +304,7 @@ class _EditClientScreenState extends State<EditClientScreen> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         ),
+        maxLines: maxLin ,
       ),
     );
   }

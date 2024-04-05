@@ -36,7 +36,7 @@ try {
       'city': row['field'][16]['val'],
       'region': row['field'][17]['val'],
       'country': row['field'][18]['val'],
-      'codigo_postal': row['field'][19]['val'],
+      'code_postal': row['field'][19]['val'],
       'c_city_id': row['field'][20]['val'],
       'c_region_id': row['field'][21]['val'],
       'c_country_id': row['field'][22]['val'],

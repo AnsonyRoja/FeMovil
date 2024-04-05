@@ -17,3 +17,25 @@ cada producto tiene propio impuesto es decir cada linea de la orden
 
 5) se aplicaran diferentes tipos de impuesto dependiendo del check isWithHolding, Si esta en N se puede utilizar
 para ordenes y facturas, y si esta en Y solo sera para retenciones
+
+
+6) Para identificar el tipo de documento se creara otra variable en las variables globales que nos ayudara
+identificar el tipo de documento
+
+7) para finalizar la sincronizacion va a tener una tabla donde cargare el porcentaje que se guardo entre 
+los productos que hay clientes, y otros modulos sincronizados con idempiere
+esto nos permitira mostrarle al usuario en la vista el porcentaje por modulo sincronizado 
+
+
+8) se agregara un campo a la tabla de usuarios en idempiere para asi al consumir el endpoind identificar 
+si ese usuario puede ver ciertos modulos ya predeterminados 
+
+9) Agregar a productos un stock minimo para asi se vean mas afectadas las ventas emergentes
+
+
+10) se habilitara el boton de cobrar solo si la orden fue completada 
+
+
+11) Se agregara otra funcionalidad al sincronizar las ordenes, es decir puede sincronizarlo directamente
+desde la orden o puede hacerlo masivamente desde el modulo de Sincronizacion
+

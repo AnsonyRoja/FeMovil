@@ -40,6 +40,7 @@ try {
       'um_id':row['field'][12]['val'],
       'um_name':row['field'][14]['val'],
       'quantity_sold': 0,
+      'pricelistsales': row['field'][17]['val'],
      // Asegúrate de convertir la cantidad a un tipo numérico adecuado
       // Añade otros campos que necesites sincronizar
     };

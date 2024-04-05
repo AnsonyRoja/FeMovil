@@ -55,7 +55,9 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
               itemCount: filteredProducts.length,
               itemBuilder: (context, index) {
                 final productName = filteredProducts[index]['name'];
-                final productPrice = filteredProducts[index]['price'];
+                final productPrice =  filteredProducts[index]['pricelistsales'] == '{@nil=true}' ? 0 :filteredProducts[index]['pricelistsales'] ;
+                final mProductId =  filteredProducts[index]['m_product_id'];
+
                 final isSelected = selectedProducts.any((product) => product['name'] == productName);
                 final quantity = productQuantities[productName] ?? 0; // Obtener la cantidad seleccionada o 0 si no hay ninguna
                 
@@ -64,10 +66,9 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Precio: \$${productPrice.toStringAsFixed(2)}'),
+                      Text('Precio: \$${productPrice != '{@nil=true}' ? productPrice.toStringAsFixed(2) : 0} '),
                       Text('Cantidad disponible: ${filteredProducts[index]['quantity']}'),
                       Text('Cantidad Seleccionada: $quantity'),
-                      
                     ],
                   ),
                   trailing: isSelected
@@ -84,10 +85,11 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
                       final selectedProduct = {
                         "id": filteredProducts[index]['id'], // Agregar el ID del producto seleccionado
                         "name": productName,
-                        "quantity_avaible" : filteredProducts[index]['quantity'],
+                        "quantity_avaible" :  filteredProducts[index]['quantity'],
                         "quantity": newQuantity, // Usar la nueva cantidad calculada
-                        "price": productPrice,
-                        "impuesto": filteredProducts[index]['tax_rate']
+                        "price":  productPrice,
+                        "impuesto": filteredProducts[index]['tax_rate'],
+                        'm_product_id': mProductId
                       };
 
                       setState(() {

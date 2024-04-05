@@ -89,7 +89,7 @@ class CustomDropdownButtonFormField extends StatelessWidget {
                       value: selectedIndex,
                       items: dataList
                           .where((taxPayer) =>
-                              taxPayer['lco_tax_payer_typeid'] is int )
+                              taxPayer['lco_tax_payer_typeid'] is int && taxPayer['tax_payer_type_name'] != '' )
                           .map<DropdownMenuItem<int>>((taxPayer) {
                         return DropdownMenuItem<int>(
                           value: taxPayer['lco_tax_payer_typeid'],
@@ -125,7 +125,7 @@ class CustomDropdownButtonFormField extends StatelessWidget {
                       value: selectedIndex,
                       items: dataList
                           .where((typePerson) =>
-                              typePerson['lve_person_type_id'] is int)
+                              typePerson['lve_person_type_id'] is int && typePerson['person_type_name'] != '')
                           .map<DropdownMenuItem<int>>((typePerson) {
                         return DropdownMenuItem<int>(
                           value: typePerson['lve_person_type_id'],
@@ -161,7 +161,7 @@ class CustomDropdownButtonFormField extends StatelessWidget {
         return DropdownButtonFormField<int>(
                       value: selectedIndex,
                       items:dataList
-                          .where((country) => country['c_country_id'] is int)
+                          .where((country) => country['c_country_id'] is int && country['country'] != '' )
                           .map<DropdownMenuItem<int>>((country) {
                         print('tax $country');
                         return DropdownMenuItem<int>(

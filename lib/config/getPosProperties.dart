@@ -72,7 +72,6 @@ getPosPropertiesInit() async {
   print('Estos son las propiedades registradas en idempiere $getPosProperties');
 
   await syncGetPosProperties(getPosProperties); // Obtener todos los productos
-  
 
   final parsedJson = jsonDecode(responseBody);
   print("esta es la respuesta $parsedJson");
@@ -106,7 +105,8 @@ Future<void> syncGetPosProperties(posPropertiesData) async {
               'c_doctypereceipt_id': posPropertieData['c_doctypereceipt_id'].toString(),
               'city': posPropertieData['city'].toString(),
               'address1':posPropertieData['address1'],
-              'm_pricelist_id': posPropertieData['m_pricelist_id']
+              'm_pricelist_id': posPropertieData['m_pricelist_id'],
+              'c_currency_id': posPropertieData['c_currency_id'],
           };
        
           // Parseo el objeto a json 

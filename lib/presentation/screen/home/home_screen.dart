@@ -39,10 +39,11 @@ class HomeState extends State<Home> {
   initV() async {
     if (variablesG.isEmpty) {
       List<Map<String, dynamic>> response = await getPosPropertiesV();
-
+      
       setState(() {
         variablesG = response;
       });
+
     }
   }
 
@@ -50,8 +51,8 @@ class HomeState extends State<Home> {
   void initState() {
     getPosPropertiesInit();
     initV();
-    print('Esto es la variable global de country_id ${variablesG}');
     super.initState();
+    print('Esto es la variable global de country_id ${variablesG}');
     print("me monte");
   }
 

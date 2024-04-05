@@ -64,3 +64,51 @@ Future<void> updateProductMProductIdAndCodProd(int productId, int newMProductId,
     print('Error: db is null');
   }
 }
+
+Future<void> updateCustomerCBPartnerIdAndCodClient(
+  int customerId, 
+  int cBPartnerId,
+  int newCodClient,
+  int cLocationId,
+  int cBparnetLocationId,
+   ) async {
+    final db = await DatabaseHelper.instance.database;
+
+  if (db != null) {
+    await db.update(
+      'clients',
+      {
+        'c_bpartner_id': cBPartnerId,
+        'cod_client': newCodClient,
+        'c_location_id':cLocationId,
+        'c_bpartner_location_id': cBparnetLocationId,
+      },
+      where: 'id = ?',
+      whereArgs: [customerId],
+    );
+    print('Customer updated successfully');
+  } else {
+    print('Error: db is null');
+  }
+}
+
+
+
+
+Future updateOrdereSalesForStatusSincronzed(int orderId, String newStatus) async {
+    final db = await DatabaseHelper.instance.database;
+  if (db != null) {
+    await db.update(
+      'orden_venta',
+      {
+        'status_sincronized': newStatus,
+      },
+      where: 'id = ?',
+      whereArgs: [orderId],
+    );
+    print('order Sales updated successfully');
+    return 1;
+  } else {
+    print('Error: db is null');
+  }
+}
