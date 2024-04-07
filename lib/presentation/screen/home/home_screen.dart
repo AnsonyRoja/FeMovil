@@ -1,5 +1,6 @@
 import 'package:femovil/assets/nav_bar_bottom.dart';
 import 'package:femovil/config/getPosProperties.dart';
+import 'package:femovil/database/create_database.dart';
 import 'package:femovil/infrastructure/models/info_perfil.dart';
 import 'package:femovil/presentation/cobranzas/cobranzas_list.dart';
 import 'package:femovil/presentation/clients/clients_screen.dart';
@@ -39,16 +40,16 @@ class HomeState extends State<Home> {
   initV() async {
     if (variablesG.isEmpty) {
       List<Map<String, dynamic>> response = await getPosPropertiesV();
-      
+
       setState(() {
         variablesG = response;
       });
-
     }
   }
 
   @override
   void initState() {
+    DatabaseHelper.instance.initDatabase();
     getPosPropertiesInit();
     initV();
     super.initState();

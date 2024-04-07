@@ -1,44 +1,57 @@
 import 'package:sqflite/sqflite.dart';
-  import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as path;
 
+class DatabaseHelper {
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+  static Database? _database;
 
-    class DatabaseHelper {
+  DatabaseHelper._privateConstructor();
 
-      static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
-      static Database? _database;
+  Future<Database?> get database async {
+    if (_database != null) return _database;
 
-      DatabaseHelper._privateConstructor();
-      
+    _database = await _initDatabase();
+    return _database;
+  }
 
-      Future<Database?> get database async {
-        
-        if (_database != null) return _database;
+  Future<void> deleteDatabases() async {
+    String databasesPath = await getDatabasesPath();
+    String dbPath = path.join(databasesPath, 'femovil.db');
 
-        _database = await _initDatabase();
-        return _database;
-      }
+    // Elimina la base de datos si existe
+    await deleteDatabase(dbPath);
+    print('Base de datos eliminada');
 
-      Future<void> deleteDatabases() async {
-      String databasesPath = await getDatabasesPath();
-      String dbPath = path.join(databasesPath, 'femovil.db');
+    // Llama al método _initDatabase para crear la base de datos con la nueva estructura
+    await _initDatabase();
+    print('Base de datos creada nuevamente');
+  }
 
-      // Elimina la base de datos si existe
-      await deleteDatabase(dbPath);
-      print('Base de datos eliminada');
+  initDatabase() async {
+    // Obtener la ruta del directorio donde se almacenará la base de datos
+    String databasesPath = await getDatabasesPath();
+    String dbpath = path.join(databasesPath, 'femovil.db');
 
-      // Llama al método _initDatabase para crear la base de datos con la nueva estructura
+    // Verificar si la base de datos ya existe
+    bool exists = await databaseExists(dbpath);
+
+    if (!exists) {
+      print("base de datos si existe");
+    } else {
+      print("base de datos creada");
       await _initDatabase();
-      print('Base de datos creada nuevamente');
     }
+  }
 
-    Future<Database> _initDatabase() async {
+  Future<Database> _initDatabase() async {
     print("Entré aquí en init database");
     String databasesPath = await getDatabasesPath();
     String dbPath = path.join(databasesPath, 'femovil.db');
     // Abre la base de datos o crea una nueva si no existe
-    Database database = await openDatabase(dbPath, version: 1,
+    Database database = await openDatabase(
+      dbPath,
+      version: 1,
       onCreate: (Database db, int version) async {
-
         await db.execute('''
           CREATE TABLE products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,7 +76,7 @@ import 'package:sqflite/sqflite.dart';
 
           )
         ''');
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE clients(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             c_bpartner_id INTEGER,
@@ -95,7 +108,7 @@ import 'package:sqflite/sqflite.dart';
 
     ''');
 
-      await db.execute('''
+        await db.execute('''
 
         CREATE TABLE providers(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -108,8 +121,7 @@ import 'package:sqflite/sqflite.dart';
 
     ''');
 
-
-      await db.execute('''
+        await db.execute('''
           CREATE TABLE orden_venta (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           c_doctypetarget_id INTEGER,
@@ -135,7 +147,7 @@ import 'package:sqflite/sqflite.dart';
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
 
         CREATE TABLE orden_venta_lines (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -154,8 +166,7 @@ import 'package:sqflite/sqflite.dart';
 
       ''');
 
-
-          await db.execute('''
+        await db.execute('''
           CREATE TABLE orden_compra (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           proveedor_id INTEGER,
@@ -172,7 +183,7 @@ import 'package:sqflite/sqflite.dart';
         )
       ''');
 
-      await db.execute('''
+        await db.execute('''
 
         CREATE TABLE orden_compra_producto (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -219,7 +230,7 @@ import 'package:sqflite/sqflite.dart';
 
         ''');
 
-          await db.execute('''
+        await db.execute('''
           CREATE TABLE usuarios(
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
             name TEXT,
@@ -230,7 +241,7 @@ import 'package:sqflite/sqflite.dart';
             )
         ''');
 
-             await db.execute('''
+        await db.execute('''
           CREATE TABLE posproperties(
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
             country_id INTEGER,
@@ -253,7 +264,7 @@ import 'package:sqflite/sqflite.dart';
             )
         ''');
 
-          await db.execute('''
+        await db.execute('''
           CREATE TABLE tax(
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
           c_tax_id INTEGER,
@@ -264,14 +275,9 @@ import 'package:sqflite/sqflite.dart';
           iswithholding TEXT
           )
         ''');
-
       },
     );
 
     return database;
   }
-
-
-
-
-  }
+}
