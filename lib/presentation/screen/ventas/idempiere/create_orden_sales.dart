@@ -7,7 +7,16 @@ import 'package:femovil/presentation/perfil/perfil_http.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:path_provider/path_provider.dart';
 
+
+
+
+
+// Esta funcion nos ayudara a crear una nueva orden
+
+
 createOrdenSalesIdempiere(orderSalesList) async {
+
+
   HttpClient httpClient = HttpClient()
     ..badCertificateCallback = (X509Certificate cert, String host, int port) {
       return true;
@@ -43,7 +52,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
     print('Contenido actual del archivo:\n$contenidoActual');
 
     // Convierte el contenido JSON a un mapa
-
+    dynamic requestBody = {};
     Map<String, dynamic> jsonData = jsonDecode(contenidoActual);
 
     var role = jsonData["RoleID"];
@@ -51,16 +60,15 @@ createOrdenSalesIdempiere(orderSalesList) async {
     var clientId = jsonData["ClientID"];
     var wareHouseId = jsonData["WarehouseID"];
     var language = jsonData["Language"];
-
-    for (var orderSales in orderSalesList) {
-      print("Esto es orderSales $orderSales");
-
-      final requestBody = {
+    print("Esto es orderSales List nuevo $orderSalesList");
+   
+  
+       requestBody = {
         "CompositeRequest": {
           "ADLoginRequest": {
             "user": variablesLogin['user'],
             "pass": variablesLogin['password'],
-            "lang": jsonData["Language"],
+            "lang": jsonData["Language"], 
             "ClientID": jsonData["ClientID"],
             "RoleID": jsonData["RoleID"],
             "OrgID": jsonData["OrgID"],
@@ -71,6 +79,8 @@ createOrdenSalesIdempiere(orderSalesList) async {
           "operations": {
             "operation": [
               {
+                "@preCommit": "false",
+                "@postCommit": "false",
                 "TargetPort": "createData",
                 "ModelCRUD": {
                   "serviceType": "UCCreateOrder",
@@ -81,16 +91,16 @@ createOrdenSalesIdempiere(orderSalesList) async {
                     "field": [
                       {
                         "@column": "AD_Client_ID",
-                        "val": orderSales['ad_client_id']
+                        "val": orderSalesList['ad_client_id']
                       },
-                      {"@column": "AD_Org_ID", "val": orderSales['ad_org_id']},
+                      {"@column": "AD_Org_ID", "val": orderSalesList['ad_org_id']},
                       {
                         "@column": "C_BPartner_ID",
-                        "val": orderSales['c_bpartner_id'],
+                        "val": orderSalesList['c_bpartner_id'],
                       },
                       {
                         "@column": "C_BPartner_Location_ID",
-                        "val": orderSales['c_bpartner_location_id'],
+                        "val": orderSalesList['c_bpartner_location_id'],
                       },
                       {
                         "@column": "C_Currency_ID",
@@ -98,7 +108,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "Description",
-                        "val": orderSales['descripcion'],
+                        "val": orderSalesList['descripcion'],
                       },
                       {
                         "@column": "C_ConversionType_ID",
@@ -106,7 +116,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "C_DocTypeTarget_ID",
-                        "val": orderSales['c_doctypetarget_id']
+                        "val": orderSalesList['c_doctypetarget_id']
                       },
                       {
                         "@column": "C_PaymentTerm_ID",
@@ -114,7 +124,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "DateOrdered",
-                        "val": orderSales['date_ordered']
+                        "val": orderSalesList['date_ordered']
                       },
                       {"@column": "IsTransferred", "val": 'Y'},
                       {
@@ -123,33 +133,47 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "M_Warehouse_ID",
-                        "val": orderSales['m_warehouse_id']
+                        "val": orderSalesList['m_warehouse_id']
                       },
-                      {"@column": "PaymentRule", "val": 'P'},
+                      {"@column": "PaymentRule", "val": 'B'},
                       {
                         "@column": "SalesRep_ID",
-                        "val": orderSales['usuario_id']
+                        "val": orderSalesList['usuario_id']
                       },
                       {"@column": "LVE_PayAgreement_ID", "val": '1000001'}
+                  
                     ]
                   }
                 }
               },
-              {
-                "TargetPort": "createData",
-                "ModelCRUD": {
-                  "serviceType": "UCCreateOrderLine",
-                  "TableName": "C_OrderLine",
-                  "RecordID": "0",
-                  "Action": "CreateUpdate",
-                  "DataRow": createLines(
-                      orderSales['lines'], orderSales['usuario_id']),
-                }
-              }
+               
             ]
           }
         }
       };
+
+      // Crear las líneas de la orden
+  final lines = createLines(orderSalesList['lines'], orderSalesList['usuario_id']);
+
+  // Agregar las líneas de la orden al JSON de la orden
+  for (var line in lines) {
+    requestBody['CompositeRequest']['operations']['operation'].add(line);
+  }
+
+  dynamic doAction  = {
+        "@preCommit": "false",
+        "@postCommit": "false",
+        "TargetPort": "setDocAction",                      
+          "ModelSetDocAction": {
+              "serviceType": "completeOrder",
+              "tableName": "C_Order",
+              "recordIDVariable": "@C_Order.C_Order_ID",
+              "docAction": "PR",
+          }
+      };
+                
+   requestBody['CompositeRequest']['operations']['operation'].add(doAction);
+
 
       // Configurar el cuerpo de la solicitud en formato JSON
 
@@ -167,12 +191,15 @@ createOrdenSalesIdempiere(orderSalesList) async {
 
       print("esta es la respuesta $parsedJson");
 
-      return parsedJson;
-    }
+    return parsedJson;
+
   } catch (e) {
     return 'este es el error e $e';
   }
 }
+
+
+
 
 createLines(lines, rePId) {
   List linea = [];
@@ -180,6 +207,15 @@ createLines(lines, rePId) {
   lines.forEach((line) => {
         print("line $line"),
         linea.add({
+          "@preCommit": "false",
+            "@postCommit": "false",
+            "TargetPort": "createData",
+            "ModelCRUD": {
+                "serviceType": "UCCreateOrderLine",
+                "TableName": "C_OrderLine",
+                "recordID": "0",
+                "Action": "Create",
+                "DataRow": {
           "field": [
             {"@column": "AD_Client_ID", "val": line['ad_client_id']},
             {"@column": "AD_Org_ID", "val": line['ad_org_id']},
@@ -189,8 +225,10 @@ createLines(lines, rePId) {
             {"@column": "M_Product_ID", "val": line['m_product_id']},
             {"@column": "QtyOrdered", "val": line['qty_entered']},
             {"@column": "QtyEntered", "val": line['qty_entered']},
-            {"@column": "SalesRep_ID", "val": rePId},
+            {"@column": "SalesRep_ID", "val": rePId}
           ]
+         }
+        }
         })
       });
 
@@ -198,3 +236,5 @@ createLines(lines, rePId) {
 
   return linea;
 }
+
+

@@ -39,6 +39,8 @@ class HomeState extends State<Home> {
 
   initV() async {
     if (variablesG.isEmpty) {
+          getPosPropertiesInit();
+
       List<Map<String, dynamic>> response = await getPosPropertiesV();
 
       setState(() {
@@ -50,7 +52,6 @@ class HomeState extends State<Home> {
   @override
   void initState() {
     DatabaseHelper.instance.initDatabase();
-    getPosPropertiesInit();
     initV();
     super.initState();
     print('Esto es la variable global de country_id ${variablesG}');

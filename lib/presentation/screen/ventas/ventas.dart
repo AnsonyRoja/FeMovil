@@ -244,7 +244,8 @@ void _showFilterOptions(BuildContext context) {
                   filteredVentas = ventas.where((venta) {
                   final numeroReferencia = venta['id'].toString();
                   final nombreCliente = venta['nombre_cliente'].toString();
-                  return numeroReferencia.contains(value) || nombreCliente.contains(value);
+                  final orderSale = venta['documentno'].toString();
+                  return numeroReferencia.contains(value) || nombreCliente.contains(value) || orderSale.contains(value) ;
                 }).toList();
                 });
                   },
@@ -260,6 +261,7 @@ void _showFilterOptions(BuildContext context) {
                   itemCount: filteredVentas.length,
                   itemBuilder: (context, index) {
                     final venta = filteredVentas[index];
+                    print('esto es ventas $venta');
                     return Column(
                       children: [
                         Container(  
@@ -272,7 +274,7 @@ void _showFilterOptions(BuildContext context) {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("N° ${venta['id']}",
+                            child: Text("N° ${venta['documentno'] != '' ? venta['documentno'] : venta['id']}",
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),

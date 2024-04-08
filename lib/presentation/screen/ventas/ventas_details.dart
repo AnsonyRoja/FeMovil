@@ -19,7 +19,7 @@ class VentasDetails extends StatefulWidget {
 
 class _VentasDetailsState extends State<VentasDetails> {
   late Future<Map<String, dynamic>> _ventaData;
-  dynamic ventasDate = [];
+  dynamic ventasDate = {};
 
   @override
   void initState() {
@@ -31,9 +31,32 @@ class _VentasDetailsState extends State<VentasDetails> {
   }
 
 
+  _updateAndCreateOrders() async {
+
+      Map<String, dynamic> respuesta = await createOrdenSalesIdempiere(ventasDate);
+
+                        String documentNo = respuesta['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
+                        dynamic cOrderId = respuesta['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
+                        
+
+                        Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
+
+                            'documentno': documentNo,
+                            'c_order_id':cOrderId
+
+
+                        };
+
+
+                          actualizarDocumentNo(widget.ventaId, nuevoDocumentNoAndCOrderId);
+
+                            
+  }
+
+
    _loadOrdenesConLineas() async {
 
-     dynamic response = await obtenerOrdenesDeVentaConLineas();
+     dynamic response = await obtenerOrdenDeVentaConLineasPorId(widget.ventaId);
 
                 setState(() {
 
@@ -117,7 +140,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                                      children: [
                                       const Text("N°"),
                                       const SizedBox(height: 5,),
-                                       Text(ventaData['id'].toString(), textAlign: TextAlign.start,),
+                                       Text( ventaData['documentno']  != '' ? ventaData['documentno'].toString(): ventaData['id'].toString(), textAlign: TextAlign.start,),
                                      ],
                                    ),
                                  ),
@@ -164,6 +187,8 @@ class _VentasDetailsState extends State<VentasDetails> {
                                  ),
         
                                  const Divider(),
+
+                            
                           
                           ],),
                         ) ,
@@ -324,14 +349,17 @@ class _VentasDetailsState extends State<VentasDetails> {
                     color: ventaData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  {
+                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  async{
 
-                        String newValue = 'Completado';
+                        String newValue = 'Enviado';
                         updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+
+                        _updateAndCreateOrders();
 
                         setState(() {
                           
-                        _ventaData =  _loadVentasForId();
+                          _ventaData =  _loadVentasForId();
+
                         });
 
 
@@ -368,7 +396,9 @@ class _VentasDetailsState extends State<VentasDetails> {
 
                         String newValue = 'Enviado';
                         updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
-                        createOrdenSalesIdempiere(ventasDate);
+                        
+                        _updateAndCreateOrders();
+
 
                         setState(() {
                           
@@ -407,13 +437,12 @@ class _VentasDetailsState extends State<VentasDetails> {
                   child: ElevatedButton(
                     onPressed:widget.saldoTotal > 0  && ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Enviado' ? () {
 
-                        // Navigator.of(context).push(
-                        //  MaterialPageRoute(
-                        //     builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId),
-                        //   ),
-                        //  );
-                              print('Estas son las ventas dates $ventasDate');
-                                    createOrdenSalesIdempiere(ventasDate);
+                        Navigator.of(context).push(
+                         MaterialPageRoute(
+                            builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId),
+                          ),
+                         );
+                      
 
 
                     }: null,

@@ -1,10 +1,12 @@
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/update_database.dart';
 import 'package:femovil/infrastructure/models/clients.dart';
+import 'package:femovil/infrastructure/models/order_sales.dart';
 import 'package:femovil/infrastructure/models/products.dart';
 import 'package:femovil/presentation/clients/idempiere/create_customer.dart';
 import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/products/products_http.dart';
+import 'package:femovil/presentation/screen/ventas/idempiere/create_orden_sales.dart';
 import 'package:femovil/sincronization/https/customer_http.dart';
 
 synchronizeProductsWithIdempiere(setState) async {
@@ -107,5 +109,64 @@ synchronizeCustomersWithIdempiere(setState) async {
 
     await updateCustomerCBPartnerIdAndCodClient(
         customersData['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
+  }
+}
+
+
+synchronizeOrderSalesWithIdempiere(setState) async {
+  List<Map<String, dynamic>> orderSalesWithZeroValues =
+      await obtenerOrdenesDeVentaConLineas();
+
+  // await sincronizationCustomers(setState);
+
+  print('Esto es custommer en cero $orderSalesWithZeroValues');
+  
+  for (var orderSales in orderSalesWithZeroValues) {
+    OrderSales orderSale = OrderSales(
+            id: orderSales['orden_venta_id'],
+            cBpartnerId: orderSales['c_bpartner_id'],
+            adClientId: orderSales['ad_client_id'],
+            adOrgId: orderSales['ad_org_id'],
+            cBpartnertLocationId: orderSales['c_bpartner_location_id'],
+            cDoctypeTargetId: orderSales['c_doctypetarget_id'],
+            clientId: orderSales['cliente_id'],
+            dateOrdered: orderSales['date_ordered'],
+            descripcion: orderSales['descripcion'],
+            documentNo: orderSales['documentno'],
+            fecha: orderSales['fecha'],
+            mWareHouseId: orderSales['m_warehouse_id'],
+            monto: orderSales['monto'],
+            orderSaleId: orderSales['orden_venta_id'],  
+            paymentRule: orderSales['paymentrule'],
+            usuarioId: orderSales['usuario_id'],
+            salesRedId: orderSales['salesrep_id'],
+            saldoNeto: orderSales['saldo_neto'],
+            statusSincronized: orderSales['status_sincronized'],
+            lines: orderSales['lines']
+        
+    );
+
+    dynamic result = await createOrdenSalesIdempiere(orderSale.toMap());
+       String documentNo = result['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
+                        dynamic cOrderId = result['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
+                        print(' esto es el client id ${orderSale.id} Esto es el document no $documentNo y este es el orderid $cOrderId');
+
+                        Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
+
+                            'documentno': documentNo,
+                            'c_order_id':cOrderId
+
+
+                        };
+
+                      String newStatus = 'Enviado';
+
+                      updateOrdereSalesForStatusSincronzed(orderSale.id, newStatus);
+
+                      actualizarDocumentNo(orderSale.id, nuevoDocumentNoAndCOrderId);
+
+
+
+
   }
 }

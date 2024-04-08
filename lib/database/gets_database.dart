@@ -296,6 +296,7 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
       orden_venta.ad_org_id,
       orden_venta.m_warehouse_id,
       orden_venta.documentno,
+      orden_venta.c_order_id,
       orden_venta.paymentrule,
       orden_venta.date_ordered,
       orden_venta.salesrep_id,
@@ -316,14 +317,12 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
       orden_venta_lines.qty_entered
     FROM orden_venta
     JOIN orden_venta_lines ON orden_venta.id = orden_venta_lines.orden_venta_id
+    WHERE orden_venta.documentno IS NULL OR orden_venta.documentno = '' 
   ''');
 
-  // Crear un mapa para agrupar las líneas por orden de venta
   Map<int, Map<String, dynamic>> ordenesMap = {};
 
-  // Procesar cada fila del resultado para construir la estructura deseada
   for (var row in resultado) {
-    // Verificar si la orden de venta ya fue agregada al mapa
     if (!ordenesMap.containsKey(row['orden_venta_id'])) {
       ordenesMap[row['orden_venta_id']] = {
         'orden_venta_id': row['orden_venta_id'],
@@ -344,11 +343,10 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
         'usuario_id': row['usuario_id'],
         'cliente_id': row['cliente_id'],
         'status_sincronized': row['status_sincronized'],
-        'lines': [] // Inicializar la lista de líneas para esta orden
+        'lines': []
       };
     }
 
-    // Agregar la línea de producto actual a la orden de venta correspondiente
     ordenesMap[row['orden_venta_id']]!['lines'].add({
       'line_id': row['line_id'],
       'ad_client_id':row['ad_client_id'],
@@ -361,6 +359,91 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
     });
   }
 
-  // Devolver las órdenes de venta con sus líneas de productos como una lista de mapas
   return ordenesMap.values.toList();
+}
+
+
+
+Future<Map<String, dynamic>> obtenerOrdenDeVentaConLineasPorId(int orderId) async {
+  final db = await DatabaseHelper.instance.database;
+
+  final List<Map<String, dynamic>> resultado = await db!.rawQuery('''
+    SELECT 
+      orden_venta.id AS orden_venta_id,
+      orden_venta.c_doctypetarget_id,
+      orden_venta.ad_client_id,
+      orden_venta.ad_org_id,
+      orden_venta.m_warehouse_id,
+      orden_venta.documentno,
+      orden_venta.paymentrule,
+      orden_venta.date_ordered,
+      orden_venta.salesrep_id,
+      orden_venta.c_bpartner_id,
+      orden_venta.c_bpartner_location_id,
+      orden_venta.fecha,
+      orden_venta.descripcion,
+      orden_venta.monto,
+      orden_venta.saldo_neto,
+      orden_venta.usuario_id,
+      orden_venta.cliente_id,
+      orden_venta.status_sincronized,
+      orden_venta_lines.id AS line_id,
+      orden_venta_lines.producto_id,
+      orden_venta_lines.price_entered,
+      orden_venta_lines.price_actual,
+      orden_venta_lines.m_product_id,
+      orden_venta_lines.qty_entered
+    FROM orden_venta
+    JOIN orden_venta_lines ON orden_venta.id = orden_venta_lines.orden_venta_id
+    WHERE orden_venta.id = ?
+  ''', [orderId]);
+
+  // Si no se encontraron resultados, retornar un mapa vacío
+  if (resultado.isEmpty) return {};
+
+  // Crear un mapa para almacenar la orden de venta y sus líneas de productos
+  Map<String, dynamic> ordenDeVenta = {};
+
+  // Iterar sobre el resultado y construir la estructura deseada
+  for (var row in resultado) {
+    // Si la orden de venta aún no ha sido agregada al mapa, agregarla
+    if (ordenDeVenta.isEmpty) {
+      ordenDeVenta = {
+        'orden_venta_id': row['orden_venta_id'],
+        'c_doctypetarget_id': row['c_doctypetarget_id'],
+        'ad_client_id': row['ad_client_id'],
+        'ad_org_id': row['ad_org_id'],
+        'm_warehouse_id': row['m_warehouse_id'],
+        'documentno': row['documentno'],
+        'paymentrule': row['paymentrule'],
+        'date_ordered': row['date_ordered'],
+        'salesrep_id': row['salesrep_id'],
+        'c_bpartner_id': row['c_bpartner_id'],
+        'c_bpartner_location_id': row['c_bpartner_location_id'],
+        'fecha': row['fecha'],
+        'descripcion': row['descripcion'],
+        'monto': row['monto'],
+        'saldo_neto': row['saldo_neto'],
+        'usuario_id': row['usuario_id'],
+        'cliente_id': row['cliente_id'],
+        'status_sincronized': row['status_sincronized'],
+        'lines': [] // Inicializar la lista de líneas de productos
+      };
+    }
+
+    // Agregar la línea de producto actual a la lista de líneas de la orden de venta
+    ordenDeVenta['lines'].add({
+      'line_id': row['line_id'],
+      'ad_client_id':row['ad_client_id'],
+      'ad_org_id': row['ad_org_id'],
+      'producto_id': row['producto_id'],
+      'price_entered': row['price_entered'],
+      'price_actual': row['price_actual'],
+      'm_product_id': row['m_product_id'],
+      'qty_entered': row['qty_entered']
+    });
+  }
+
+  // Retornar la orden de venta con sus líneas de productos
+  return ordenDeVenta;
 }

@@ -129,6 +129,7 @@ class DatabaseHelper {
           ad_org_id INTEGER,
           m_warehouse_id INTEGER,
           documentno INTEGER,
+          c_order_id INTEGER,
           paymentrule INTEGER,
           date_ordered TEXT,
           salesrep_id INTEGER,

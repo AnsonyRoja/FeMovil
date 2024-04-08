@@ -112,3 +112,25 @@ Future updateOrdereSalesForStatusSincronzed(int orderId, String newStatus) async
     print('Error: db is null');
   }
 }
+
+
+
+ Future<void> actualizarDocumentNo(int id, Map<String, dynamic> nuevoDocumentNoAndCOrderId) async {
+    final db = await DatabaseHelper.instance.database;
+
+    int resultado = await db!.update(
+      'orden_venta',
+      {
+      'documentno': nuevoDocumentNoAndCOrderId['documentno'],
+      'c_order_id': nuevoDocumentNoAndCOrderId['c_order_id']
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (resultado == 1) {
+      print('Actualización exitosa.');
+    } else {
+      print('La actualización falló.');
+    }
+  }
