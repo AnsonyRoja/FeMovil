@@ -24,11 +24,11 @@ class _AddClientsFormState extends State<AddClientsForm> {
   final TextEditingController _codePostalController = TextEditingController();
  
 //List
-  List<Map<String, dynamic>> _countryList = [];
-  List<Map<String, dynamic>> _groupList = [];
-  List<Map<String, dynamic>> _taxTypeList = [];
-  List<Map<String, dynamic>> _taxPayerList = [];
-  List<Map<String, dynamic>> _typePersonList =[];
+  final List<Map<String, dynamic>> _countryList = [];
+  final List<Map<String, dynamic>> _groupList = [];
+  final List<Map<String, dynamic>> _taxTypeList = [];
+  final List<Map<String, dynamic>> _taxPayerList = [];
+  final List<Map<String, dynamic>> _typePersonList =[];
 
   // SELECTED
   int _selectedCountryIndex = 0;

@@ -9,6 +9,8 @@ class ProvidersDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      final screenMax = MediaQuery.of(context).size.width * 0.8;
+
     return Scaffold(
       
       appBar: AppBar(title: const Text("Detalles del proveedor", style: TextStyle(
@@ -28,15 +30,39 @@ class ProvidersDetailsScreen extends StatelessWidget {
           scrollDirection: Axis.vertical,
           child: Form(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox( height: 25,),
-          
-                _buildTextFormField('Nombre', provider['name'].toString()),
-                _buildTextFormField('Ruc', provider['ruc'].toString()),
-                _buildTextFormField('Correo', '${provider['correo']}'),
-                _buildTextFormField('Telefono', provider['telefono'].toString()),
-                _buildTextFormField('Grupo', provider['grupo'].toString()),
+                  Container(
+                    width: screenMax ,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8), // Establece el radio de los bordes
+                    ),
+                    child: const Text('Datos Del Cliente', style:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                  ),
+                const SizedBox(height: 10,),
+                _buildTextFormField('Nombre', provider['bpname'].toString()),
+                _buildTextFormField('Ruc', provider['tax_id'].toString()),
+                _buildTextFormField('Correo', '${provider['email'] != '{@nil=true}' ? provider['email'] : 'Sin registro' }'),
+                _buildTextFormField('Telefono', provider['phone'].toString() != '{@nil=true}' ? provider['phone'].toString() : 'Sin registro'),
+                _buildTextFormField('Grupo', provider['groupbpname'].toString()), 
+                _buildTextFormField('Tipo de Impuesto', provider['tax_id_type_name'].toString()),
+                  const SizedBox(height: 10,),
+                  Container(
+                    width: screenMax ,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(8), // Establece el radio de los bordes
+                    ),
+                    child: const Text('Domicilio Fiscal', style:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                  ),
+                  const SizedBox(height: 10,),
+                _buildTextFormField('Direccion', provider['address'].toString() ),
+                _buildTextFormField('Ciudad', provider['city'].toString()),
+                _buildTextFormField('Pais', provider['country_name'].toString()),
+                _buildTextFormField('Codigo Postal', provider['postal'] != '{@nil=true}' ? provider['postal'].toString(): 'Sin codigo postal' ),
+
                 const SizedBox(height: 29,),
                SizedBox(
                 
@@ -46,7 +72,7 @@ class ProvidersDetailsScreen extends StatelessWidget {
                   onPressed: () {
                     // Aquí puedes manejar la acción de agregar orden
                     // Por ejemplo, puedes navegar a una pantalla de agregar orden
-                   Navigator.push(context,MaterialPageRoute(builder: (context) => OrdenDeCompraScreen(providerId: provider["id"] ,providerName: provider["name"])),
+                   Navigator.push(context,MaterialPageRoute(builder: (context) => OrdenDeCompraScreen(providerId: provider["id"] ,providerName: provider["bpname"])),
                   );
 
                   },

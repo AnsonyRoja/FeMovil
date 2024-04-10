@@ -264,6 +264,19 @@ Future<List<Map<String, dynamic>>> getProducts() async {
         return [];
       }
 
+Future<List<Map<String, dynamic>>> getVendorWithZeroValues() async {
+        final db = await DatabaseHelper.instance.database;
+        if (db != null) {
+          return await db.rawQuery('''
+            
+            SELECT * FROM providers 
+            WHERE c_bpartner_id = 0 AND c_code_id = 0
+
+          ''');
+        }
+        return [];
+      }
+
 
   // Método para obtener los datos de un usuario por ID
  Future<Map<String, dynamic>?> getUserByLogin(String user, String password) async {
@@ -290,7 +303,7 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
 
   final List<Map<String, dynamic>> resultado = await db!.rawQuery('''
     SELECT 
-      orden_venta.id AS orden_venta_id,
+      orden_venta.id,
       orden_venta.c_doctypetarget_id,
       orden_venta.ad_client_id,
       orden_venta.ad_org_id,
@@ -323,9 +336,9 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
   Map<int, Map<String, dynamic>> ordenesMap = {};
 
   for (var row in resultado) {
-    if (!ordenesMap.containsKey(row['orden_venta_id'])) {
-      ordenesMap[row['orden_venta_id']] = {
-        'orden_venta_id': row['orden_venta_id'],
+    if (!ordenesMap.containsKey(row['id'])) {
+      ordenesMap[row['id']] = {
+        'id': row['id'],
         'c_doctypetarget_id': row['c_doctypetarget_id'],
         'ad_client_id': row['ad_client_id'],
         'ad_org_id': row['ad_org_id'],
@@ -347,7 +360,7 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
       };
     }
 
-    ordenesMap[row['orden_venta_id']]!['lines'].add({
+    ordenesMap[row['id']]!['lines'].add({
       'line_id': row['line_id'],
       'ad_client_id':row['ad_client_id'],
       'ad_org_id': row['ad_org_id'],
@@ -369,7 +382,7 @@ Future<Map<String, dynamic>> obtenerOrdenDeVentaConLineasPorId(int orderId) asyn
 
   final List<Map<String, dynamic>> resultado = await db!.rawQuery('''
     SELECT 
-      orden_venta.id AS orden_venta_id,
+      orden_venta.id,
       orden_venta.c_doctypetarget_id,
       orden_venta.ad_client_id,
       orden_venta.ad_org_id,
@@ -409,7 +422,7 @@ Future<Map<String, dynamic>> obtenerOrdenDeVentaConLineasPorId(int orderId) asyn
     // Si la orden de venta aún no ha sido agregada al mapa, agregarla
     if (ordenDeVenta.isEmpty) {
       ordenDeVenta = {
-        'orden_venta_id': row['orden_venta_id'],
+        'id': row['id'],
         'c_doctypetarget_id': row['c_doctypetarget_id'],
         'ad_client_id': row['ad_client_id'],
         'ad_org_id': row['ad_org_id'],

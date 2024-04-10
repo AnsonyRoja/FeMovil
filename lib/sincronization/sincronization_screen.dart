@@ -14,6 +14,8 @@ double syncPercentageClient = 0.0;
 double syncPercentageProviders = 0.0;
 double syncPercentageSelling = 0.0;
 double syncPercentageImpuestos = 0.0;
+bool setearValoresEnCero = true;
+
 
 class SynchronizationScreen extends StatefulWidget {
   const SynchronizationScreen({Key? key}) : super(key: key);
@@ -43,19 +45,30 @@ class _SynchronizationScreenState extends State<SynchronizationScreen> {
           Align(
             alignment: Alignment.topCenter,
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Llamada a la función de sincronización
-                // synchronizeProductsWithIdempiere(setState);
-                // sincronizationCustomers(setState);
-                // synchronizeCustomersWithIdempiere(setState);
-                // sincronizationImpuestos(setState);
-                synchronizeOrderSalesWithIdempiere(setState);
-
+              if(setearValoresEnCero == false) {
                 setState(() {
                   syncPercentage = 0;
                   syncPercentageClient = 0;
                   syncPercentageImpuestos = 0;
+                  syncPercentageProviders = 0;
+                  syncPercentageSelling = 0;
+                  setearValoresEnCero = true;
                 });
+              }
+              
+                // await sincronizationImpuestos(setState);
+                // await synchronizeCustomersWithIdempiere(setState);
+                await synchronizeVendorsWithIdempiere(setState);
+                // await synchronizeProductsWithIdempiere(setState);
+                // sincronizationCustomers(setState);
+                // await synchronizeOrderSalesWithIdempiere(setState); 
+
+             setState(() {
+              setearValoresEnCero = false;
+             });
+             
               },
               child: const Text('Sincronizar'),
             ),

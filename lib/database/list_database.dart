@@ -118,3 +118,62 @@ Future<List<Map<String, dynamic>>> listarCategorias() async {
           }
           return [];
         }
+
+         Future<List<Map<String, dynamic>>> listarTypeGroupVendor() async {
+          final db = await DatabaseHelper.instance.database;
+          if(db != null) {
+            return await db.rawQuery('''
+            SELECT DISTINCT c_bp_group_id, groupbpname
+               FROM providers
+            ''');
+          }
+          return [];
+        }
+
+         Future<List<Map<String, dynamic>>> listarTypeTaxVendor() async {
+          final db = await DatabaseHelper.instance.database;
+          if(db != null) {
+            return await db.rawQuery('''
+            SELECT DISTINCT lco_tax_id_type_id, tax_id_type_name
+               FROM providers
+            ''');
+          }
+          return [];
+        }
+
+
+        Future<List<Map<String, dynamic>>> listarCountryVendor() async {
+          final db = await DatabaseHelper.instance.database;
+          if(db != null) {
+            return await db.rawQuery('''
+            SELECT DISTINCT c_country_id, country_name
+               FROM providers
+            ''');
+          }
+          return [];
+        }
+
+
+
+        // Tax payer es tipo de contribuyente
+        Future<List<Map<String, dynamic>>> listarTaxPayerVendors() async {
+          final db = await DatabaseHelper.instance.database;
+          if(db != null) {
+            return await db.rawQuery('''
+            SELECT DISTINCT lco_taxt_payer_type_id, tax_payer_type_name
+               FROM providers
+            ''');
+          }
+          return [];
+        }
+
+           Future<List<Map<String, dynamic>>> listarPersonTypeVendors() async {
+          final db = await DatabaseHelper.instance.database;
+          if(db != null) {
+            return await db.rawQuery('''
+            SELECT DISTINCT lve_person_type_id, person_type_name
+               FROM providers
+            ''');
+          }
+          return [];
+        }

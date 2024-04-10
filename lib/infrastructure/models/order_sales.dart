@@ -6,7 +6,6 @@
 
 class OrderSales {
       final dynamic id;
-      final dynamic orderSaleId;
       final dynamic cDoctypeTargetId;
       final dynamic adClientId;
       final dynamic adOrgId;
@@ -27,8 +26,7 @@ class OrderSales {
       final dynamic lines; 
 
       OrderSales({
-       required this.id, 
-       required this.orderSaleId,
+       required this.id,
        required this.cDoctypeTargetId, 
        required this.adClientId, 
        required this.adOrgId, 
@@ -53,7 +51,6 @@ class OrderSales {
 
       return {
           'id':id,
-          'orden_venta_id': orderSaleId,
           'c_doctypetarget_id' : cDoctypeTargetId,
           'ad_client_id': adClientId, 
           'ad_org_id': adOrgId,

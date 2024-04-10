@@ -22,7 +22,7 @@ class _FilterGroupsProvidersState extends State<FilterGroupsProviders> {
   Widget build(BuildContext context) {
     print("Products ${widget.providers}");
          List<String> providers = widget.providers
-        .map<String>((providers) => providers['grupo'] as String) 
+        .map<String>((providers) => providers['groupbpname'] as String) 
         .toSet() // Elimina duplicados
         .toList(); //
         providers.insert(0, "Todos");

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:femovil/config/getPosProperties.dart';
 import 'package:femovil/config/url.dart';
+import 'package:femovil/database/update_database.dart';
 import 'package:femovil/presentation/perfil/perfil_http.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:path_provider/path_provider.dart';
@@ -190,6 +191,25 @@ createOrdenSalesIdempiere(orderSalesList) async {
       final parsedJson = jsonDecode(responseBody);
 
       print("esta es la respuesta $parsedJson");
+
+        String documentNo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
+        dynamic cOrderId = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
+        print(' esto es el client id ${orderSalesList['id']} Esto es el document no $documentNo y este es el orderid $cOrderId');
+
+                        Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
+
+                            'documentno': documentNo,
+                            'c_order_id':cOrderId
+
+
+                        };
+
+                      String newStatus = 'Enviado';
+
+                      updateOrdereSalesForStatusSincronzed(orderSalesList['id'], newStatus);
+
+                      actualizarDocumentNo(orderSalesList['id'], nuevoDocumentNoAndCOrderId);
+
 
     return parsedJson;
 

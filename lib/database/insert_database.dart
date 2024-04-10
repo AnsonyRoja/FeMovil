@@ -157,7 +157,7 @@ Future<void> insertTaxData() async {
 
       // Recorrer la lista de productos y agregarlos a la tabla de unión 'orden_venta_producto'
       for (Map<String, dynamic> product in order['productos']) {
-        await db.insert('orden_venta_producto', {
+        await db.insert('orden_compra_lines', {
           'orden_venta_id': orderId,
           'producto_id': product['id'],
           'cantidad': product['quantity'], // Agrega la cantidad del producto si es necesario

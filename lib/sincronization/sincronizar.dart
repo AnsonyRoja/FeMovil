@@ -2,6 +2,7 @@ import 'package:femovil/database/create_database.dart';
 import 'package:femovil/infrastructure/models/clients.dart';
 import 'package:femovil/infrastructure/models/impuestos.dart';
 import 'package:femovil/infrastructure/models/products.dart';
+import 'package:femovil/infrastructure/models/vendors.dart';
 import 'package:femovil/sincronization/sincronization_screen.dart';
 
 
@@ -87,12 +88,101 @@ Future<void> syncCustomers( customersData,setState) async {
             print('cliente insertado: ${customer.bpName}');
           }
         }
-        print('Sincronización de Impuestos completada.');
+        print('Sincronización de clientes completada.');
       } else {
         // Manejar el caso en el que db sea null
         print('Error: db is null');
       }
     }
+
+Future<void> syncVendors( vendorsData,setState) async {
+      final db = await DatabaseHelper.instance.database;
+    
+       double contador = 0;
+print('Esto es vendor Datas $vendorsData');
+
+      if (db != null) {
+        // Itera sobre los datos de los productos recibidos
+        for (Map<String, dynamic> vendorData in vendorsData) {
+          // Construye un objeto Product a partir de los datos recibidos
+          print('Vendor data $vendorData');
+          Vendor vendor = Vendor(
+            cBPartnerId: vendorData['c_bpartner_id'],
+            cCodeId: vendorData['c_code_id'],
+            bPName: vendorData['bpname'],
+            email: vendorData['email'],
+            cBPGroupId: vendorData['c_bp_group_id'],
+            groupBPName: vendorData['groupbpname'],
+            taxId: vendorData['tax_id'], 
+            isVendor: vendorData['is_vendor'],
+            lcoTaxIdTypeId: vendorData['lco_tax_id_type_id'],
+            taxIdTypeName: vendorData['tax_id_type_name'],
+            cBPartnerLocationId: vendorData['c_bpartner_location_id'],
+            isBillTo: vendorData['is_bill_to'],
+            phone: vendorData['phone'],
+            cLocationId: vendorData['c_location_id'],
+            address: vendorData['address'],
+            city: vendorData['city'],
+            countryName: vendorData['country_name'],
+            postal: vendorData['postal'],
+            cCityId: vendorData['c_city_id'],
+            cCountryId: vendorData['c_country_id'],
+            lcoTaxtPayerTypeId: vendorData['lco_taxt_payer_type_id'],
+            taxPayerTypeName: vendorData['tax_payer_type_name'],
+            lvePersonTypeId: vendorData['lve_person_type_id'],
+            personTypeName: vendorData['person_type_name']
+
+          );
+          
+            contador++;
+
+         
+            
+                    setState(() {
+                      
+                          syncPercentageProviders = (contador / vendorsData.length) * 100;
+
+                    });
+
+          
+          
+                   
+
+
+          // Convierte el objeto Product a un mapa
+          Map<String, dynamic> vendorMap = vendor.toMap();
+
+          print('Esto es vendorMap $vendorMap');
+
+          // Consulta si el producto ya existe en la base de datos local por su nombre
+          List<Map<String, dynamic>> existingCustomer= await db.query(
+            'providers',
+            where: 'bpname = ?',
+            whereArgs: [vendor.bPName],
+          );
+
+          if (existingCustomer.isNotEmpty) {
+            // Si el producto ya existe, actualiza sus datos
+            await db.update(
+              'providers',
+              vendorMap,
+              where: 'bpname = ?',
+              whereArgs: [vendor.bPName],
+            );
+            print('proveedor actualizado: ${vendor.bPName}');
+          } else {
+            // Si el producto no existe, inserta un nuevo registro en la tabla de productos
+            await db.insert('providers', vendorMap);
+            print('proveedor insertado: ${vendor.bPName}');
+          }
+        }
+        print('Sincronización de proveedores completada.');
+      } else {
+        // Manejar el caso en el que db sea null
+        print('Error: db is null');
+      }
+    }
+
 
 
 
@@ -149,11 +239,11 @@ Future<void> syncImpuestos(List<Map<String, dynamic>> impuestosData,setState) as
               where: 'name = ?',
               whereArgs: [impuesto.name],
             );
-            print('Producto actualizado: ${impuesto.name}');
+            print('Impuesto actualizado: ${impuesto.name}');
           } else {
             // Si el producto no existe, inserta un nuevo registro en la tabla de productos
             await db.insert('tax', impuestoMap);
-            print('Producto insertado: ${impuesto.name}');
+            print('Impuesto insertado: ${impuesto.name}');
           }
         }
         print('Sincronización de Impuestos completada.');

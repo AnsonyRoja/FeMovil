@@ -3,11 +3,15 @@ import 'package:femovil/database/update_database.dart';
 import 'package:femovil/infrastructure/models/clients.dart';
 import 'package:femovil/infrastructure/models/order_sales.dart';
 import 'package:femovil/infrastructure/models/products.dart';
+import 'package:femovil/infrastructure/models/vendors.dart';
 import 'package:femovil/presentation/clients/idempiere/create_customer.dart';
 import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/products/products_http.dart';
+import 'package:femovil/presentation/screen/proveedores/idempiere/create_vendor.dart';
 import 'package:femovil/presentation/screen/ventas/idempiere/create_orden_sales.dart';
 import 'package:femovil/sincronization/https/customer_http.dart';
+import 'package:femovil/sincronization/https/vendors_http.dart';
+import 'package:femovil/sincronization/sincronization_screen.dart';
 
 synchronizeProductsWithIdempiere(setState) async {
   List<Map<String, dynamic>> productsWithZeroValues =
@@ -112,18 +116,100 @@ synchronizeCustomersWithIdempiere(setState) async {
   }
 }
 
+synchronizeVendorsWithIdempiere(setState) async {
+  List<Map<String, dynamic>> vendorWithZeroValues =
+      await getVendorWithZeroValues();
+
+  await sincronizationVendors(setState);
+
+  print('Esto es vendor en cero $vendorWithZeroValues');
+  
+  for (var vendorsData in vendorWithZeroValues) {
+    Vendor provider = Vendor(
+      cBPartnerId: vendorsData['c_bpartner_id'],
+      cCodeId: vendorsData['c_code_id'],
+      cBPGroupId: vendorsData['c_bp_group_id'],
+      bPName: vendorsData['bpname'],
+      email: vendorsData['email'],
+      groupBPName: vendorsData['groupbpname'],
+      taxId: vendorsData['tax_id'],
+      isVendor: vendorsData['is_vendor'],
+      lcoTaxIdTypeId: vendorsData['lco_tax_id_type_id'],
+      taxIdTypeName: vendorsData['tax_id_type_name'],
+      cBPartnerLocationId: vendorsData['c_bpartner_location_id'],
+      isBillTo: vendorsData['is_bill_to'],
+      phone: vendorsData['phone'],
+      cLocationId: vendorsData['c_location_id'],
+      address: vendorsData['address'],
+      city: vendorsData['city'],
+      countryName: vendorsData['country_name'],
+      postal: vendorsData['postal'],
+      cCityId: vendorsData['c_city_id'],
+      cCountryId: vendorsData['c_country_id'],
+      lcoTaxtPayerTypeId: vendorsData['lco_taxt_payer_type_id'],
+      taxPayerTypeName: vendorsData['tax_payer_type_name'],
+      lvePersonTypeId: vendorsData['lve_person_type_id'],
+      personTypeName: vendorsData['person_type_name'],
+
+    );
+    dynamic result = await createVendorIdempiere(provider.toMap());
+    print('este es el $result');
+
+    final cBParnertId =
+        result['CompositeResponses']['CompositeResponse']
+        ['StandardResponse'][0]['outputFields']
+        ['outputField'][0]['@value'];
+    final newCodClient =
+        result['CompositeResponses']['CompositeResponse']
+        ['StandardResponse'][0]['outputFields']
+        ['outputField'][1]['@value'];
+    final cLocationId =  result['CompositeResponses']['CompositeResponse']
+        ['StandardResponse'][1]['outputFields']
+        ['outputField']['@value'];
+    final cBPartnerLocationId = result['CompositeResponses']['CompositeResponse']
+        ['StandardResponse'][2]['outputFields']
+        ['outputField']['@value'];
+
+    print('Esto es el codigo de partnert id  $cBParnertId, esto es el $newCodClient, esto es el $cLocationId y esto es el cbparnert location id $cBPartnerLocationId');
+
+
+    await updateCustomerCBPartnerIdAndCodClientVendor(
+        vendorsData['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
+  }
+}
+
+
 
 synchronizeOrderSalesWithIdempiere(setState) async {
   List<Map<String, dynamic>> orderSalesWithZeroValues =
       await obtenerOrdenesDeVentaConLineas();
+ 
+  int contador = 0;
 
   // await sincronizationCustomers(setState);
 
   print('Esto es custommer en cero $orderSalesWithZeroValues');
+
+
+
+                  if(orderSalesWithZeroValues.isEmpty){
+
+
+                    setState(() {
+                      
+                          syncPercentageSelling = 100;
+
+                    });
+                    
+
+                  }
+            
+
+
   
   for (var orderSales in orderSalesWithZeroValues) {
     OrderSales orderSale = OrderSales(
-            id: orderSales['orden_venta_id'],
+            id: orderSales['id'],
             cBpartnerId: orderSales['c_bpartner_id'],
             adClientId: orderSales['ad_client_id'],
             adOrgId: orderSales['ad_org_id'],
@@ -135,8 +221,7 @@ synchronizeOrderSalesWithIdempiere(setState) async {
             documentNo: orderSales['documentno'],
             fecha: orderSales['fecha'],
             mWareHouseId: orderSales['m_warehouse_id'],
-            monto: orderSales['monto'],
-            orderSaleId: orderSales['orden_venta_id'],  
+            monto: orderSales['monto'], 
             paymentRule: orderSales['paymentrule'],
             usuarioId: orderSales['usuario_id'],
             salesRedId: orderSales['salesrep_id'],
@@ -145,28 +230,23 @@ synchronizeOrderSalesWithIdempiere(setState) async {
             lines: orderSales['lines']
         
     );
+    contador++;
 
-    dynamic result = await createOrdenSalesIdempiere(orderSale.toMap());
-       String documentNo = result['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
-                        dynamic cOrderId = result['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
-                        print(' esto es el client id ${orderSale.id} Esto es el document no $documentNo y este es el orderid $cOrderId');
+    print('El valor del contador $contador');
 
-                        Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
+     setState(() {
+      syncPercentageSelling =  (contador / orderSalesWithZeroValues.length) * 100;
 
-                            'documentno': documentNo,
-                            'c_order_id':cOrderId
+     });
 
+    print('el valor de syncPercentageSelling $syncPercentageSelling');
 
-                        };
-
-                      String newStatus = 'Enviado';
-
-                      updateOrdereSalesForStatusSincronzed(orderSale.id, newStatus);
-
-                      actualizarDocumentNo(orderSale.id, nuevoDocumentNoAndCOrderId);
-
+     await createOrdenSalesIdempiere(orderSale.toMap());
+   
 
 
 
   }
+
+  
 }

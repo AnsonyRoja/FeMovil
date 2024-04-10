@@ -112,11 +112,31 @@ class DatabaseHelper {
 
         CREATE TABLE providers(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            ruc INTEGER,
-            correo TEXT,
-            telefono INTEGER,
-            grupo TEXT
+            c_bpartner_id INTEGER,
+            c_code_id INTEGER,
+            bpname TEXT,
+            email STRING,
+            c_bp_group_id INTEGER,
+            groupbpname STRING,
+            tax_id STRING,
+            is_vendor STRING,
+            lco_tax_id_type_id INTEGER,
+            tax_id_type_name STRING,
+            c_bpartner_location_id INTEGER,
+            is_bill_to STRING,
+            phone STRING,
+            c_location_id INTEGER,
+            address STRING,
+            city STRING,
+            country_name STRING,
+            postal STRING,
+            c_city_id INTEGER,
+            c_country_id INTEGER,
+            lco_taxt_payer_type_id INTEGER, 
+            tax_payer_type_name STRING, 
+            lve_person_type_id INTEGER,
+            person_type_name STRING
+
         )
 
     ''');
@@ -186,7 +206,7 @@ class DatabaseHelper {
 
         await db.execute('''
 
-        CREATE TABLE orden_compra_producto (
+        CREATE TABLE orden_compra_lines (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             orden_compra_id INTEGER,
             producto_id INTEGER,

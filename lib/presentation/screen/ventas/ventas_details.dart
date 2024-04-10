@@ -33,22 +33,7 @@ class _VentasDetailsState extends State<VentasDetails> {
 
   _updateAndCreateOrders() async {
 
-      Map<String, dynamic> respuesta = await createOrdenSalesIdempiere(ventasDate);
-
-                        String documentNo = respuesta['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
-                        dynamic cOrderId = respuesta['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
-                        
-
-                        Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
-
-                            'documentno': documentNo,
-                            'c_order_id':cOrderId
-
-
-                        };
-
-
-                          actualizarDocumentNo(widget.ventaId, nuevoDocumentNoAndCOrderId);
+    await createOrdenSalesIdempiere(ventasDate);
 
                             
   }

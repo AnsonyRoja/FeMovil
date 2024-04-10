@@ -85,7 +85,7 @@ class _ProvidersState extends State<Providers> {
 
             searchProvider = providers.toList();
           } else {
-            searchProvider = providers.where((provider) => provider['grupo'] == _filter).toList();
+            searchProvider = providers.where((provider) => provider['groupbpname'] == _filter).toList();
             print("Este es el searchProvider $searchProvider");
           }
           input = ""; // Limpiar el campo de búsqueda al filtrar por categoría
@@ -94,8 +94,8 @@ class _ProvidersState extends State<Providers> {
         print("Estoy entrando en el input cuando no esta vacio ");
         setState(() {
           searchProvider = providers.where((provider) {
-            final name = provider['name'].toString().toLowerCase();
-            final ruc = provider['ruc'].toString().toLowerCase();
+            final name = provider['bpname'].toString().toLowerCase();
+            final ruc = provider['tax_id'].toString().toLowerCase();
             final inputLower = input.toLowerCase();
             return name.contains(inputLower) || ruc.contains(inputLower);
           }).toList();
@@ -105,7 +105,7 @@ class _ProvidersState extends State<Providers> {
 
       if(_filter != "" && _filter != "Todos"){
           
-          searchProvider = providers.where((provider) => provider['grupo'] == _filter).toList();
+          searchProvider = providers.where((provider) => provider['groupbpname'] == _filter).toList();
           searchController.clear();
           input = "";
       }else if(_filter == "Todos"){
@@ -171,15 +171,21 @@ class _ProvidersState extends State<Providers> {
                 input = value;
               print("Este es el valor $value");
 
+              print('esto es providers $providers');
+
                 searchProvider = providers.where((provider) {
                   final valueLower = value.toLowerCase();
                   if (int.tryParse(valueLower) != null) {
                     // Si el valor se puede convertir a un número entero, buscar por ruc
-                    final ruc = provider['ruc'].toString().toLowerCase();
+                    final ruc = provider['tax_id'].toString().toLowerCase();
                     return ruc.contains(valueLower);
                   } else {
                     // Si no se puede convertir a un número entero, buscar por nombre
-                    final name = provider['name'].toString().toLowerCase();
+                    final name = provider['bpname'].toString().toLowerCase();
+                             final result = name.contains(valueLower);
+                             
+                    print('Esto es name $result');
+
                     return name.contains(valueLower);
                   }
                 }).toList();
@@ -202,8 +208,7 @@ class _ProvidersState extends State<Providers> {
                 itemBuilder: (context, index) {
       
                   final provider = searchProvider[index];
-      
-      
+
       
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -218,7 +223,7 @@ class _ProvidersState extends State<Providers> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(' RUC ${provider['ruc'].toString()}',
+                            child: Text(' RUC ${provider['tax_id'].toString()}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -232,11 +237,12 @@ class _ProvidersState extends State<Providers> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Nombre: ${provider['name']}'),
-                                Text('Ruc: ${provider['ruc'].toString()}'),
-                                Text('Correo: ${provider['correo']}'),
-                                Text('Telefono: ${provider['telefono'].toString()}'),
-                                Text('Grupo: ${provider['grupo']}'),
+                             
+                                Text('Nombre: ${provider['bpname']}'),
+                                Text('Ruc: ${provider['tax_id'].toString()}'),
+                                Text('Correo: ${provider['email'] != '{@nil=true}' ? provider['email']:'Sin registro'}'),
+                                Text('Telefono: ${provider['phone'].toString() != '{@nil=true}' ? provider['phone'] : 'Sin registro'}'),
+                                Text('Grupo: ${provider['groupbpname']}'),
                               ],
                             ),
                           ),

@@ -92,6 +92,36 @@ Future<void> updateCustomerCBPartnerIdAndCodClient(
   }
 }
 
+Future<void> updateCustomerCBPartnerIdAndCodClientVendor(
+  int customerId, 
+  int cBPartnerId,
+  int newCodClient,
+  int cLocationId,
+  int cBparnetLocationId,
+   ) async {
+    final db = await DatabaseHelper.instance.database;
+
+  if (db != null) {
+    await db.update(
+      
+      'providers',
+      {
+        'c_bpartner_id': cBPartnerId,
+        'c_code_id': newCodClient,
+        'c_location_id':cLocationId,
+        'c_bpartner_location_id': cBparnetLocationId,
+      },
+      where: 'id = ?',
+      whereArgs: [customerId],
+    );
+    print('Proveedor updated successfully');
+  } else {
+    print('Error: db is null');
+  }
+}
+
+
+
 
 
 
