@@ -193,7 +193,6 @@ print('infouserFororder $infoUserForOrder');
 
 @override
 void initState()  {
-     
       initV();
       initGetUser();
       print('infouser $variablesG');
@@ -201,9 +200,7 @@ void initState()  {
      print("Esto es el id ${widget.clientId}");
      print("Esto es el name ${widget.clientName}");
      fechaIdempiereController.text = DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedDate);
-  
     super.initState();
-  
 }
 
   @override

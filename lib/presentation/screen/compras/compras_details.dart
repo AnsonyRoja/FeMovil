@@ -1,30 +1,40 @@
-import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/update_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
+import 'package:femovil/presentation/screen/compras/idempiere/create_order_purchase.dart';
 import 'package:femovil/presentation/screen/ventas/idempiere/create_orden_sales.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class VentasDetails extends StatefulWidget {
-  final int ventaId;
-  final String nameClient;
-  final double saldoTotal;
-  const VentasDetails({super.key, required this.ventaId, required this.nameClient, required this.saldoTotal});
+class ComprasDetails extends StatefulWidget {
+  final int compraId;
+  final String nameProveedor;
+  const ComprasDetails({super.key, required this.compraId, required this.nameProveedor});
 
   @override
-  State<VentasDetails> createState() => _VentasDetailsState();
+  State<ComprasDetails> createState() => _ComprasDetailsState();
 }
 
-class _VentasDetailsState extends State<VentasDetails> {
-  late Future<Map<String, dynamic>> _ventaData;
-  dynamic ventasDate = {};
+class _ComprasDetailsState extends State<ComprasDetails> {
+  late Future<Map<String, dynamic>> _compraData;
+  dynamic comprasDate = {};
+
+
+  initComprasDatas() async {
+
+      dynamic respuesta = await _loadComprasForId();
+
+      print('Esta es la respuesta $respuesta');
+
+  }
 
   @override
   void initState() {
     super.initState();
-    _ventaData = _loadVentasForId();
+    _compraData = _loadComprasForId();
+
+    print('Este es el id de la orden ${widget.compraId} && este es el nombre del proveedor ${widget.nameProveedor}');
+
+    initComprasDatas();
 
     _loadOrdenesConLineas();
 
@@ -32,7 +42,7 @@ class _VentasDetailsState extends State<VentasDetails> {
 
   _updateAndCreateOrders() async {
 
-   dynamic isTrue = await createOrdenSalesIdempiere(ventasDate);
+   dynamic isTrue = await createOrdenPurchaseIdempiere(comprasDate);
 
               if(isTrue == false){
                 return false;
@@ -45,22 +55,23 @@ class _VentasDetailsState extends State<VentasDetails> {
 
    _loadOrdenesConLineas() async {
 
-     dynamic response = await obtenerOrdenDeVentaConLineasPorId(widget.ventaId);
+     dynamic response = await obtenerOrdenDeCompraConLineasPorId(widget.compraId);
 
                 setState(() {
 
-                    ventasDate = response;
+                    comprasDate = response;
 
                 });
 
         print('Estas son las ordenes de ventas con sus respectivas lineas $response');
         
+      
   }
 
 
-  Future<Map<String, dynamic>> _loadVentasForId() async {
+  Future<Map<String, dynamic>> _loadComprasForId() async {
   
-    return await getOrderWithProducts(widget.ventaId);
+    return await getOrderPurchaseWithProducts(widget.compraId);
   
   }
 
@@ -71,7 +82,7 @@ class _VentasDetailsState extends State<VentasDetails> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 236, 247, 255),
       appBar: AppBar(
-        title: const Text('Orden de Venta', style: TextStyle(
+        title: const Text('Orden de Compra', style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 105, 102, 102),
@@ -83,17 +94,17 @@ class _VentasDetailsState extends State<VentasDetails> {
       body: Align(
         alignment: Alignment.topCenter,
         child: FutureBuilder(
-          future: _ventaData,
+          future: _compraData,
           builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              final ventaData = snapshot.data!['order'];
+              final compraData = snapshot.data!['order'];
               final productsData = snapshot.data!['products'];
               print("Esto es lo que hay productsData ${snapshot.data}");
-              print("esto es ventas data $ventaData");
+              print("esto es ventas data $compraData");
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
@@ -129,7 +140,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                                      children: [
                                       const Text("N°"),
                                       const SizedBox(height: 5,),
-                                       Text( ventaData['documentno']  != '' ? ventaData['documentno'].toString(): ventaData['id'].toString(), textAlign: TextAlign.start,),
+                                       Text( compraData['documentno']  != '' ? compraData['documentno'].toString(): compraData['id'].toString(), textAlign: TextAlign.start,),
                                      ],
                                    ),
                                  ),
@@ -142,7 +153,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                                      children: [
                                       const Text('Fecha'),
                                       const SizedBox(height: 5,),
-                                       Text(ventaData['fecha']),
+                                       Text(compraData['fecha']),
                                      ],
                                    ),
                                  ),
@@ -153,9 +164,9 @@ class _VentasDetailsState extends State<VentasDetails> {
                                    child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                        const Text('Cliente'),
+                                        const Text('Proveedor'),
                                         const SizedBox(height: 5,),
-                                        Text(widget.nameClient),
+                                        Text(widget.nameProveedor),
                                    
                                     ],
                                    ),
@@ -170,7 +181,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                                      children: [
                                        const Text('Descripción'),
                                        const SizedBox(height: 5,),
-                                       Text(ventaData['descripcion']),
+                                       Text(compraData['description']),
                                      ],
                                    ),
                                  ),
@@ -276,7 +287,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                               children: [
                                 const Text('Saldo Neto', style: TextStyle(fontWeight: FontWeight.bold)),
                                 
-                                Text(' \$ ${ventaData['saldo_neto'].toString()}'),
+                                Text(' \$ ${compraData['saldo_neto'].toString()}'),
                               ],
                             ),
                             Row(
@@ -284,7 +295,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                               children: [
                                 const Text('Monto', style: TextStyle(fontWeight: FontWeight.bold)),
                                 
-                                Text(' \$ ${ventaData['monto'].toString()}'),
+                                Text(' \$ ${compraData['monto'].toString()}'),
                               ],
                             ),
                           ],
@@ -295,17 +306,17 @@ class _VentasDetailsState extends State<VentasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ventaData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color: compraData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  {
+                    onPressed:compraData['status_sincronized'] == 'Borrador' ? ()  {
 
                         String newValue = 'Completado';
-                        updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+                        updateOrderePurchaseForStatusSincronzed(compraData['id'], newValue );
 
                         setState(() {
                           
-                        _ventaData =  _loadVentasForId();
+                        _compraData =  _loadComprasForId();
                         });
 
 
@@ -335,10 +346,10 @@ class _VentasDetailsState extends State<VentasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ventaData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color: compraData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  async{
+                    onPressed:compraData['status_sincronized'] == 'Borrador' ? ()  async{
 
 
                      dynamic isTrue =  await _updateAndCreateOrders();
@@ -346,12 +357,12 @@ class _VentasDetailsState extends State<VentasDetails> {
 
                             if(isTrue != false){
                               String newValue = 'Enviado';
-                              updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+                              updateOrderePurchaseForStatusSincronzed(compraData['id'], newValue );
 
                             }else{
                               String newValue = 'Por Enviar';
 
-                              updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+                              updateOrderePurchaseForStatusSincronzed(compraData['id'], newValue );
 
 
                             }
@@ -360,7 +371,7 @@ class _VentasDetailsState extends State<VentasDetails> {
 
                         setState(() {
                           
-                          _ventaData =  _loadVentasForId();
+                          _compraData =  _loadComprasForId();
 
                         });
 
@@ -393,10 +404,10 @@ class _VentasDetailsState extends State<VentasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Por Enviar'  ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color: compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Por Enviar'  ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:ventaData['status_sincronized'] == 'Completado' ||  ventaData['status_sincronized'] == 'Por Enviar'  ? () async {
+                    onPressed:compraData['status_sincronized'] == 'Completado' ||  compraData['status_sincronized'] == 'Por Enviar'  ? () async {
                         
                        dynamic isTrue =  await _updateAndCreateOrders();
 
@@ -404,12 +415,12 @@ class _VentasDetailsState extends State<VentasDetails> {
                           if(isTrue != false){
 
                         String newValue = 'Enviado';
-                        updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+                        updateOrderePurchaseForStatusSincronzed(compraData['id'], newValue );
                         
                           }else{
 
                                String newValue = 'Por Enviar';
-                        updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
+                        updateOrderePurchaseForStatusSincronzed(compraData['id'], newValue );
                         
 
                           } 
@@ -418,7 +429,7 @@ class _VentasDetailsState extends State<VentasDetails> {
 
                         setState(() {
                           
-                        _ventaData =  _loadVentasForId();
+                        _compraData =  _loadComprasForId();
                         });
 
                         }
@@ -450,18 +461,16 @@ class _VentasDetailsState extends State<VentasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: widget.saldoTotal > 0 && ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Enviado' ? Colors.green: Colors.grey, // Color verde para el fondo del botón
+                    color:  compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Enviado' ? Colors.green: Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:widget.saldoTotal > 0  && ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Enviado' ? () {
+                    onPressed: compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Enviado' ? () {
 
-                        Navigator.of(context).push(
-                         MaterialPageRoute(
-                            builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId),
-                          ),
-                         );
-                      
-
+                        // Navigator.of(context).push(
+                        //  MaterialPageRoute(
+                        //     builder: (context) =>  Cobro(orderId: compraData['id'],saldoTotal:, loadCobranzas: _loadVentasForId),
+                        //   ),
+                        //  );
 
                     }: null,
                     style: ButtonStyle(

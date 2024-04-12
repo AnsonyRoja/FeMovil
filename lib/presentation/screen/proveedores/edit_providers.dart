@@ -99,7 +99,9 @@ class _EditProviderScreenState extends State<EditProviderScreen> {
     _addressController.text = widget.provider['address'].toString();
     _cityController.text = widget.provider['city'].toString();
     _codePostalController.text = widget.provider['postal'].toString() != '{@nil=true}' ? widget.provider['postal'].toString(): 'Sin Codigo Postal';
+ 
   }
+
 
   @override
   Widget build(BuildContext context) {

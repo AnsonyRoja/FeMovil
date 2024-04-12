@@ -7,6 +7,7 @@ import 'package:femovil/presentation/clients/clients_screen.dart';
 import 'package:femovil/presentation/precios/precios.dart';
 import 'package:femovil/presentation/products/products_screen.dart';
 import 'package:femovil/presentation/retenciones/retenciones_screen.dart';
+import 'package:femovil/presentation/screen/compras/compras.dart';
 import 'package:femovil/presentation/screen/login/progress_indicator.dart';
 import 'package:femovil/presentation/screen/proveedores/providers_screen.dart';
 import 'package:femovil/presentation/screen/ventas/ventas.dart';
@@ -200,14 +201,14 @@ class HomeState extends State<Home> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Precios(),
+                                builder: (context) => const Providers(),
                               ));
                         },
                         child: Column(
                           children: [
-                            const Text("Precios"),
+                            const Text("Proveedores"),
                             Image.network(
-                              'https://www.fijaciondeprecios.com/wp-content/uploads/2017/01/Puedo-cobrar-un-precio-mas-alto-Conozcalo-por-5-se%C3%B1ales-clave.jpg',
+                              'https://go.insitech.com.mx/wp-content/uploads/2022/12/La-guia-para-una-gestion-moderna-de-las-relaciones-con-los-proveedores.webp',
                               width: 100,
                               height: 100,
                               loadingBuilder: (BuildContext context,
@@ -284,7 +285,7 @@ class HomeState extends State<Home> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const Providers(),
+                                builder: (context) => const Compras(),
                               ));
                         },
                         child: Column(
@@ -319,45 +320,44 @@ class HomeState extends State<Home> {
                         ),
                       ),
                       const SizedBox(width: 100),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Cobranzas(),
-                              ));
-                        },
-                        child: Column(
-                          children: [
-                            const Text("Cobranzas"),
-                            Image.network(
-                              'https://www.g-talent.net/cdn/shop/articles/img-1659972637173_d775bd22-cd61-445a-aa42-48c0832b7472.jpg?v=1675217410',
-                              width: 100,
-                              height: 100,
-                              loadingBuilder: (BuildContext context,
-                                  Widget child,
-                                  ImageChunkEvent? loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                }
-
-                                return CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                );
-                              },
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                                return const Text(
-                                    "No se pudo cargar la imagen");
-                              },
-                            )
-                          ],
+                    GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const Precios(),
+                                  ));
+                            },
+                            child: Column(
+                              children: [
+                                const Text("Precios"),
+                                Image.network(
+                                  'https://www.fijaciondeprecios.com/wp-content/uploads/2017/01/Puedo-cobrar-un-precio-mas-alto-Conozcalo-por-5-se%C3%B1ales-clave.jpg',
+                                  width: 100,
+                                  height: 100,
+                                  loadingBuilder: (BuildContext context,
+                                      Widget child,
+                                      ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    );
+                                  },
+                                  errorBuilder: (BuildContext context,
+                                      Object exception, StackTrace? stackTrace) {
+                                    return const Text(
+                                        'No se pudo cargar la imagen');
+                                  },
+                                ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   Row(
@@ -404,7 +404,52 @@ class HomeState extends State<Home> {
                         ),
                       ),
                       const SizedBox(width: 100),
-                      GestureDetector(
+                    GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Cobranzas(),
+                              ));
+                        },
+                        child: Column(
+                          children: [
+                            const Text("Cobranzas"),
+                            Image.network(
+                              'https://www.g-talent.net/cdn/shop/articles/img-1659972637173_d775bd22-cd61-445a-aa42-48c0832b7472.jpg?v=1675217410',
+                              width: 100,
+                              height: 100,
+                              loadingBuilder: (BuildContext context,
+                                  Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                }
+
+                                return CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                );
+                              },
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                return const Text(
+                                    "No se pudo cargar la imagen");
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10,),
+                    Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                    GestureDetector(
                         onTap: () {
                           Navigator.push(
                               context,
@@ -414,6 +459,7 @@ class HomeState extends State<Home> {
                               ));
                         },
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const Text("Sincronizar"),
                             Image.network(

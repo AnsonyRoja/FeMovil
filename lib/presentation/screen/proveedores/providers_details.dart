@@ -41,6 +41,7 @@ class ProvidersDetailsScreen extends StatelessWidget {
                     ),
                     child: const Text('Datos Del Cliente', style:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                   ),
+
                 const SizedBox(height: 10,),
                 _buildTextFormField('Nombre', provider['bpname'].toString()),
                 _buildTextFormField('Ruc', provider['tax_id'].toString()),
@@ -68,11 +69,12 @@ class ProvidersDetailsScreen extends StatelessWidget {
                 
                 width: double.infinity, // Ocupa el ancho de la pantalla horizontalmente
                 child: ElevatedButton(
-                  
                   onPressed: () {
                     // Aquí puedes manejar la acción de agregar orden
                     // Por ejemplo, puedes navegar a una pantalla de agregar orden
-                   Navigator.push(context,MaterialPageRoute(builder: (context) => OrdenDeCompraScreen(providerId: provider["id"] ,providerName: provider["bpname"])),
+
+                    print('estos son los proveedores $provider');
+                   Navigator.push(context,MaterialPageRoute(builder: (context) => OrdenDeCompraScreen(providerId: provider["id"] ,providerName: provider["bpname"], cBPartnerID: provider['c_bpartner_id'], cBPartnerLocationId: provider['c_bpartner_location_id'] )),
                   );
 
                   },

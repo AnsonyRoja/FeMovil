@@ -39,3 +39,10 @@ si ese usuario puede ver ciertos modulos ya predeterminados
 11) Se agregara otra funcionalidad al sincronizar las ordenes, es decir puede sincronizarlo directamente
 desde la orden o puede hacerlo masivamente desde el modulo de Sincronizacion
 
+12) Se validara si no tiene mpartnerid y codigo entonces sincronizara el tercero 
+
+13) Enviar warning de sincronizar productos, solo si el producto no esta sincronizado, si no esta sincronizado
+que lo sincronice y lo agregue sino que no lo agregue
+
+
+14) la aplicacion debe funcionar en offline para que al sincronizarce funcione de ambas formas. 

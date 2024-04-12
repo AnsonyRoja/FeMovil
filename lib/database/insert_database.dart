@@ -106,7 +106,6 @@ Future<void> insertTaxData() async {
           'm_product_id': product['m_product_id'],
           'ad_client_id': order['ad_client_id'],
           'ad_org_id': order['ad_org_id'],
-          'c_order_id': order['c_order_id']
 
         });
 
@@ -130,37 +129,47 @@ Future<void> insertTaxData() async {
     Future insertOrderCompra(Map<String, dynamic> order) async {
     final db = await DatabaseHelper.instance.database;
     if (db != null) {
-      // Verificar la disponibilidad de productos antes de insertar la orden
-      // for (Map<String, dynamic> product in order['productos']) {
-      //   final productId = product['id'];
-      //   final productName = product['name'];
-      //   final productQuantity = product['quantity'];
-      //   final productAvailableQuantity = await getProductAvailableQuantity(productId);
-        
-      //   if (productQuantity > productAvailableQuantity) {
-      //     // Si la cantidad solicitada es mayor que la cantidad disponible, mostrar un mensaje de error
-      //     print('Error: Producto con ID $productId no tiene suficiente stock disponible.');
-      //     return {"failure": -1, "Error":"Producto $productName no tiene suficiente stock disponible." };
-      //   }
-      // }
+
 
       // Insertar la orden de venta en la tabla 'orden_venta'
       int orderId = await db.insert('orden_compra', {
         'proveedor_id': order['proveedor_id'],
-        'numero_referencia': order['numero_referencia'],
-        'numero_factura': order['numero_factura'],
-        'fecha': order['fecha'],
-        'descripcion': order['descripcion'],
-        'monto': order['monto'],
-        'saldo_neto':order['saldo_neto'],
+        'documentno': order['documentno'],
+        'c_doc_type_target_id': order['c_doc_type_target_id'],
+        'ad_client_id': order['ad_client_id'],
+        'ad_org_id': order['ad_org_id'],
+        'm_warehouse_id': order['m_warehouse_id'],
+        'payment_rule': order['payment_rule'],
+        'dateordered':order['dateordered'],
+        'sales_rep_id': order['sales_rep_id'],
+        'c_bpartner_id': order['c_bpartner_id'],
+        'c_bpartner_location_id': order['c_bpartner_location_id'],
+        'm_price_list_id' : order['m_price_list_id'],
+        'c_currency_id': order['c_currency_id'],
+        'c_payment_term_id': order['c_payment_term_id'],
+        'c_conversion_type_id' : order['c_conversion_type_id'],
+        'po_reference' : order['po_reference'], 
+        'description' : order['description'], 
+        'id_factura' : order['id_factura'], 
+        'fecha': order['fecha'], 
+        'monto' : order['monto'],
+        'saldo_neto': order['saldo_neto'],
+        'usuario_id':order['usuario_id'],
+        'status_sincronized' : order['status_sincronized'],
       });
 
       // Recorrer la lista de productos y agregarlos a la tabla de unión 'orden_venta_producto'
       for (Map<String, dynamic> product in order['productos']) {
         await db.insert('orden_compra_lines', {
-          'orden_venta_id': orderId,
+          'orden_compra_id': orderId,
           'producto_id': product['id'],
-          'cantidad': product['quantity'], // Agrega la cantidad del producto si es necesario
+          'qty_entered': product['quantity'],
+          'ad_client_id': order['ad_client_id'],
+          'ad_org_id': order['ad_org_id'], 
+          'price_entered': product['price'], 
+          'price_actual': product['price'],
+          'm_product_id': product['m_product_id'],  
+
         });
 
         // Actualizar la cantidad disponible del producto en la tabla 'products'

@@ -1,18 +1,27 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:femovil/config/getPosProperties.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/insert_database.dart';
 import 'package:femovil/presentation/orden_compra/product_selection.dart';
 import 'package:femovil/presentation/orden_venta/product_selection.dart';
+import 'package:femovil/presentation/perfil/perfil_http.dart';
+import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart'; // Importa la librería de formateo de fechas
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart'; // Importa la librería de formateo de fechas
 
 
 class OrdenDeCompraScreen extends StatefulWidget {
   final int providerId;
   final String providerName;
+  final int cBPartnerID;
+  final int cBPartnerLocationId;
 
-  const OrdenDeCompraScreen({super.key, required this.providerId, required this.providerName});
+  const OrdenDeCompraScreen({super.key, required this.providerId, required this.providerName, required this.cBPartnerID, required this.cBPartnerLocationId });
 
   @override
   _OrdenDeCompraScreenState createState() => _OrdenDeCompraScreenState();
@@ -25,15 +34,21 @@ class _OrdenDeCompraScreenState extends State<OrdenDeCompraScreen> {
   TextEditingController montoController = TextEditingController();
   TextEditingController numeroFacturaController = TextEditingController();
   TextEditingController saldoNetoController = TextEditingController();
+  TextEditingController fechaIdempiereController = TextEditingController();
+
   List<Map<String, dynamic>> selectedProducts = [];
   bool _validateDescription = false;
   DateTime selectedDate = DateTime.now();
   double? saldoNeto;
   double? totalImpuesto;
+  Map<String, dynamic> infoUserForOrder = {};
 
-    double calcularSaldoNetoProducto(cantidadProducts, price){
 
-        double multi = cantidadProducts * price;
+
+  double calcularSaldoNetoProducto(cantidadProducts, price){
+      
+
+        double multi = (cantidadProducts as num).toDouble() *  (price as num).toDouble();
 
         
           saldoNeto = multi;
@@ -70,6 +85,48 @@ class _OrdenDeCompraScreenState extends State<OrdenDeCompraScreen> {
     return suma;
 
   }
+
+
+ initGetUser()async{
+    final info = await getApplicationSupportDirectory();
+  print("esta es la ruta ${info.path}");
+
+
+  final String filePathEnv = '${info.path}/.env';
+  final File archivo = File(filePathEnv);
+  String contenidoActual = await archivo.readAsString();
+
+    Map<String, dynamic> infoLogin =  await getLogin();
+     Map<String, dynamic> jsonData = jsonDecode(contenidoActual);
+
+
+  var orgId = jsonData["OrgID"];
+  var clientId = jsonData["ClientID"];
+  var wareHouseId = jsonData["WarehouseID"];
+
+    print('Esto es infologin $infoLogin');
+
+    // Map<String, dynamic> getUser = await getUsers(username, password);
+
+    setState(() {
+     infoUserForOrder = {'orgid': orgId, 'clientid': clientId, 'warehouseid': wareHouseId, 'userId': infoLogin['userId'] } ;
+    });
+
+print('infouserFororder $infoUserForOrder');
+
+}
+
+  initV() async {
+    if (variablesG.isEmpty) {
+       await getPosPropertiesInit();
+      List<Map<String, dynamic>> response = await getPosPropertiesV();
+      setState(() { 
+        variablesG = response;
+      });
+
+    }
+  }
+
 
 
 Future<void> _selectDate(BuildContext context) async {
@@ -136,14 +193,17 @@ void _addOrUpdateProduct(List<Map<String, dynamic>> products) {
 void _removeProduct(int index) {
   setState(() {
     selectedProducts.removeAt(index);
-    montoController.text = calcularMontoTotal().toString();
+    montoController.text = calcularMontoTotal().toString() ;
   });
 }
 
 @override
 void initState() {
-    fechaController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
+    initV();
+    initGetUser();
+    fechaController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    fechaIdempiereController.text = DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedDate);
     print("Esto es el id ${widget.providerId}");
      print("Esto es el name ${widget.providerName}");
     super.initState();
@@ -164,7 +224,7 @@ void initState() {
             children: [
               TextField(
                 controller: numeroReferenciaController,
-                decoration: const InputDecoration(labelText: 'Número de Referencia'),
+                decoration: const InputDecoration(labelText: 'Número de Documento'),
               ),
               TextField(
                 controller: numeroFacturaController,
@@ -241,7 +301,7 @@ void initState() {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            product['name'],
+                            product['name'].toString(),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -339,16 +399,16 @@ void initState() {
                   // con los datos proporcionados
                   // Por ejemplo:
         
-                             if (descripcionController.text.isEmpty) {
-                                      setState(() {
-                                        _validateDescription = true; // Marcar como campo inválido si está vacío
-                                      });
+                            //  if (descripcionController.text.isEmpty) {
+                            //           setState(() {
+                            //             _validateDescription = true; // Marcar como campo inválido si está vacío
+                            //           });
         
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:  Text('Por favor ingrese una descripción.')));
+                            //                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:  Text('Por favor ingrese una descripción.')));
         
         
-                                      return; // Detener el proceso de agregar la orden si el campo está vacío
-                                }
+                            //           return; // Detener el proceso de agregar la orden si el campo está vacío
+                            //     }
         
         
         
@@ -374,15 +434,32 @@ void initState() {
         
                             return;
                           }
+                          
                   final order = {
                     'proveedor_id': widget.providerId,
-                    'numero_referencia': numeroReferenciaController.text,
-                    'numero_factura': numeroFacturaController.text,
+                    'documentno': numeroReferenciaController.text,
+                    'c_doc_type_target_id': variablesG[0]['c_doc_type_order_co'],
+                    'ad_client_id': infoUserForOrder['clientid'], 
+                    'ad_org_id': infoUserForOrder['orgid'],
+                    'm_warehouse_id' : infoUserForOrder['warehouseid'],
+                    'payment_rule': 'B',
+                    'dateordered': fechaIdempiereController.text,
+                    'sales_rep_id': infoUserForOrder['userId'],
+                    'c_bpartner_id': widget.cBPartnerID,
+                    'c_bpartner_location_id': widget.cBPartnerLocationId,
+                    'm_price_list_id': variablesG[0]['m_pricelist_id'],
+                    'c_currency_id': 100, 
+                    'c_payment_term_id':  variablesG[0]['c_paymentterm_id'], 
+                    'c_conversion_type_id': variablesG[0]['c_conversion_type_id'], 
+                    'po_reference': numeroFacturaController.text,
+                    'id_factura': 0,
                     'fecha': fechaController.text,
-                    'descripcion': descripcionController.text,
+                    'description': descripcionController.text,
                     'monto': double.parse(montoController.text.substring(1)),
                     'saldo_neto':double.parse(saldoNetoController.text.substring(1)),
-                    'productos': selectedProducts, // Esta lista contendría los detalles de los productos seleccionados
+                    'productos': selectedProducts, 
+                    'usuario_id' :infoUserForOrder['userId'],
+                    'status_sincronized': 'Borrador',
                   };
                  
                   // Luego puedes guardar la orden de venta en la base de datos o enviarla al servidor

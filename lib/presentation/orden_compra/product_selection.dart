@@ -1,4 +1,5 @@
 import 'package:femovil/database/gets_database.dart';
+import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProductSelectionComprasScreen extends StatefulWidget {
@@ -55,16 +56,19 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
               itemBuilder: (context, index) {
                 final productName = filteredProducts[index]['name'];
                 final productPrice = filteredProducts[index]['price'];
+                final mProductId = filteredProducts[index]['m_product_id'];
                 final isSelected = selectedProducts.any((product) => product['name'] == productName);
                 final quantity = productQuantities[productName] ?? 0; // Obtener la cantidad seleccionada o 0 si no hay ninguna
                 
+                print('propiedades de los productos $filteredProducts');
+
                 return ListTile(
                   title: Text(productName),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Precio: \$${productPrice is !String ? productPrice.toStringAsFixed(2) : 0 }'),
-                      Text('Cantidad: ${quantity is int ? quantity : 0}'),
+                      Text('Precio: \$${productPrice != '{@nil=true}' ? productPrice.toStringAsFixed(2) : 0}'),
+                      Text('Cantidad: ${quantity is double ? quantity : 0}'),
                     ],
                   ),
                   trailing: isSelected
@@ -83,9 +87,10 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
                         "name": productName,
                         "quantity_avaible" : filteredProducts[index]['quantity'],
                         "quantity": newQuantity, // Usar la nueva cantidad calculada
-                        "price": productPrice,
-                        "impuesto": filteredProducts[index]['tax_rate']
-
+                        "price": productPrice != '{@nil=true}' ? productPrice : 0 ,
+                        "impuesto": filteredProducts[index]['tax_rate'],
+                        "m_product_id": mProductId,
+                        
                       };
 
                       setState(() {

@@ -173,7 +173,7 @@ synchronizeVendorsWithIdempiere(setState) async {
     print('Esto es el codigo de partnert id  $cBParnertId, esto es el $newCodClient, esto es el $cLocationId y esto es el cbparnert location id $cBPartnerLocationId');
 
 
-    await updateCustomerCBPartnerIdAndCodClientVendor(
+    await updateCBPartnerIdAndCodVendor(
         vendorsData['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -7,59 +6,51 @@ import 'package:femovil/config/url.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/update_database.dart';
-import 'package:femovil/infrastructure/models/clients.dart';
-import 'package:femovil/presentation/clients/idempiere/create_customer.dart';
+import 'package:femovil/infrastructure/models/vendors.dart';
 import 'package:femovil/presentation/perfil/perfil_http.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
+import 'package:femovil/presentation/screen/proveedores/idempiere/create_vendor.dart';
+import 'package:femovil/presentation/screen/ventas/idempiere/create_orden_sales.dart';
 import 'package:path_provider/path_provider.dart';
 
+updateAndCreateVendors(orderPurchaseList) async{
 
+  Map<String, dynamic>? vendorIsSincronized = await getVendorsById(orderPurchaseList['proveedor_id']);
 
+      print('Esto es vendor $vendorIsSincronized ');
 
-
-
-
-
-updateAndCreateTercero(orderSalesList) async{
-
-  Map<String, dynamic>? customerIsSincronized = await getClientById(orderSalesList['cliente_id']);
-
-
-      print('Esto es customer $customerIsSincronized ');
-
-        if(customerIsSincronized!['c_bpartner_id'] == 0 && customerIsSincronized['cod_client'] == 0){
+        if(vendorIsSincronized!['c_bpartner_id'] == 0 && vendorIsSincronized['c_code_id'] == 0){
           
-            Customer customer = Customer(
-                    cbPartnerId: customerIsSincronized['c_bpartner_id'],
-                    codClient: customerIsSincronized['cod_client'],
-                    isBillTo: 'Y',
-                    address: customerIsSincronized['address'],
-                    bpName: customerIsSincronized['bp_name'],
-                    cBpGroupId: customerIsSincronized['c_bp_group_id'],
-                    cBpGroupName: customerIsSincronized['group_bp_name'],
-                    cBparnetLocationId: 0,
-                    cCityId: customerIsSincronized['c_city_id'],
-                    cCountryId: customerIsSincronized['c_country_id'],
-                    cLocationId: 0, 
-                    cRegionId: 0,
-                    city: customerIsSincronized['city'],
-                    codePostal: customerIsSincronized['code_postal'],
-                    country: customerIsSincronized['country'],
-                    email: customerIsSincronized['email'],
-                    lcoTaxIdTypeId: customerIsSincronized['lco_tax_id_typeid'],
-                    lcoTaxPayerTypeId: customerIsSincronized['lco_tax_payer_typeid'],
-                    lvePersonTypeId: customerIsSincronized['lve_person_type_id'],
-                    personTypeName: customerIsSincronized['person_type_name'],
-                    phone: customerIsSincronized['phone'],
-                    region: customerIsSincronized['region'],
-                    ruc: customerIsSincronized['ruc'],
-                    taxIdTypeName: customerIsSincronized['tax_id_type_name'],
-                    taxPayerTypeName: customerIsSincronized['tax_payer_type_name']
+            Vendor vendor = Vendor(
+                    cBPartnerId: vendorIsSincronized['c_bpartner_id'],
+                    cCodeId: vendorIsSincronized['c_code_id'],
+                    bPName: vendorIsSincronized['bpname'],
+                    cBPGroupId: vendorIsSincronized['c_bp_group_id'],
+                    groupBPName: vendorIsSincronized['groupbpname'],
+                    taxId: vendorIsSincronized['tax_id'],
+                    isBillTo: vendorIsSincronized['is_bill_to'],
+                    isVendor: vendorIsSincronized['is_vendor'],
+                    address: vendorIsSincronized['address'],
+                    phone: vendorIsSincronized['phone'],
+                    cCityId: vendorIsSincronized['c_city_id'],
+                    cCountryId: vendorIsSincronized['c_country_id'],
+                    cLocationId: vendorIsSincronized['c_location_id'], 
+                    city: vendorIsSincronized['city'],
+                    email: vendorIsSincronized['email'],
+                    lcoTaxIdTypeId: vendorIsSincronized['lco_tax_id_type_id'],
+                    lvePersonTypeId: vendorIsSincronized['lve_person_type_id'],
+                    personTypeName: vendorIsSincronized['person_type_name'],
+                    cBPartnerLocationId: vendorIsSincronized['c_bpartner_location_id'],
+                    countryName: vendorIsSincronized['country_name'],
+                    postal: vendorIsSincronized['postal'],
+                    taxIdTypeName: vendorIsSincronized['tax_id_type_name'],
+                    lcoTaxtPayerTypeId: vendorIsSincronized['lco_taxt_payer_type_id'],
+                    taxPayerTypeName: vendorIsSincronized['tax_payer_type_name']
 
                 );
  
-        print('Entre aqui en la creacion del cliente');
-                dynamic result = await createCustomerIdempiere(customer.toMap());
+        print('Entre aqui en la creacion del proveedor');
+                dynamic result = await createVendorIdempiere(vendor.toMap());
     print('este es el $result');
 
     final cBParnertId =
@@ -79,14 +70,12 @@ updateAndCreateTercero(orderSalesList) async{
 
     print('Esto es el codigo de partnert id  $cBParnertId, esto es el $newCodClient, esto es el $cLocationId y esto es el cbparnert location id $cBPartnerLocationId');
 
-
       
-    await updateCustomerCBPartnerIdAndCodClient(
-        customerIsSincronized['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
+    await updateCBPartnerIdAndCodVendor(
+        vendorIsSincronized['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
 
-        print('Entre aqui 3');
 
-        Map<String, dynamic>? customerIsSincronizedTrue = await getClientById(orderSalesList['cliente_id']);
+        Map<String, dynamic>? customerIsSincronizedTrue = await getVendorsById(orderPurchaseList['proveedor_id']);
              final db = await DatabaseHelper.instance.database;
 
 
@@ -94,12 +83,12 @@ updateAndCreateTercero(orderSalesList) async{
           if (db != null) {
             print('entre aqui 4');
             int rowsAffected = await db.update(
-              'orden_venta',
+              'orden_compra',
               {
                 'c_bpartner_location_id': customerIsSincronizedTrue!['c_bpartner_location_id'],
                 'c_bpartner_id': customerIsSincronizedTrue['c_bpartner_id'],
               },
-              where: 'cliente_id = ?',
+              where: 'proveedor_id = ?',
               whereArgs: [customerIsSincronizedTrue['id']],
             );
 
@@ -112,7 +101,7 @@ updateAndCreateTercero(orderSalesList) async{
         }
 
 
-  return await obtenerOrdenDeVentaConLineasPorId(orderSalesList['id']);
+  return await obtenerOrdenDeCompraConLineasPorId(orderPurchaseList['id']);
 
 
 }
@@ -120,36 +109,8 @@ updateAndCreateTercero(orderSalesList) async{
 
 
 
-Future<bool> checkInternetConnectivity() async {
-  dynamic map = await getRuta();
-  try {
-    // Desactivar la verificación del certificado SSL
-    HttpClient client = HttpClient();
-    client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
 
-    // Realizar la solicitud HTTP con el cliente personalizado
-    final response = await client.headUrl(Uri.parse('${map['URL']}'));
-    final httpResponse = await response.close();
-
-      print('Esto es http ${httpResponse.statusCode}');
-    // Verificar si la respuesta tiene un código de estado exitoso (2xx)
-    if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
-      // Se recibió una respuesta exitosa, lo que significa que hay conexión a internet
-      return true;
-    } else {
-      // No se recibió una respuesta exitosa, lo que significa que no hay conexión a internet
-      return false;
-    }
-  } catch (e) {
-    // Si ocurre algún error durante la solicitud, asumimos que no hay conexión a internet
-    print('Error al verificar la conexión a internet: $e');
-    return false;
-  }
-}
-
-// Esta funcion nos ayudara a crear una nueva orden
-
-createOrdenSalesIdempiere(orderSalesList) async {
+createOrdenPurchaseIdempiere(orderPurchaseList) async {
 
 
    dynamic isConnection = await checkInternetConnectivity();
@@ -159,17 +120,17 @@ createOrdenSalesIdempiere(orderSalesList) async {
               }
     
 
-          if(orderSalesList!['c_bpartner_id'] == 0 && orderSalesList['c_bpartner_location_id'] == 0){
+          if(orderPurchaseList!['c_bpartner_id'] == 0 && orderPurchaseList['c_bpartner_location_id'] == 0){
 
-            orderSalesList = await updateAndCreateTercero(orderSalesList);
+            orderPurchaseList = await updateAndCreateVendors(orderPurchaseList);
           
           }
 
 
 
 
-    print('Esto es ordersaleslist actual $orderSalesList');
-
+    print('Esto es ordersaleslist actual $orderPurchaseList');
+      
       HttpClient httpClient = HttpClient()
         ..badCertificateCallback = (X509Certificate cert, String host, int port) {
           return true;
@@ -177,7 +138,9 @@ createOrdenSalesIdempiere(orderSalesList) async {
 
       try {
         initV() async {
+         
           if (variablesG.isEmpty) {
+           
             await getPosPropertiesInit();
             List<Map<String, dynamic>> response = await getPosPropertiesV();
             print('variables Entre aqui');
@@ -213,7 +176,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
     var clientId = jsonData["ClientID"];
     var wareHouseId = jsonData["WarehouseID"];
     var language = jsonData["Language"];
-    print("Esto es orderSales List nuevo $orderSalesList");
+    print("Esto es orderSales List nuevo $orderPurchaseList");
    
   
        requestBody = {
@@ -244,16 +207,16 @@ createOrdenSalesIdempiere(orderSalesList) async {
                     "field": [
                       {
                         "@column": "AD_Client_ID",
-                        "val": orderSalesList['ad_client_id']
+                        "val": orderPurchaseList['ad_client_id']
                       },
-                      {"@column": "AD_Org_ID", "val": orderSalesList['ad_org_id']},
+                      {"@column": "AD_Org_ID", "val": orderPurchaseList['ad_org_id']},
                       {
                         "@column": "C_BPartner_ID",
-                        "val": orderSalesList['c_bpartner_id'],
+                        "val": orderPurchaseList['c_bpartner_id'],
                       },
                       {
                         "@column": "C_BPartner_Location_ID",
-                        "val": orderSalesList['c_bpartner_location_id'],
+                        "val": orderPurchaseList['c_bpartner_location_id'],
                       },
                       {
                         "@column": "C_Currency_ID",
@@ -261,7 +224,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "Description",
-                        "val": orderSalesList['descripcion'],
+                        "val": orderPurchaseList['description'],
                       },
                       {
                         "@column": "C_ConversionType_ID",
@@ -269,7 +232,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "C_DocTypeTarget_ID",
-                        "val": orderSalesList['c_doctypetarget_id']
+                        "val": orderPurchaseList['c_doc_type_target_id']
                       },
                       {
                         "@column": "C_PaymentTerm_ID",
@@ -277,7 +240,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "DateOrdered",
-                        "val": orderSalesList['date_ordered']
+                        "val": orderPurchaseList['dateordered']
                       },
                       {"@column": "IsTransferred", "val": 'Y'},
                       {
@@ -286,12 +249,12 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "M_Warehouse_ID",
-                        "val": orderSalesList['m_warehouse_id']
+                        "val": orderPurchaseList['m_warehouse_id']
                       },
                       {"@column": "PaymentRule", "val": 'B'},
                       {
                         "@column": "SalesRep_ID",
-                        "val": orderSalesList['usuario_id']
+                        "val": orderPurchaseList['usuario_id']
                       },
                       {"@column": "LVE_PayAgreement_ID", "val": '1000001'}
                   
@@ -306,7 +269,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
       };
 
       // Crear las líneas de la orden
-  final lines = createLines(orderSalesList['lines'], orderSalesList['usuario_id']);
+  final lines = createLines(orderPurchaseList['lines'], orderPurchaseList['usuario_id']);
 
   // Agregar las líneas de la orden al JSON de la orden
   for (var line in lines) {
@@ -346,7 +309,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
 
         String documentNo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
         dynamic cOrderId = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
-        print(' esto es el client id ${orderSalesList['id']} Esto es el document no $documentNo y este es el orderid $cOrderId');
+        print(' esto es el client id ${orderPurchaseList['id']} Esto es el document no $documentNo y este es el orderid $cOrderId');
 
                         Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
 
@@ -358,9 +321,9 @@ createOrdenSalesIdempiere(orderSalesList) async {
 
                       String newStatus = 'Enviado';
 
-                      updateOrdereSalesForStatusSincronzed(orderSalesList['id'], newStatus);
+                      updateOrdereSalesForStatusSincronzed(orderPurchaseList['id'], newStatus);
 
-                      actualizarDocumentNo(orderSalesList['id'], nuevoDocumentNoAndCOrderId);
+                      actualizarDocumentNoVendor(orderPurchaseList['id'], nuevoDocumentNoAndCOrderId);
 
     return parsedJson;
 
@@ -408,5 +371,6 @@ createLines(lines, rePId) {
   return linea;
 
 }
+
 
 

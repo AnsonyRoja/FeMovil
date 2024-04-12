@@ -105,6 +105,23 @@ Future<List<Map<String, dynamic>>> getProducts() async {
       return [];
     }
   }
+  
+    Future<List<Map<String, dynamic>>> getAllOrdersWithVendorsNames() async {
+    final db = await DatabaseHelper.instance.database;
+    if (db != null) {
+      // Consultar todas las órdenes de venta con el nombre del cliente asociado
+      List<Map<String, dynamic>> orders = await db.rawQuery('''
+        SELECT o.*, p.bpname AS nombre_proveedor, p.tax_id as ruc
+        FROM orden_compra o
+        INNER JOIN providers p ON o.proveedor_id = p.id
+      ''');
+      return orders;
+    } else {
+      // Manejar el caso en el que db sea null
+      print('Error: db is null');
+      return [];
+    }
+  }
 
 
   Future<Map<String, dynamic>> getOrderWithProducts(int orderId) async {
@@ -141,6 +158,63 @@ Future<List<Map<String, dynamic>>> getProducts() async {
           FROM clients c
           WHERE  c.id = ?
         ''', [clienteId]); 
+
+
+        // Crear un mapa que contenga la orden de venta y sus productos
+        Map<String, dynamic> orderWithProducts = {
+          'client': clientsResult,
+          'order': orderResult.first, // La primera (y única) fila de la consulta de la orden de venta
+          'products': productsResult, // Resultado de la consulta de productos asociados
+        };
+
+        return orderWithProducts;
+      } else {
+        // Manejar el caso en el que no se encuentra la orden de venta
+        print('Error: No se encontró la orden de venta con ID $orderId');
+        return {};
+      }
+    } else {
+      // Manejar el caso en el que db sea null
+      print('Error: db is null');
+      return {};
+    }
+  }
+
+
+    Future<Map<String, dynamic>> getOrderPurchaseWithProducts(int orderId) async {
+    
+
+    final db = await DatabaseHelper.instance.database;
+    if (db != null) {
+      // Consultar la orden de venta con el ID especificado
+      List<Map<String, dynamic>> orderResult = await db.query(
+        'orden_compra',
+        where: 'id = ?',
+        whereArgs: [orderId],
+      );
+
+
+
+
+      if (orderResult.isNotEmpty) {
+        // Consultar los productos asociados a la orden de venta
+       List<Map<String, dynamic>> productsResult = await db.rawQuery('''
+          SELECT p.id, p.name, p.price, p.quantity, ocl.qty_entered, ocl.price_actual, t.rate AS impuesto
+          FROM products p
+          INNER JOIN orden_compra_lines ocl ON p.id = ocl.producto_id
+          INNER JOIN tax t ON p.tax_cat_id  = t.c_tax_category_id
+          WHERE ocl.orden_compra_id = ?
+        ''', [orderId]);
+
+
+        int provedorId = orderResult[0]['proveedor_id'];
+
+
+        List<Map<String, dynamic>> clientsResult = await db.rawQuery('''
+          SELECT p.bpname, p.tax_id
+          FROM providers p
+          WHERE  p.id = ?
+        ''', [provedorId]); 
 
 
         // Crear un mapa que contenga la orden de venta y sus productos
@@ -455,8 +529,151 @@ Future<Map<String, dynamic>> obtenerOrdenDeVentaConLineasPorId(int orderId) asyn
       'm_product_id': row['m_product_id'],
       'qty_entered': row['qty_entered']
     });
+
   }
 
   // Retornar la orden de venta con sus líneas de productos
   return ordenDeVenta;
+}
+
+Future<Map<String, dynamic>> obtenerOrdenDeCompraConLineasPorId(int orderId) async {
+  final db = await DatabaseHelper.instance.database;
+
+  final List<Map<String, dynamic>> resultado = await db!.rawQuery('''
+
+    SELECT 
+      orden_compra.id,
+      orden_compra.c_doc_type_target_id,
+      orden_compra.ad_client_id,
+      orden_compra.ad_org_id,
+      orden_compra.m_warehouse_id,
+      orden_compra.documentno,
+      orden_compra.payment_rule,
+      orden_compra.dateordered,
+      orden_compra.sales_rep_id,
+      orden_compra.c_bpartner_id,
+      orden_compra.c_bpartner_location_id,
+      orden_compra.fecha,
+      orden_compra.description,
+      orden_compra.monto,
+      orden_compra.saldo_neto,
+      orden_compra.usuario_id,
+      orden_compra.proveedor_id,
+      orden_compra.status_sincronized,
+      orden_compra_lines.id AS line_id,
+      orden_compra_lines.producto_id,
+      orden_compra_lines.price_entered,
+      orden_compra_lines.price_actual,
+      orden_compra_lines.m_product_id,
+      orden_compra_lines.qty_entered
+    FROM orden_compra
+    JOIN orden_compra_lines ON orden_compra.id = orden_compra_lines.orden_compra_id
+    WHERE orden_compra.id = ?
+
+  ''', [orderId]);
+
+  // Si no se encontraron resultados, retornar un mapa vacío
+  if (resultado.isEmpty) return {};
+
+  // Crear un mapa para almacenar la orden de venta y sus líneas de productos
+  Map<String, dynamic> ordenDeCompra = {};
+
+  // Iterar sobre el resultado y construir la estructura deseada
+  for (var row in resultado) {
+    // Si la orden de venta aún no ha sido agregada al mapa, agregarla
+    if (ordenDeCompra.isEmpty) {
+      ordenDeCompra = {
+        'id': row['id'],
+        'c_doc_type_target_id': row['c_doc_type_target_id'],
+        'ad_client_id': row['ad_client_id'],
+        'ad_org_id': row['ad_org_id'],
+        'm_warehouse_id': row['m_warehouse_id'],
+        'documentno': row['documentno'],
+        'payment_rule': row['payment_rule'],
+        'dateordered': row['dateordered'],
+        'sales_rep_id': row['sales_rep_id'],
+        'c_bpartner_id': row['c_bpartner_id'],
+        'c_bpartner_location_id': row['c_bpartner_location_id'],
+        'fecha': row['fecha'],
+        'description': row['description'],
+        'monto': row['monto'],
+        'saldo_neto': row['saldo_neto'],
+        'usuario_id': row['usuario_id'],
+        'proveedor_id': row['proveedor_id'],
+        'status_sincronized': row['status_sincronized'],
+        'lines': [] // Inicializar la lista de líneas de productos
+      };
+    }
+
+    // Agregar la línea de producto actual a la lista de líneas de la orden de venta
+    ordenDeCompra['lines'].add({
+      'line_id': row['line_id'],
+      'ad_client_id':row['ad_client_id'],
+      'ad_org_id': row['ad_org_id'],
+      'producto_id': row['producto_id'],
+      'price_entered': row['price_entered'],
+      'price_actual': row['price_actual'],
+      'm_product_id': row['m_product_id'],
+      'qty_entered': row['qty_entered']
+    });
+  }
+
+
+  // Retornar la orden de venta con sus líneas de productos
+  return ordenDeCompra;
+}
+
+
+
+Future<Map<String, dynamic>?> getClientById(int clientId) async {
+  final db = await DatabaseHelper.instance.database;
+
+  if (db != null) {
+    // Realiza la consulta para recuperar el cliente con el ID especificado
+    List<Map<String, dynamic>> results = await db.query(
+      'clients',
+      where: 'id = ?',
+      whereArgs: [clientId],
+    );
+
+    // Verifica si se encontró un cliente con el ID especificado
+    if (results.isNotEmpty) {
+      // Devuelve el primer cliente encontrado (debería ser único ya que se filtra por ID)
+      return results.first;
+    } else {
+      // Si no se encontró ningún cliente con el ID especificado, devuelve null
+      return null;
+    }
+  } else {
+    // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
+    print('Error: db is null');
+    return null;
+  }
+}
+
+
+Future<Map<String, dynamic>?> getVendorsById(int vendorId) async {
+  final db = await DatabaseHelper.instance.database;
+
+  if (db != null) {
+    // Realiza la consulta para recuperar el cliente con el ID especificado
+    List<Map<String, dynamic>> results = await db.query(
+      'providers',
+      where: 'id = ?',
+      whereArgs: [vendorId],
+    );
+
+    // Verifica si se encontró un cliente con el ID especificado
+    if (results.isNotEmpty) {
+      // Devuelve el primer cliente encontrado (debería ser único ya que se filtra por ID)
+      return results.first;
+    } else {
+      // Si no se encontró ningún cliente con el ID especificado, devuelve null
+      return null;
+    }
+  } else {
+    // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
+    print('Error: db is null');
+    return null;
+  }
 }

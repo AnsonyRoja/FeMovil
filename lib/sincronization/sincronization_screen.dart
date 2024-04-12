@@ -58,10 +58,10 @@ class _SynchronizationScreenState extends State<SynchronizationScreen> {
                 });
               }
               
-                // await sincronizationImpuestos(setState);
-                // await synchronizeCustomersWithIdempiere(setState);
+                await sincronizationImpuestos(setState);
+                await synchronizeCustomersWithIdempiere(setState);
                 await synchronizeVendorsWithIdempiere(setState);
-                // await synchronizeProductsWithIdempiere(setState);
+                await synchronizeProductsWithIdempiere(setState);
                 // sincronizationCustomers(setState);
                 // await synchronizeOrderSalesWithIdempiere(setState); 
 

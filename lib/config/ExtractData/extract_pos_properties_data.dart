@@ -38,7 +38,7 @@ try {
       'address1':dataRows[17]['field'][1]['val'],
       'm_pricelist_id':dataRows[18]['field'][1]['val'],
       'c_currency_id':dataRows[19]['field'][1]['val'],
-    
+      'c_doc_type_order_co': dataRows[20]['field'][1]['val']
     };
     // Agrega los datos del producto a la lista
     posPropertiesData.add(posPropiertieData);

@@ -1,6 +1,7 @@
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
+import 'package:femovil/presentation/screen/compras/compras_details.dart';
 import 'package:femovil/presentation/screen/ventas/ventas_details.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,46 +9,46 @@ import 'package:intl/intl.dart';
 
 
 
-class Ventas extends StatefulWidget {
-  const Ventas({super.key});
+class Compras extends StatefulWidget {
+  const Compras({super.key});
 
   @override
-  State<Ventas> createState() => _VentasState();
+  State<Compras> createState() => _ComprasState();
 }
 
-class _VentasState extends State<Ventas> {
+class _ComprasState extends State<Compras> {
   String _filter = "";
   DateTimeRange? _selectedDateRange; // Declare and initialize to null
 
-  late List<Map<String, dynamic>> ventas = [];
-  List<Map<String, dynamic>> filteredVentas = [];
+  late List<Map<String, dynamic>> compras = [];
+  List<Map<String, dynamic>> filteredCompras = [];
   TextEditingController searchController = TextEditingController();
     TextEditingController inputValue = TextEditingController();
 
   String input = "";
   int? searchValue;
 
-      Future<void> _loadVentas() async {
-        final ventasData = await getAllOrdersWithClientNames(); // Cambiar a la función de obtener ventas
+      Future<void> _loadCompras() async {
+        final comprasData = await getAllOrdersWithVendorsNames(); // Cambiar a la función de obtener ventas
 
-            print("Esto es la venta Data $ventasData");
+            print("Esto es la venta Data $comprasData");
 
             setState(() {
-              ventas = ventasData;
-              filteredVentas = ventasData;
+              compras = comprasData;
+              filteredCompras = comprasData;
             });
       }
 
   @override
   void initState() {
-    _loadVentas();
+    _loadCompras();
     super.initState();
   }
 
 void _filterByMaxPrice(double maxPrice) {
   setState(() {
-    filteredVentas = ventas.where((venta) => venta['monto'] <= maxPrice).toList();
-    filteredVentas.sort((a, b) => b['monto'].compareTo(a['monto'])); // Ordena las ventas de mayor a menor monto
+    filteredCompras = compras.where((venta) => venta['monto'] <= maxPrice).toList();
+    filteredCompras.sort((a, b) => b['monto'].compareTo(a['monto'])); // Ordena las ventas de mayor a menor monto
   });
 }
 
@@ -80,7 +81,7 @@ void _sortByDateRange(DateTime start, DateTime end) {
 
   print("fecha start $start y fecha end $end");
   setState(() {
-    filteredVentas = ventas.where((venta) {
+    filteredCompras = compras.where((venta) {
       final DateFormat dateFormat = DateFormat('dd/MM/yyyy');
           try {
             if (venta['fecha'] != null && venta['fecha'] != '') {
@@ -98,9 +99,9 @@ void _sortByDateRange(DateTime start, DateTime end) {
           }
     }).toList();
       print("entre aqui para el sort o algoritmo de ordenamiento");
-      print("FItered Ventas $filteredVentas " );
+      print("FItered Ventas $filteredCompras " );
     // Ordena las ventas dentro del rango de fechas seleccionado
-        filteredVentas.sort((a, b) {
+        filteredCompras.sort((a, b) {
           final DateFormat inputFormat = DateFormat('dd/MM/yyyy');
           final DateTime dateA = inputFormat.parse(a['fecha']);
           final DateTime dateB = inputFormat.parse(b['fecha']);
@@ -196,7 +197,7 @@ void _showFilterOptions(BuildContext context) {
     return Scaffold(
             backgroundColor: const Color.fromARGB(255, 236, 247, 255),
 
-      appBar: AppBar(title: const Text("Ventas", style: TextStyle(
+      appBar: AppBar(title: const Text("Compras", style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w400,
             color: Color.fromARGB(255, 105, 102, 102),
@@ -241,11 +242,11 @@ void _showFilterOptions(BuildContext context) {
                       });
                     }
                     setState(() {
-                  filteredVentas = ventas.where((venta) {
-                  final numeroReferencia = venta['id'].toString();
-                  final nombreCliente = venta['nombre_cliente'].toString();
-                  final orderSale = venta['documentno'].toString();
-                  return numeroReferencia.contains(value) || nombreCliente.contains(value) || orderSale.contains(value) ;
+                  filteredCompras = compras.where((compra) {
+                  final numeroReferencia = compra['id'].toString();
+                  final nombreProveedor = compra['nombre_proveedor'].toString().toLowerCase();
+                  final orderSale = compra['documentno'].toString();
+                  return numeroReferencia.contains(value) || nombreProveedor.contains(value.toLowerCase()) || orderSale.contains(value) ;
                 }).toList();
                 });
                   },
@@ -258,10 +259,12 @@ void _showFilterOptions(BuildContext context) {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: filteredVentas.length,
+                  itemCount: filteredCompras.length,
                   itemBuilder: (context, index) {
-                    final venta = filteredVentas[index];
-                    print('esto es ventas $venta');
+                    final compra = filteredCompras[index];
+                    
+                    print('esto es ventas $compra');
+
                     return Column(
                       children: [
                         Container(  
@@ -274,7 +277,7 @@ void _showFilterOptions(BuildContext context) {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("N° ${venta['documentno'] != '' ? venta['documentno'] : venta['id']}",
+                            child: Text("N° ${compra['documentno'] != '' ? compra['documentno'] : compra['id']}",
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -293,12 +296,12 @@ void _showFilterOptions(BuildContext context) {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Nombre: ${venta['nombre_cliente']}'),
-                                Text('Fecha:  ${venta['fecha']}'),
-                                Text('Monto: ${venta['monto']}'),
-                                Text('Descripcion: ${venta['descripcion']}'),
+                                Text('Nombre: ${compra['nombre_proveedor']}'),
+                                Text('Fecha:  ${compra['fecha']}'),
+                                Text('Monto: ${compra['monto']}'),
+                                Text('Descripcion: ${compra['description']}'),
                                 // aqui quiero agregar los dos botones con space betwenn 
-                                     
+                                         
                               ],
                             ),
                           ),
@@ -318,7 +321,7 @@ void _showFilterOptions(BuildContext context) {
                                       // Acción al presionar el botón "Ver más"
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => VentasDetails(ventaId: venta['id'], nameClient: venta['nombre_cliente'], saldoTotal: venta['saldo_total']),
+                                            builder: (context) => ComprasDetails(compraId: compra['id'], nameProveedor: compra['nombre_proveedor']),
                                           ),
                                         );
                                     },
@@ -326,14 +329,14 @@ void _showFilterOptions(BuildContext context) {
                                   ),
                                   ElevatedButton(
                                       style: ButtonStyle(
-                                      backgroundColor:venta['saldo_total'] > 0 && venta['status_sincronized'] == 'Completado' ? MaterialStateProperty.all<Color>(Colors.green) : MaterialStateProperty.all<Color>(Colors.grey),
+                                      backgroundColor:compra['status_sincronized'] == 'Completado' ? MaterialStateProperty.all<Color>(Colors.green) : MaterialStateProperty.all<Color>(Colors.grey),
                                       foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                                     ),
-                                    onPressed: venta['saldo_total'] > 0 && venta['status_sincronized'] == 'Completado' ? () {
+                                    onPressed: compra['status_sincronized'] == 'Completado' ? () {
                                       // Acción al presionar el botón "Cobrar"
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => Cobro(orderId: venta['id'], loadCobranzas: _loadVentas,saldoTotal: venta['saldo_total'], ),
+                                            builder: (context) => Cobro(orderId: compra['id'], loadCobranzas: _loadCompras ,saldoTotal: compra['saldo_total'], ),
                                           ),
                                         );
                                     }: null,

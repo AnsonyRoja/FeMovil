@@ -28,12 +28,12 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+
   cupertino_icons: ^1.0.6
   flutter:
     sdk: flutter
   flutter_date_pickers: ^0.4.2
   flutter_feather_icons: ^2.0.0+1
-  http: ^1.2.1
   image_picker: ^1.0.7
   intl: ^0.18.1
   path_provider: ^2.1.2
