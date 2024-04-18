@@ -62,6 +62,7 @@ synchronizeCustomersWithIdempiere(setState) async {
   print('Esto es custommer en cero $customersWithZeroValues');
   
   for (var customersData in customersWithZeroValues) {
+
     Customer customer = Customer(
         cbPartnerId: customersData['c_bpartner_id'],
         codClient: customersData['cod_client'],
@@ -114,6 +115,7 @@ synchronizeCustomersWithIdempiere(setState) async {
     await updateCustomerCBPartnerIdAndCodClient(
         customersData['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
   }
+  
 }
 
 synchronizeVendorsWithIdempiere(setState) async {

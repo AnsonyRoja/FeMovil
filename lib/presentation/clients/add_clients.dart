@@ -2,7 +2,6 @@ import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/list_database.dart';
 import 'package:femovil/infrastructure/models/clients.dart';
 import 'package:femovil/presentation/clients/select_customer.dart';
-import 'package:femovil/presentation/products/utils/switch_generated_names_select.dart';
 import 'package:flutter/material.dart';
 
 class AddClientsForm extends StatefulWidget {
@@ -84,9 +83,8 @@ class _AddClientsFormState extends State<AddClientsForm> {
   void initState() {
     loadList();
 
-   
-
     super.initState();
+  
   }
 
   @override
@@ -195,14 +193,14 @@ class _AddClientsFormState extends State<AddClientsForm> {
 
                     },),
                     const SizedBox(height: 10,),
-                    CustomDropdownButtonFormField(identifier: 'typePerson', selectedIndex: _seletectedTypePerson, dataList: _typePersonList, text: _typePersonText, onSelected: (newValue, tyPersonText) {
-                        setState(() {
-                          _seletectedTypePerson = newValue ?? 0;
-                          _typePersonText = tyPersonText;
+                    // CustomDropdownButtonFormField(identifier: 'typePerson', selectedIndex: _seletectedTypePerson, dataList: _typePersonList, text: _typePersonText, onSelected: (newValue, tyPersonText) {
+                    //     setState(() {
+                    //       _seletectedTypePerson = newValue ?? 0;
+                    //       _typePersonText = tyPersonText;
 
-                        });
+                    //     });
 
-                    },),
+                    // },),
                     const SizedBox(
                       height: 10,
                     ),

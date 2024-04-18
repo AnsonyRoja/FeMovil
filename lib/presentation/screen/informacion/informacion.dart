@@ -11,9 +11,7 @@ class Informacion extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 247, 255),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 236, 247, 255),
         leading: const Icon(null),
       ),
       body: Padding(
@@ -25,7 +23,7 @@ class Informacion extends StatelessWidget {
               children: [
                 const SizedBox(height: 10),
                 Image.asset(
-                  'lib/assets/logo_originn.png',
+                  'lib/assets/LogoFemovil.png',
                   height: 160,
                   width: 160,
                 ),

@@ -134,12 +134,12 @@ Future<void> syncGetPosProperties(posPropertiesData) async {
               whereArgs: [objeto['country_id']],
             );
 
-            print('cliente actualizado: ${objeto['country_id']}');
+            print('PosProperties actualizado: ${objeto['country_id']}');
             
           } else {
             // Si el producto no existe, inserta un nuevo registro en la tabla de productos
             await db.insert('posproperties', objeto);
-            print('cliente insertado: ${objeto['country_id']}');
+            print('PosProperties insertado: ${objeto['country_id']}');
           }
         }
         print('Sincronización de posProperties completada.');

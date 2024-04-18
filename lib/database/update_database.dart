@@ -183,7 +183,27 @@ Future updateOrderePurchaseForStatusSincronzed(int orderId, String newStatus) as
       where: 'id = ?',
       whereArgs: [orderId],
     );
-    print('order Sales updated successfully');
+    print('order purchase updated successfully');
+    return 1;
+  } else {
+    print('Error: db is null');
+  }
+}
+
+
+
+Future updateMProductIdOrderCompra(int orderId, int mProductId) async {
+    final db = await DatabaseHelper.instance.database;
+  if (db != null) {
+    await db.update(
+      'orden_compra_lines',
+      {
+        'm_product_id': mProductId,
+      },
+      where: 'id = ?',
+      whereArgs: [orderId],
+    );
+    print('order purchase updated successfully');
     return 1;
   } else {
     print('Error: db is null');

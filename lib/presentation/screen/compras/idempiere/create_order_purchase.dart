@@ -6,8 +6,10 @@ import 'package:femovil/config/url.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/update_database.dart';
+import 'package:femovil/infrastructure/models/products.dart';
 import 'package:femovil/infrastructure/models/vendors.dart';
 import 'package:femovil/presentation/perfil/perfil_http.dart';
+import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:femovil/presentation/screen/proveedores/idempiere/create_vendor.dart';
 import 'package:femovil/presentation/screen/ventas/idempiere/create_orden_sales.dart';
@@ -106,7 +108,89 @@ updateAndCreateVendors(orderPurchaseList) async{
 
 }
 
+ processMap(Map data) async {
+  final lines = data['lines'];
+  for (var line in lines) {
+    final productId = line['m_product_id'];
+    if (productId == 0) {
+      // Si el m_product_id es 0, busca y actualiza el producto en la base de datos
+      final products = await findProductById(line['producto_id']); 
+        print('Entre aqui $line');
 
+        print('esto es products id ${products['id']}');
+
+        print('Estos son los productos $products');
+
+         Product product = Product(
+        mProductId: products['m_product_id'],
+        productType: products['product_type'],
+        productTypeName: products['product_type_name'] ,
+        codProd: products['cod_product'],
+        prodCatId: products['pro_cat_id'],
+        taxName: products['tax_cat_name'] ,
+        umId: products['um_id'],
+        name: products['name'],
+        price: products['price'],
+        quantity: products['quantity'],
+        categoria:products['categoria'],
+        qtySold: 0,
+        taxId: products['tax_cat_id'],
+        umName: products['um_name'],
+        productGroupId: products['product_group_id'],
+        produtGroupName: products['product_group_name'],
+        priceListSales: products['pricelistsales']
+      );
+
+
+
+         dynamic result = await createProductIdempiere(product.toMap());
+
+    final mProductId = result['StandardResponse']['outputFields']['outputField'][0]['@value'];
+    final codProdc = result['StandardResponse']['outputFields']['outputField'][1]['@value'];
+    print('Este es el mp product id $mProductId && el codprop $codProdc');
+   
+
+    await updateProductMProductIdAndCodProd(products['id'], mProductId, codProdc);
+    await updateMProductIdOrderCompra(line['line_id'], mProductId);
+  
+
+    }else{
+
+      print('Este producto esta registrado en idempiere');
+    }
+  }
+
+  print('Esto es la orden ${data['id']}');
+
+return await obtenerOrdenDeCompraConLineasPorId(data['id']);
+
+}
+
+
+  findProductById(int productId) async {
+  // Implementa la lógica para buscar el producto en la base de datos por su ID
+  // Retorna el producto encontrado o null si no se encuentra.
+  // Esto variará dependiendo de tu configuración específica.
+
+   final db = await DatabaseHelper.instance.database;
+    if (db != null) {
+      final product = await db.query(
+        'products',
+        where: 'id = ?',
+        whereArgs: [productId],
+      );
+
+
+
+    return product.first;  
+
+    } else {
+      print('Error: db is null');
+    }
+
+
+
+}
 
 
 
@@ -118,7 +202,10 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
               if(!isConnection){
                 return false;
               }
-    
+      
+    orderPurchaseList =  await processMap(orderPurchaseList);
+      
+
 
           if(orderPurchaseList!['c_bpartner_id'] == 0 && orderPurchaseList['c_bpartner_location_id'] == 0){
 
@@ -129,7 +216,7 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
 
 
 
-    print('Esto es ordersaleslist actual $orderPurchaseList');
+    print('Esto es orderPurchase actual $orderPurchaseList');
       
       HttpClient httpClient = HttpClient()
         ..badCertificateCallback = (X509Certificate cert, String host, int port) {
@@ -154,8 +241,7 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
 
     var map = await getRuta();
     var variablesLogin = await getLogin();
-    final uri = Uri.parse(
-        '${map['URL']}ADInterface/services/rest/composite_service/composite_operation');
+    final uri = Uri.parse('${map['URL']}ADInterface/services/rest/composite_service/composite_operation');
 
     final request = await httpClient.postUrl(uri);
 
@@ -176,7 +262,7 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
     var clientId = jsonData["ClientID"];
     var wareHouseId = jsonData["WarehouseID"];
     var language = jsonData["Language"];
-    print("Esto es orderSales List nuevo $orderPurchaseList");
+    print("Esto es orderPurchase List nuevo $orderPurchaseList");
    
   
        requestBody = {
@@ -226,10 +312,10 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
                         "@column": "Description",
                         "val": orderPurchaseList['description'],
                       },
-                      {
-                        "@column": "C_ConversionType_ID",
-                        "val": variablesG[0]['c_conversion_type_id']
-                      },
+                      // {
+                      //   "@column": "C_ConversionType_ID",
+                      //   "val": variablesG[0]['c_conversion_type_id']
+                      // },
                       {
                         "@column": "C_DocTypeTarget_ID",
                         "val": orderPurchaseList['c_doc_type_target_id']
@@ -256,7 +342,8 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
                         "@column": "SalesRep_ID",
                         "val": orderPurchaseList['usuario_id']
                       },
-                      {"@column": "LVE_PayAgreement_ID", "val": '1000001'}
+                      {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
+                      {"@column": "IsSOTrx", "val": 'N'}
                   
                     ]
                   }
@@ -321,7 +408,7 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
 
                       String newStatus = 'Enviado';
 
-                      updateOrdereSalesForStatusSincronzed(orderPurchaseList['id'], newStatus);
+                      updateOrderePurchaseForStatusSincronzed(orderPurchaseList['id'], newStatus);
 
                       actualizarDocumentNoVendor(orderPurchaseList['id'], nuevoDocumentNoAndCOrderId);
 

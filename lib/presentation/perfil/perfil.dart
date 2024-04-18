@@ -1,5 +1,5 @@
-import 'dart:convert';
 
+import 'package:femovil/config/banner_app.dart';
 import 'package:flutter/material.dart';
 import 'package:femovil/assets/nav_bar_bottom.dart';
 import 'package:femovil/config/fields_perfil.dart';
@@ -7,7 +7,6 @@ import 'package:femovil/infrastructure/models/info_perfil.dart';
 import 'package:femovil/presentation/perfil/perfil_http.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:femovil/presentation/screen/login/login_success.dart';
-import 'package:http/http.dart' as http;
 import 'package:femovil/presentation/screen/login/progress_indicator.dart';
 
 class Perfil extends StatefulWidget {
@@ -103,21 +102,54 @@ class _PerfilState extends State<Perfil> {
   
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-      appBar: AppBar(
-          centerTitle: true, // Establece el título en el centro
+      appBar: PreferredSize(
+      preferredSize: const Size.fromHeight(170), // Altura del AppBar
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(50), // Radio del borde redondeado
+        ),
+        child: AppBar(
+         automaticallyImplyLeading: false,
+          flexibleSpace: Stack(
+            children: [
+              CustomPaint(
+                painter: CirclePainter(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 50), // Ajuste de la posición vertical
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                   
 
-        title: const Text('Perfil', style:  TextStyle(
-              fontFamily:
-                  'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
-              fontSize: 20.0, // Tamaño de la fuente
-              fontWeight:
-                   FontWeight.w400, // Peso de la fuente (por ejemplo, bold)
-              color: Color.fromARGB(255, 105, 102, 102), // Color del texto
-            )),
-        leading: const Icon(null),
-        backgroundColor: const Color.fromARGB(255, 236, 247, 255),
+                      Text(
+                        'Perfil',
+                        style: TextStyle(
+                          fontFamily: 'Poppins ExtraBold',
+                          color: Colors.white,
+                          fontSize: 30, // Tamaño del texto
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(2, 2),
+                              blurRadius: 3.0,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                   
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF7531FF), // Color hexadecimal
+        ),
       ),
+    ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -166,23 +198,17 @@ class _PerfilState extends State<Perfil> {
                     : const SizedBox(),
               ),
             ),
-            const SizedBox(height: 15),
         
             if (perfilData == null)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                child: showErrorMes
-                    ? const Text(
-                        'Error de conexión a Internet',
-                        style: TextStyle(color: Colors.red),
-                      )
-                    : CustomProgressIndicator(),
-              ),
-              const SizedBox(height: 105,),
+              showErrorMes
+                  ? const Text(
+                      'Error de conexión a Internet',
+                      style: TextStyle(color: Colors.red),
+                    )
+                  : CustomProgressIndicator(),
             GestureDetector(
                 onTap: () async {
                final currentContext = context;
-
 
                   setState(() {
                     flag = true;

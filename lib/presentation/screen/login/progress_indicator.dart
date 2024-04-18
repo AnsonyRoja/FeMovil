@@ -23,13 +23,19 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator>
   Widget build(BuildContext context) {
     return RotationTransition(
       turns: _controller,
-      child: Container(
-        width: 50.0,
-        height: 50.0,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                'lib/assets/progress_indicator.png'), // Ruta a tu imagen PNG
+      child: ColorFiltered(
+         colorFilter: const ColorFilter.mode(
+        Color(0xFF7531FF), // El color que deseas aplicar a la imagen
+        BlendMode.modulate, // El modo de mezcla que deseas aplicar
+      ),
+        child: Container(
+          width: 50.0,
+          height: 50.0,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                  'lib/assets/progress_indicator.png'), // Ruta a tu imagen PNG
+            ),
           ),
         ),
       ),

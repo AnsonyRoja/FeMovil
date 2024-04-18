@@ -537,6 +537,7 @@ Future<Map<String, dynamic>> obtenerOrdenDeVentaConLineasPorId(int orderId) asyn
 }
 
 Future<Map<String, dynamic>> obtenerOrdenDeCompraConLineasPorId(int orderId) async {
+  print('Entre aqui a obtenerordedecomprasconlineas y esta es el orderid $orderId');
   final db = await DatabaseHelper.instance.database;
 
   final List<Map<String, dynamic>> resultado = await db!.rawQuery('''

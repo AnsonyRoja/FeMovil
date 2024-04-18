@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
       initialRoute: widget.initialRoute,
       debugShowCheckedModeBanner: false,
       title: 'Fe Movil',
-      theme: AppTheme(selectedColor: 4).theme(),
+      theme: AppTheme(selectedColor: 0).theme(),
       routes: {
         '/' :(context) => const Login(),
         '/configuracion' :(context) => const Configuracion(),

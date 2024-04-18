@@ -1,10 +1,13 @@
 import 'package:femovil/assets/nav_bottom_menu.dart';
+import 'package:femovil/config/banner_app.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/presentation/products/add_products.dart';
 import 'package:femovil/presentation/products/filter_dialog.dart';
 import 'package:femovil/presentation/products/products_details.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class Products extends StatefulWidget {
   const Products({super.key});
@@ -19,6 +22,8 @@ class _ProductsState extends State<Products> {
   List<Map<String, dynamic>> filteredProducts = [];
   TextEditingController searchController = TextEditingController();
   String input = "";
+  bool _isMounted = false;
+
   late List<Map<String, dynamic>> taxes =
       []; // Lista para almacenar los impuestos
 
@@ -58,10 +63,28 @@ class _ProductsState extends State<Products> {
   @override
   void initState() {
     _loadProducts();
+      _isMounted = true;
 
     _deleteBaseDatos();
     super.initState();
     // sincronizationProducts();
+  }
+
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+if (_isMounted) {
+    _loadProducts();
+  }
+}
+
+@override
+  void dispose() {
+
+    _isMounted = false;
+
+
+    super.dispose();
   }
 
   @override
@@ -72,6 +95,7 @@ class _ProductsState extends State<Products> {
 
     if (_filter != "" && input == "") {
       setState(() {
+
         if (_filter == "Todos") {
           searchController.clear();
           input = "";
@@ -83,6 +107,7 @@ class _ProductsState extends State<Products> {
               .toList();
         }
         input = ""; // Limpiar el campo de búsqueda al filtrar por categoría
+      
       });
     } else if (input != "") {
       setState(() {
@@ -108,161 +133,330 @@ class _ProductsState extends State<Products> {
     final screenMax = MediaQuery.of(context).size.width * 0.8;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-      appBar: AppBar(
-        title: const Text(
-          "Productos",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w400,
-            color: Color.fromARGB(255, 105, 102, 102),
-          ),
-        ),
-        backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-        iconTheme:
-            const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
-        leading: IconButton(
-          icon: Image.asset(
-            'lib/assets/Ajustes.png',
-            width: 25,
-            height: 35,
-          ),
-          onPressed: () {
-            _showFilterOptions(context);
-          },
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: searchController,
-                  onChanged: (value) {
-                    print("esto es lo que tiene ${_filter}");
-
-                    if (searchController.text.isNotEmpty) {
-                      setState(() {
-                        _filter = "";
-                        print("ESto es la categoria en blanco ${_filter}");
-                      });
-                    }
-
-                    setState(() {
-                      input = value;
-                      print("Este es el valor $value");
-                      filteredProducts = products
-                          .where((product) => product['name']
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
-                          .toList();
-                      print(
-                          "cual es el valor de filteredproducts $filteredProducts");
-                    });
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Buscar por nombre',
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = filteredProducts[index];
-
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
+      resizeToAvoidBottomInset: true,
+        appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(170),
+        child: Stack(
+          clipBehavior: Clip.none,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(50), // Radio del borde redondeado
+            ),
+            child: GestureDetector(
+             
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+              
+              child: AppBar(
+                  leading: IconButton(
+              icon: Image.asset('lib/assets/Atras@3x.png', width: 25, height: 25,), // Reemplaza 'tu_imagen.png' con la ruta de tu imagen en los assets
+              onPressed: () {
+                // Acción al presionar el botón de flecha hacia atrás
+                Navigator.pop(context);
+              },
+            ),
+                backgroundColor: const Color(0xFF7531FF), // Color hexadecimal
+                flexibleSpace: Stack(
+                  children: [
+                    CustomPaint(
+                      painter: CirclePainter(),
+                    ),
+                    const Align(
+                      alignment: Alignment.bottomCenter,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            width: screenMax,
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(10),
+                          SizedBox(height: 55,),
+                          Text(
+                            'Productos',
+                            style: TextStyle(
+                              fontFamily: 'Poppins ExtraBold',
+                              color: Colors.white,
+                              fontSize: 30, // Tamaño del texto
+                              shadows: <Shadow>[
+                                Shadow(
+                                  offset: Offset(2, 2),
+                                  blurRadius: 3.0,
+                                  color: Colors.grey,
+                                )
+                              ],
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                product['categoria'],
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.white),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: screenMax,
-                            color: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Nombre: ${product['name']}'),
-                                  Text(
-                                      'Precio: \$${product['price'] is double ? product['price'] : 0}'),
-                                  Text(
-                                      'Cantidad: ${product['quantity'] is int ? product['quantity'] : 0}'),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () =>
-                                    _verMasProducto('${product['id']}'),
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.grey,
-                                  foregroundColor: Colors.white,
-                                  fixedSize: Size(screenMax, 40),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: const Text('Ver más'),
-                              ),
-                            ],
                           ),
                         ],
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ),
-              //esto para abajo es el navbar bottom
-            ],
+            ),
           ),
-        ),
+      
+          Positioned(
+            left: 16,
+            right: 16,
+            top: 160,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                width: 300,
+                height: 50,
+                  decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                              9.0), // Ajusta el radio de las esquinas
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey
+                                  .withOpacity(0.2), // Color de la sombra
+                              spreadRadius: 2, // Extensión de la sombra
+                              blurRadius: 3, // Difuminado de la sombra
+                              offset: const Offset(
+                                  0, 2), // Desplazamiento de la sombra
+                            ),
+                          ],
+                        ),
+                child: TextField(
+                  controller: searchController,
+                  onChanged: (value) {
+                    if (searchController.text.isNotEmpty) {
+                      setState(() {
+                        _filter = "";
+                      });
+                    }
+                      
+                    setState(() {
+                      input = value;
+                      filteredProducts = products
+                          .where((product) =>
+                              product['name'].toLowerCase().contains(value.toLowerCase()))
+                          .toList();
+                    });
+                  },
+                  decoration:  InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 3.0, horizontal: 20.0), 
+                    hintText: 'Nombre del producto',
+                    labelStyle: const TextStyle( color: Colors.black, fontFamily: 'Poppins Regular'),
+                    suffixIcon:Image.asset('lib/assets/Lupa.png'),
+                       border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                                borderSide: BorderSide.none,
+                              ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        onAddPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddProductForm()),
-          );
-        },
-        onRefreshPressed: () {
-          _loadProducts();
-        },
-        onBackPressed: () {
-          Navigator.pop(context);
-        },
+    ),
+
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  
+                const SizedBox(height: 25,),
+          
+                IconButton(
+                  icon: Image.asset(
+                    'lib/assets/filtro@3x.png',
+                    width: 25,
+                    height: 35,
+                  ),
+                  onPressed: () {
+                    _showFilterOptions(context);
+                  },
+                ),
+          
+                  const SizedBox(height: 10,),
+                 
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = filteredProducts[index];
+          
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                             Container(
+                        width: screenMax,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                         ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                Container(
+                  height: 130,
+                  decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                  BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                  ),
+                           ],
+                         ),
+                  child: Stack(
+                    
+                    children: [
+                      Positioned(
+                  
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          height: 50,
+                                width: screenMax,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF0EBFC),
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                          BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                           ],
+                         ),
+                        child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(
+                        product['categoria'],
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins Bold',
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.start,
+                    ),
+                  ),
+                               ),
+                             ),
+                             Positioned(
+                              top: 55,
+                               child: Padding(
+                                 padding: const EdgeInsets.all(8.0),
+                                 child: SizedBox(
+                                  width: screenMax *0.9,
+                                   child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start ,
+                                                  children: [
+                                   
+                                                    Row(
+                                                      children: [
+                                                        const Text('Nombre: ', style: TextStyle(fontFamily:'Poppins SemiBold' ),),
+                                                        Text('${product['name']}', style: const TextStyle(fontFamily: 'Poppins Regular' ))
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        const Text('Stock: ', style: TextStyle(fontFamily: 'Poppins SemiBold') ,),
+                                                        Text('${product['quantity'] is int ? product['quantity'] : 0}', style: const TextStyle(fontFamily: 'Poppins Regular'),),
+                                                      ],
+                                                    ),
+          
+          
+                                                Row(
+                                                  children: [
+                                                    const Text('Precio: ', style: TextStyle(fontFamily: 'Poppins SemiBold'),),
+                                                    Text('${product['price'] is double ? product['price'] : 0}\$')
+                                                  ],
+                                                ),
+                                                
+                                                ],
+                                              ),
+                                    
+                                            GestureDetector(
+                                              onTap: () {
+                                                _verMasProducto('${product['id']}');
+                                              },
+                                              child: Row(
+                                                children: [
+                                              const Text('Ver', style: TextStyle(color: Color(0xFF7531FF))),
+                                              const SizedBox(width: 10,),
+                                              Image.asset('lib/assets/Lupa-2@2x.png', width: 25),
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                 ),
+                                ],
+                              ),
+                            ),
+          
+                    
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  //esto para abajo es el navbar bottom
+                ],
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: 450,
+            right: 15,
+            child: GestureDetector( 
+                onTap:  () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AddProductForm()),),
+               child: Image.asset('lib/assets/Agregar@3x.png', width: 80,) ,)),
+        ],
       ),
+      // bottomNavigationBar: CustomBottomNavigationBar(
+      //   onAddPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => const AddProductForm()),
+      //     );
+      //   },
+      //   onRefreshPressed: () {
+      //     _loadProducts();
+      //   },
+      //   onBackPressed: () {
+      //     Navigator.pop(context);
+      //   },
+      // ),
     );
   }
 

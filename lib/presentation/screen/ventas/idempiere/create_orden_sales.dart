@@ -293,7 +293,9 @@ createOrdenSalesIdempiere(orderSalesList) async {
                         "@column": "SalesRep_ID",
                         "val": orderSalesList['usuario_id']
                       },
-                      {"@column": "LVE_PayAgreement_ID", "val": '1000001'}
+                      {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
+                      {"@column": "IsSOTrx", "val": 'Y'}
+
                   
                     ]
                   }

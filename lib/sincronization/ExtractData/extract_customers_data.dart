@@ -28,24 +28,24 @@ try {
       'group_bp_name': row['field'][6]['val'],
       'lco_tax_id_typeid':row['field'][7]['val'],
       'tax_id_type_name': row['field'][8]['val'],
-      'email': row['field'][11]['val'],
-      'c_bpartner_location_id': row['field'][12]['val'],
-      'is_bill_to':row['field'][13]['val'],
-      'phone': row['field'][14]['val'],
-      'c_location_id': row['field'][15]['val'],
-      'city': row['field'][16]['val'],
-      'region': row['field'][17]['val'],
-      'country': row['field'][18]['val'],
-      'code_postal': row['field'][19]['val'],
-      'c_city_id': row['field'][20]['val'],
-      'c_region_id': row['field'][21]['val'],
-      'c_country_id': row['field'][22]['val'],
-      'ruc': row['field'][23]['val'],
-      'address' : row['field'][24]['val'],
-      'lco_tax_payer_typeid': row['field'][25]['val'],
-      'tax_payer_type_name': row['field'][26]['val'],
-      'lve_person_type_id': row['field'][27]['val'],
-      'person_type_name': row['field'][28]['val'],
+      'email': row['field'][9]['val'],
+      'c_bpartner_location_id': row['field'][10]['val'],
+      'is_bill_to':row['field'][11]['val'],
+      'phone': row['field'][12]['val'],
+      'c_location_id': row['field'][13]['val'],
+      'city': row['field'][14]['val'],
+      'region': row['field'][15]['val'],
+      'country': row['field'][16]['val'],
+      'code_postal': row['field'][17]['val'],
+      'c_city_id': row['field'][18]['val'],
+      'c_region_id': row['field'][19]['val'],
+      'c_country_id': row['field'][20]['val'],
+      'ruc': row['field'][21]['val'],
+      'address' : row['field'][22]['val'],
+      'lco_tax_payer_typeid': row['field'][23]['val'],
+      'tax_payer_type_name': row['field'][24]['val'],
+      // 'lve_person_type_id': row['field'][27]['val'],
+      // 'person_type_name': row['field'][28]['val'],
 
 
      // Asegúrate de convertir la cantidad a un tipo numérico adecuado
@@ -53,7 +53,7 @@ try {
     };
 
 
-    print('Esto es tax payer type ${row['field'][26]['val']}');
+    // print('Esto es tax payer type ${row['field'][26]['val']}');
          
              
     // Agrega los datos del producto a la lista
@@ -65,7 +65,7 @@ try {
   
 }
 
-  print("esto es impuestosData $customersData");
+  print("esto es customer data $customersData");
 
   return customersData;
 }

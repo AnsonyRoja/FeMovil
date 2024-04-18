@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:femovil/config/banner_app.dart';
 import 'package:flutter/material.dart';
 import 'package:femovil/presentation/perfil/perfil.dart';
 import 'package:femovil/presentation/screen/configuracion/config_screen.dart';
@@ -97,13 +98,69 @@ class _LoginState extends State<Login> {
           FocusScope.of(context).unfocus();
         },
         child: Scaffold(
-          backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-          appBar: AppBar(
-            leading: const Icon(null),
-            backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-            title: Text('', style: TextStyle(color: colors.tertiary)),
-            centerTitle: true,
+          appBar: PreferredSize(
+      preferredSize: const Size.fromHeight(170), // Altura del AppBar
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(50), // Radio del borde redondeado
+        ),
+        child: AppBar(
+         automaticallyImplyLeading: false,
+          flexibleSpace: Stack(
+            children: [
+              CustomPaint(
+                painter: CirclePainter(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 20), // Ajuste de la posición vertical
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                   
+
+                      Text(
+                        'Login',
+                        style: TextStyle(
+                          fontFamily: 'Poppins ExtraBold',
+                          color: Colors.white,
+                          fontSize: 30, // Tamaño del texto
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(2, 2),
+                              blurRadius: 3.0,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                              Text(
+                        'Inicio de sesión',
+                        style: TextStyle(
+                          fontFamily: 'Poppins Regular',
+                          color: Colors.white,
+                          fontSize: 12, // Tamaño del texto
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(2, 2),
+                              blurRadius: 3.0,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
+          backgroundColor: const Color(0xFF7531FF), // Color hexadecimal
+        ),
+      ),
+    ),
           body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Center(
@@ -112,22 +169,11 @@ class _LoginState extends State<Login> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 20,),
                     Image.asset(
-                      'lib/assets/logo_originn.png',
-                      width: 130,
-                      height: 130,
-                    ),
-                    const SizedBox(height: 50),
-                    const Text(
-                      "Login",
-                      style: TextStyle(
-                        fontFamily:
-                            'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
-                        fontSize: 35.0, // Tamaño de la fuente
-                        fontWeight: FontWeight
-                            .bold, // Peso de la fuente (por ejemplo, bold)
-                        color: Color.fromARGB(255, 0, 0, 0), // Color del texto
-                      ),
+                      'lib/assets/LogoFemovil.png',
+                      width: 100,
+                      height: 100,
                     ),
                     const SizedBox(height: 20),
                     Padding(
@@ -135,7 +181,8 @@ class _LoginState extends State<Login> {
                       child: Column(
                         children: [
                           Container(
-                            width: 300,
+                            width: 340,
+                            height: 50,
                             decoration: BoxDecoration(boxShadow: [
                               BoxShadow(
                                 color: Colors.black
@@ -150,13 +197,14 @@ class _LoginState extends State<Login> {
                               controller: usernameController,
                               decoration: const InputDecoration(
                                 filled: true,
+                                fillColor: Colors.white,
                                 contentPadding: EdgeInsets.symmetric(
                                     vertical: 2.0,
                                     horizontal:
                                         18.0), // Ajusta el padding interno
                                 labelStyle: TextStyle(
                                   fontFamily:
-                                      'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
+                                      'Poppins Regular', // Reemplaza con el nombre definido en pubspec.yaml
                                   fontSize: 15.0, // Tamaño de la fuente
                                   // Peso de la fuente (por ejemplo, bold)
                                   color: Color.fromARGB(
@@ -195,7 +243,8 @@ class _LoginState extends State<Login> {
                           ),
                           const SizedBox(height: 18),
                           Container(
-                            width: 300,
+                            width: 340,
+                            height: 50,
                             decoration: BoxDecoration(boxShadow: [
                               BoxShadow(
                                 color: Colors.black
@@ -215,9 +264,10 @@ class _LoginState extends State<Login> {
                                   !isPasswordVisible, // Mostrar u ocultar la contraseña
                               decoration: InputDecoration(
                                 filled: true,
+                                fillColor: Colors.white,
                                 labelStyle: const TextStyle(
                                   fontFamily:
-                                      'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
+                                      'Poppins Regular', // Reemplaza con el nombre definido en pubspec.yaml
                                   fontSize: 15.0, // Tamaño de la fuente
                                   // Peso de la fuente (por ejemplo, bold)
                                   color: Color.fromARGB(
@@ -225,7 +275,7 @@ class _LoginState extends State<Login> {
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                     vertical: 2.0, horizontal: 18.0),
-                                labelText: 'Ingrese una Contraseña',
+                                labelText: 'Contraseña',
                                 border: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(8.0)),
@@ -236,8 +286,7 @@ class _LoginState extends State<Login> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(8.0)),
                                   borderSide: BorderSide(
-                                      color: Colors
-                                          .blue), // Color del borde cuando está enfocado
+                                      color: Color(0xFF7531FF)), // Color del borde cuando está enfocado
                                 ),
                                 enabledBorder: const OutlineInputBorder(
                                   borderRadius:
@@ -247,12 +296,17 @@ class _LoginState extends State<Login> {
                                           0.2)), // Color del borde cuando no está enfocado
                                 ),
                                 suffixIcon: IconButton(
-                                  icon: Icon(
-                                    isPasswordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: colors.primary,
-                                  ),
+                                  icon: isPasswordVisible
+                                  ? ImageIcon(
+                                      const AssetImage('lib/assets/Ojos Activado@3x.png'),
+                                      size: 24,
+                                      color: colors.primary,
+                                    )
+                                  : const ImageIcon(
+                                      AssetImage('lib/assets/Ojo Desactivado@3x.png'),
+                                      size: 24,
+                                      color: Color(0xFFA7A7A7),
+                                    ),
                                   onPressed: () {
                                     setState(() {
                                       isPasswordVisible = !isPasswordVisible;
@@ -286,7 +340,7 @@ class _LoginState extends State<Login> {
                                     style: const TextStyle(color: Colors.red)),
                             ],
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 15),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -299,26 +353,26 @@ class _LoginState extends State<Login> {
                                     onTouch();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    fixedSize: const Size(300, 30),
+                                    fixedSize: const Size(340, 50),
                                     backgroundColor: colors
                                         .primary, // Color de fondo del botón
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
-                                          8.0), // Ajusta el radio de las esquinas
+                                          15.0), // Ajusta el radio de las esquinas
                                       side: const BorderSide(
-                                        color: Color.fromRGBO(0, 204, 255,
-                                            0.8), // Color del borde con opacidad
+                                        color: Color.fromARGB(255, 134, 77, 247), // Color del borde con opacidad
                                         width: 2.0, // Ancho del borde
                                       ),
                                     ),
                                   ),
                                   child: const Text(
                                     'Iniciar Sesión',
-                                    style: TextStyle(color: Colors.white),
+                                    
+                                    style: TextStyle(color: Colors.white,fontFamily: 'Poppins Bold', fontSize: 18),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 25),
+                              const SizedBox(height: 5),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -349,7 +403,9 @@ class _LoginState extends State<Login> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 45),
+                              const SizedBox(height: 7,),
+                              Image.asset('lib/assets/Bande ECU@3x.png', width: 50,),
+                              const SizedBox(height: 15),
                               const Text('Desarrollado Por:'),
                               Image.asset(
                                 'lib/assets/Logo_Frontuari.png',

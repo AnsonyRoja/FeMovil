@@ -429,7 +429,8 @@ class _ComprasDetailsState extends State<ComprasDetails> {
 
                         setState(() {
                           
-                        _compraData =  _loadComprasForId();
+                         _compraData =  _loadComprasForId();
+
                         });
 
                         }

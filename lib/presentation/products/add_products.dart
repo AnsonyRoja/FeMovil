@@ -3,7 +3,6 @@ import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/list_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
 import 'package:femovil/presentation/products/utils/switch_generated_names_select.dart';
-import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:flutter/material.dart';
 
 
@@ -16,6 +15,7 @@ class AddProductForm extends StatefulWidget {
 
   @override
   _AddProductFormState createState() => _AddProductFormState();
+
 }
 
 class _AddProductFormState extends State<AddProductForm> {
@@ -25,6 +25,8 @@ class _AddProductFormState extends State<AddProductForm> {
   String _umText = '';
   String _productTypeText = '';
   String _productGroupText = '';
+  late BuildContext _context;
+
 
   final TextEditingController _nameController = TextEditingController();
    TextEditingController _quantityController = TextEditingController();
@@ -94,7 +96,10 @@ class _AddProductFormState extends State<AddProductForm> {
 
   @override
   Widget build(BuildContext context) {
+        _context = context; 
+
     return Scaffold(
+
       backgroundColor: const Color.fromARGB(255, 236, 247, 255),
       appBar: AppBar(title: const Text("Agregar Producto", style: TextStyle(
             fontSize: 20,
@@ -206,7 +211,7 @@ class _AddProductFormState extends State<AddProductForm> {
                     const SizedBox(height:10,),
                    DropdownButtonFormField<int>(
                     value: _selectedCategoriesIndex,
-                    items: _categoriesList.map<DropdownMenuItem<int>>((categories) {
+                    items: _categoriesList.where((cat) => cat['pro_cat_id'] is int).map<DropdownMenuItem<int>>((categories) {
                       return DropdownMenuItem<int>(
                         value: categories['pro_cat_id'] as int,
                         child: SizedBox(
@@ -235,7 +240,7 @@ class _AddProductFormState extends State<AddProductForm> {
                     const SizedBox(height: 10,),
                         DropdownButtonFormField<int>(
                     value: _seletedProductGroup,
-                    items: _productGroupList.map<DropdownMenuItem<int>>((productGroup) {
+                    items: _productGroupList.where((group) => group['product_group_id'] is int ).map<DropdownMenuItem<int>>((productGroup) {
                       return DropdownMenuItem<int>(
                         value: productGroup['product_group_id'] as int,
                         child: SizedBox(
@@ -267,7 +272,7 @@ class _AddProductFormState extends State<AddProductForm> {
                     const SizedBox(height: 10,),
                    DropdownButtonFormField<int>(
                     value: _selectedUmIndex,
-                    items: _umList.map<DropdownMenuItem<int>>((um) {
+                    items: _umList.where((um) => um['um_id'] is int).map<DropdownMenuItem<int>>((um) {
                       print('Um $um');
                       return DropdownMenuItem<int>(
                         value: um['um_id'] as int,
@@ -342,7 +347,7 @@ class _AddProductFormState extends State<AddProductForm> {
     );
   }
 
-  void _saveProduct() async {
+  void _saveProduct()  {
     // Obtén los valores del formulario
     String name = _nameController.text;
     double price = double.parse(_priceController.text);
@@ -385,7 +390,7 @@ class _AddProductFormState extends State<AddProductForm> {
       );
 
     // Llama a un método para guardar el producto en Sqflite
-    final id = await saveProductToDatabase(product);
+    final id =  saveProductToDatabase(product);
     print('Esto es el id $id');
   //  dynamic result = await createProductIdempiere(product.toMap());
   //  print('este es el $result');
@@ -411,10 +416,29 @@ class _AddProductFormState extends State<AddProductForm> {
     // _imageFile = null;
     // });
 
+
+    final scaffoldMessenger = ScaffoldMessenger.of(_context);
+    scaffoldMessenger.showSnackBar(
+      const SnackBar(
+        content: Text('Producto guardado correctamente'),
+      ),
+    );
+
+
+    setState(() {
+
+        _nameController.clear();
+        _selectedTaxIndex = 0;
+        _selectedCategoriesIndex = 0;
+        _selectedUmIndex = 0;
+        _selectedProductType = 'first';
+        _seletedProductGroup = 0;
+
+    });
+
+
+
     // Muestra un mensaje de éxito o realiza cualquier otra acción necesaria
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text('Producto guardado correctamente'),
-    ));
 
 
 

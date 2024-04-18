@@ -62,8 +62,6 @@ try {
 
   final requestBody= {
 
-      
-
           "CompositeRequest":{
               
               "ADLoginRequest": {
@@ -124,10 +122,10 @@ try {
                               "@column": "LCO_TaxPayerType_ID",
                               "val": customer['lco_tax_payer_typeid']
                           },
-                          {
-                              "@column": "LVE_PersonType_ID",
-                              "val": customer['lve_person_type_id']
-                          },
+                          // {
+                          //     "@column": "LVE_PersonType_ID",
+                          //     "val": customer['lve_person_type_id']
+                          // },
                           {
                               "@column": "EMail",
                               "val": customer['email']

@@ -12,7 +12,9 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
   List<Map<String, dynamic>> filteredProducts = []; // Lista de productos filtrados
   List<Map<String, dynamic>> selectedProducts = []; // Lista de productos seleccionados
   Map<String, int> productQuantities = {}; // Mapa para almacenar las cantidades seleccionadas por producto
+   int newQuantity = 0 ;
 
+   
   @override
   void initState() {
     super.initState();
@@ -60,6 +62,7 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
                 final isSelected = selectedProducts.any((product) => product['name'] == productName);
                 final quantity = productQuantities[productName] ?? 0; // Obtener la cantidad seleccionada o 0 si no hay ninguna
                 
+
                 print('propiedades de los productos $filteredProducts');
 
                 return ListTile(
@@ -68,7 +71,7 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Precio: \$${productPrice != '{@nil=true}' ? productPrice.toStringAsFixed(2) : 0}'),
-                      Text('Cantidad: ${quantity is double ? quantity : 0}'),
+                      Text('Cantidad: $quantity'),
                     ],
                   ),
                   trailing: isSelected
@@ -80,7 +83,11 @@ class _ProductSelectionComprasScreenState extends State<ProductSelectionComprasS
                           if (selectedQuantity > 0) {
 
                       final selectedProductIndex = selectedProducts.indexWhere((product) => product['name'] == productName);
-                      final int newQuantity = selectedQuantity; // Sumar la cantidad seleccionada anteriormente con la nueva cantidad seleccionada
+
+                        setState(() {
+                          newQuantity = selectedQuantity; // Sumar la cantidad seleccionada anteriormente con la nueva cantidad seleccionada
+                          
+                        });
 
                       final selectedProduct = {
                         "id": filteredProducts[index]['id'], // Agregar el ID del producto seleccionado

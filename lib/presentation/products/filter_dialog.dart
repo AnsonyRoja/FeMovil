@@ -27,53 +27,65 @@ class _FilterCategoriesState extends State<FilterCategories> {
         categories.insert(0, "Todos");
 
     return AlertDialog(
-      title: Text('Filtrar por categoría'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Lista desplegable para mostrar las categorías disponibles
-          DropdownButtonFormField<String>(
-            decoration: InputDecoration(labelText: 'Categoría'),
-            value:scategory, // Valor inicial vacío
-            onChanged: (selectedCategory) {
-              // Aquí puedes manejar la selección de la categoría
-              // Puedes actualizar el estado del diálogo y almacenar la categoría seleccionada
-              scategory = selectedCategory;
-              print("categoria seleccionada $selectedCategory" );
-            },
-            items: categories.map((category) {
-              return DropdownMenuItem<String>(
-                value: category,
-                child:  Container(
-                      width: 220, // Ancho máximo deseado para el texto
-                          child: Text(
-                            category,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ),
-              );
-            }).toList(),
-          ),
-        ],
+  backgroundColor: Colors.white, // Cambia el color de fondo del AlertDialog
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16.0), // Da esquinas redondeadas al AlertDialog
+  ),
+  title: const Text(
+    'Filtrar por categoría',
+    style: TextStyle(fontFamily: 'Poppins SemiBold'),
+  ),
+  content: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      DropdownButtonFormField<String>(
+        decoration: const InputDecoration(
+          labelText: 'Categoría',
+          hintStyle: TextStyle(fontFamily: 'Poppins SemiBold'),
+        ),
+        value: scategory,
+        onChanged: (selectedCategory) {
+          scategory = selectedCategory;
+          print("categoria seleccionada $selectedCategory");
+        },
+        items: categories.map((category) {
+          return DropdownMenuItem<String>(
+            value: category,
+            child: SizedBox(
+              width: 220,
+              child: Text(
+                category,
+                overflow: TextOverflow.clip,
+                style: const TextStyle(fontFamily: 'Poppins Regular'),
+              ),
+            ),
+          );
+        }).toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            print("esto es scategory $scategory");
-            // Aquí puedes implementar la lógica para aplicar el filtro y cerrar el diálogo
-            // Por ejemplo, puedes enviar la categoría seleccionada de vuelta a la pantalla principal para que se aplique el filtro
-            Navigator.of(context).pop(scategory);
-          },
-          child: Text('Filtrar'),
-        ),
-        TextButton(
-          onPressed: () {
-            // Aquí puedes implementar la lógica para cerrar el diálogo sin aplicar el filtro
-            Navigator.of(context).pop();
-          },
-          child: Text('Cancelar'),
-        ),
-      ],
-    );
+    ],
+  ),
+  actions: [
+    TextButton(
+      onPressed: () {
+        print("esto es scategory $scategory");
+        Navigator.of(context).pop(scategory);
+      },
+      child: const Text(
+        'Filtrar',
+        style: TextStyle(fontFamily: 'Poppins SemiBold', color: Color(0xFF7531FF)), // Cambia el color del texto del botón
+      ),
+    ),
+    TextButton(
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+      child: const Text(
+        'Cancelar',
+        style: TextStyle(color: Colors.red), // Cambia el color del texto del botón
+      ),
+    ),
+  ],
+);
+
   }
 }

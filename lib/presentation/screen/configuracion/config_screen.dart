@@ -1,3 +1,4 @@
+import 'package:femovil/config/banner_app.dart';
 import 'package:flutter/material.dart';
 import 'package:femovil/presentation/screen/configuracion/services/config_services.dart';
 import 'package:femovil/presentation/screen/login/login_screen.dart';
@@ -67,6 +68,8 @@ class _ConfiguracionState extends State<Configuracion> {
     super.initState();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     // final saludo = dotenv.env['Hola'];
@@ -75,32 +78,78 @@ class _ConfiguracionState extends State<Configuracion> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-      appBar: AppBar(
-        leading: IconButton(
-          icon:
-              const Icon(Icons.arrow_back, color: Color.fromARGB(255, 0, 0, 0)),
-          onPressed: () {
-            // Acción al presionar el botón de flecha hacia atrás
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const Login()));
-          },
+      backgroundColor: Colors.white,
+      appBar: PreferredSize(
+      preferredSize: const Size.fromHeight(170), // Altura del AppBar
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(50), // Radio del borde redondeado
         ),
-        backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-        title: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text('Configuracion',
-              style: TextStyle(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  shadows: <Shadow>[
-                    Shadow(
-                      offset: Offset(2, 2),
-                      blurRadius: 3.0,
-                      color: Colors.grey,
-                    )
-                  ])),
+        child: AppBar(
+          leading: IconButton(
+              icon: Image.asset('lib/assets/Atras@3x.png', width: 25, height: 25,), // Reemplaza 'tu_imagen.png' con la ruta de tu imagen en los assets
+              onPressed: () {
+                // Acción al presionar el botón de flecha hacia atrás
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+              },
+            ),
+
+          flexibleSpace: Stack(
+            children: [
+              CustomPaint(
+                painter: CirclePainter(),
+              ),
+              const Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 20), // Ajuste de la posición vertical
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                   
+
+                      Text(
+                        'Configuración',
+                        style: TextStyle(
+                          fontFamily: 'Poppins ExtraBold',
+                          color: Colors.white,
+                          fontSize: 30, // Tamaño del texto
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(2, 2),
+                              blurRadius: 3.0,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                              Text(
+                        'Configura el servidor',
+                        style: TextStyle(
+                          fontFamily: 'Poppins Regular',
+                          color: Colors.white,
+                          fontSize: 12, // Tamaño del texto
+                          shadows: <Shadow>[
+                            Shadow(
+                              offset: Offset(2, 2),
+                              blurRadius: 3.0,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: const Color(0xFF7531FF), // Color hexadecimal
         ),
       ),
+    )
+,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus(); // Cierra el teclado virtual
@@ -116,32 +165,19 @@ class _ConfiguracionState extends State<Configuracion> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text(
-                          'Escribe la Url',
-                          style: TextStyle(
-                            fontFamily:
-                                'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
-                            fontSize: 17.0, // Tamaño de la fuente
-                            fontWeight: FontWeight
-                                .bold, // Peso de la fuente (por ejemplo, bold)
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            // Color del texto
-                          ),
-                        ),
-                      ),
+               
                       const SizedBox(width: 8),
                       Container(
                         width: 300,
-                        height: 40,
+                        height: 50,
+
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
                               9.0), // Ajusta el radio de las esquinas
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey
-                                  .withOpacity(0.5), // Color de la sombra
+                                  .withOpacity(0.2), // Color de la sombra
                               spreadRadius: 2, // Extensión de la sombra
                               blurRadius: 3, // Difuminado de la sombra
                               offset: const Offset(
@@ -150,6 +186,7 @@ class _ConfiguracionState extends State<Configuracion> {
                           ],
                         ),
                         child: TextField(
+                      
                           controller: textUrlController,
                           decoration: InputDecoration(
                               filled: true,
@@ -157,7 +194,7 @@ class _ConfiguracionState extends State<Configuracion> {
                               hintText: 'Url', // Tu placeholder
 
                               contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 2.0, horizontal: 18.0), // A
+                                  vertical: 2.0, horizontal: 20.0), // A
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                                 borderSide: BorderSide.none,
@@ -209,30 +246,18 @@ class _ConfiguracionState extends State<Configuracion> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Text('Token de acceso',
-                            style: TextStyle(
-                              fontFamily:
-                                  'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
-                              fontSize: 17.0, // Tamaño de la fuente
-                              fontWeight: FontWeight
-                                  .bold, // Peso de la fuente (por ejemplo, bold)
-                              color: Color.fromARGB(255, 0, 0, 0),
-                              // Color del texto
-                            )),
-                      ),
+                     
                       const SizedBox(width: 8),
                       Container(
                         width: 300,
-                        height: 40,
+                        height: 50,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
                               9.0), // Ajusta el radio de las esquinas
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey
-                                  .withOpacity(0.5), // Color de la sombra
+                                  .withOpacity(0.2), // Color de la sombra
                               spreadRadius: 2, // Extensión de la sombra
                               blurRadius: 3, // Difuminado de la sombra
                               offset: const Offset(
@@ -346,25 +371,25 @@ class _ConfiguracionState extends State<Configuracion> {
                           // Puedes ajustar el color según tus necesidades
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               Icons.settings,
-                              color: colors.primary,
+                              color: Color(0xFF7531FF),
                             ),
-                            const SizedBox(width: 15),
-                            const SizedBox(
-                              height: 30,
+                            SizedBox(width: 10),
+                            SizedBox(
+                              height: 20,
                             ),
                             Text(
                               'Realizar Test',
                               style: TextStyle(
                                 fontFamily:
-                                    'OpenSans', // Reemplaza con el nombre definido en pubspec.yaml
+                                    'Poppins Regular', // Reemplaza con el nombre definido en pubspec.yaml
                                 fontSize: 12.0, // Tamaño de la fuente
                                 // Peso de la fuente (por ejemplo, bold)
-                                color: colors.primary, // Color del texto
+                                color: Color(0xFF7531FF), // Color del texto
                               ), // Puedes ajustar el color del texto
                             ),
                           ],
@@ -449,3 +474,8 @@ class _ConfiguracionState extends State<Configuracion> {
     return urlRegExp.hasMatch(url);
   }
 }
+
+
+
+
+

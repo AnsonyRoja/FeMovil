@@ -9,7 +9,7 @@ class AuthenticationService {
   bool isAuthenticated = false; // Inicialmente, el usuario no está autenticado.
 
   Future login({required String username, required String password}) async {
-     dynamic response;
+    dynamic response;
     try {
       final info = await getApplicationSupportDirectory();
       final String filePath = '${info.path}/.login.json';
@@ -21,9 +21,7 @@ class AuthenticationService {
           const Duration(seconds: 2)); // Simulación de tiempo de espera.
 
       // Configurar el cuerpo de la solicitud en formato JSON
-        response = await getUsers(username, password);
-
-
+      response = await getUsers(username, password);
 
       if (response.statusCode == 200) {
         // La solicitud fue exitosa, puedes procesar la respuesta aquí.
@@ -51,23 +49,22 @@ class AuthenticationService {
           final String newContent = json.encode(jsonData);
           await configFile.writeAsString(newContent);
 
-    //  name TEXT,
-    //         password INTEGER,
-    //         ad_user_id TEXT,
-    //         email TEXT,
-    //         phone TEXT
+          //  name TEXT,
+          //         password INTEGER,
+          //         ad_user_id TEXT,
+          //         email TEXT,
+          //         phone TEXT
 
-          Map<String, dynamic>  user = {
+          Map<String, dynamic> user = {
             "name": username,
             "password": password,
-            "ad_user_id": windowTabData['DataSet']['DataRow']['field'][0]['val'],
+            "ad_user_id": windowTabData['DataSet']['DataRow']['field'][0]
+                ['val'],
             "email": windowTabData['DataSet']['DataRow']['field'][2]['val'],
             "phone": windowTabData['DataSet']['DataRow']['field'][3]['val']
-
           };
 
-         await  insertUser(user);
-
+          await insertUser(user);
 
           return true; // Inicio de sesión exitoso.
         } else {
@@ -91,31 +88,34 @@ class AuthenticationService {
       }
     } catch (e) {
       print("este es el error de login $e");
+      print('esto es el user $username && password $password');
       response = await getUserByLogin(username, password);
+
+      print('Esto es la respuesta del user $response');
       if (response is! Map<String, dynamic>) {
-      // No se pudo obtener una respuesta válida ni de la red ni de la base de datos local
-      return "hay problemas con el internet";
-    }
+        // No se pudo obtener una respuesta válida ni de la red ni de la base de datos local
+        return "hay problemas con el internet";
+      }
 
-     if (response['name'] == username && response['password'] == password) {
-      // Usuario autenticado
-          final info = await getApplicationSupportDirectory();
-       final String filePath = '${info.path}/.login.json';
-       final File configFile = File(filePath);
+      if (response['name'] == username && response['password'] == password) {
+        // Usuario autenticado
+        final info = await getApplicationSupportDirectory();
+        final String filePath = '${info.path}/.login.json';
+        final File configFile = File(filePath);
         final Map<String, dynamic> jsonData = {
-            "user": username,
-            "password": password,
-            "auth": true,
-          }; // Usuario o contraseña incorrectos.
+          "user": username,
+          "password": password,
+          "auth": true,
+          "userId": response['ad_user_id'],
+        }; // Usuario o contraseña incorrectos.
 
-          final String newContent = json.encode(jsonData);
-          await configFile.writeAsString(newContent);
-      isAuthenticated = true;
+        final String newContent = json.encode(jsonData);
+        await configFile.writeAsString(newContent);
+        isAuthenticated = true;
 
-      // Resto del código...
-      return true;
-     } 
-  
+        // Resto del código...
+        return true;
+      }
 
       print(
           'Error en la solicitud: ${e.toString().contains("Cannot open file")}');

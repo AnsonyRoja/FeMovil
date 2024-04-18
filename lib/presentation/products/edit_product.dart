@@ -23,16 +23,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _minStockController = TextEditingController();
   final _maxStockController = TextEditingController();
 
- List<Map<String, dynamic>> _taxList = []; // Lista para almacenar los impuestos disponibles
- List<Map<String, dynamic>> _categoriesList = [];
- List<Map<String, dynamic>> _umList = [];
- List<Map<String, dynamic>> _productTypeList = [];
- List<Map<String, dynamic>> _productGroupList = [];
+ final List<Map<String, dynamic>> _taxList = []; // Lista para almacenar los impuestos disponibles
+ final List<Map<String, dynamic>> _categoriesList = [];
+ final List<Map<String, dynamic>> _umList = [];
+ final List<Map<String, dynamic>> _productTypeList = [];
+ final List<Map<String, dynamic>> _productGroupList = [];
+
   int _selectedTaxIndex = 0; // Índice del impuesto seleccionado por defecto
   int _selectedCategoriesIndex = 0;
   int _selectedProductGroupIndex = 0;
   int _selectedUmIndex = 0;
   String _selectedProductType = 'first';
+  
   
   String _prodTypeText = '';
   String _prodGroupText = '';
@@ -89,8 +91,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _selectedTaxIndex = widget.product['tax_cat_id'];
     _selectedCategoriesIndex = widget.product['pro_cat_id'];
     _selectedUmIndex = widget.product['um_id'];
-    _selectedProductType = widget.product['product_type'];
-    _selectedProductGroupIndex = widget.product['product_group_id'];
+    _selectedProductType = widget.product['product_type'] == '{@nil: true}' ? 0 : widget.product['product_type'];
+    _selectedProductGroupIndex = widget.product['product_group_id'] == '{@nil: true}' ? 0 : widget.product['product_group_id']  ;
     _taxText = widget.product['tax_cat_name'];
     _prodGroupText = widget.product['product_group_name'];
     _prodCatText = widget.product['categoria'];
@@ -146,7 +148,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     child: DropdownButtonFormField<int>(
                       value: _selectedTaxIndex,
-                      items: _taxList.map<DropdownMenuItem<int>>((tax) {
+                      items: _taxList.where((tax) => tax['tax_cat_id'] is int && tax['tax_cat_name'] != '').map<DropdownMenuItem<int>>((tax) {
                         return DropdownMenuItem<int>(
                           value: tax['tax_cat_id'] as int,
                           child: Text(tax['tax_cat_name'] as String),
@@ -184,7 +186,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     child: DropdownButtonFormField<int>(
                       value: _selectedCategoriesIndex,
-                      items: _categoriesList.map<DropdownMenuItem<int>>((categories) {
+                      items: _categoriesList.where((categories) => categories['pro_cat_id'] is int && categories['categoria'] != '' ).map<DropdownMenuItem<int>>((categories) {
                         return DropdownMenuItem<int>(
                           value: categories['pro_cat_id'] as int,
                           child: Text(categories['categoria'] as String),
@@ -222,7 +224,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     child: DropdownButtonFormField<String>(
                       value: _selectedProductType,
-                      items: _productTypeList.map<DropdownMenuItem<String>>((productType) {
+                      items: _productTypeList.where((productType) => productType['product_type'] is String && productType['product_type_name'] != "" ).map<DropdownMenuItem<String>>((productType) {
                         return DropdownMenuItem<String>(
                           value: productType['product_type'] as String,
                           child: Text(productType['product_type_name'] as String),
@@ -261,7 +263,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     child: DropdownButtonFormField<int>(
                       value: _selectedProductGroupIndex,
-                      items: _productGroupList.map<DropdownMenuItem<int>>((productGroup) {
+                      items: _productGroupList.where((productGroup) => productGroup['product_group_id'] is int && productGroup['product_group_name'] != '').map<DropdownMenuItem<int>>((productGroup) {
                         return DropdownMenuItem<int>(
                           value: productGroup['product_group_id'] as int,
                           child: Text(productGroup['product_group_name'] as String),
@@ -301,7 +303,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     ),
                     child: DropdownButtonFormField<int>(
                       value: _selectedUmIndex,
-                      items: _umList.map<DropdownMenuItem<int>>((um) {
+                      items: _umList.where((um) => um['um_id'] is int && um['um_name'] != "").map<DropdownMenuItem<int>>((um) {
                         return DropdownMenuItem<int>(
                           value: um['um_id'] as int,
                           child: Text(um['um_name'] as String),

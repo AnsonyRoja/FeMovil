@@ -18,16 +18,21 @@ class _ProductSelectionScreenState extends State<ProductSelectionScreen> {
     super.initState();
     _loadProducts();
   }
+Future<void> _loadProducts() async {
+  final productList = await getProductsAndTaxes(); // Obtener todos los productos
 
-  Future<void> _loadProducts() async {
-    final productList = await getProductsAndTaxes(); // Obtener todos los productos
+  // Filtrar los productos con precio igual a '{@nil=true}'
+  final filteredList = productList.where((product) =>
+    product['pricelistsales'] != '{@nil=true}'
+  ).toList();
 
-      print('Esto es el productlist $productList');
-    setState(() {
-      products = productList;
-      filteredProducts = productList;
-    });
-  }
+  print('Esto es el productList $productList');
+  setState(() {
+    products = filteredList;
+    filteredProducts = filteredList;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
