@@ -128,10 +128,10 @@ try {
                               "@column": "LCO_TaxPayerType_ID",
                               "val": vendor['lco_taxt_payer_type_id']
                           },
-                          {
-                              "@column": "LVE_PersonType_ID",
-                              "val": vendor['lve_person_type_id']
-                          },
+                          // {
+                          //     "@column": "LVE_PersonType_ID",
+                          //     "val": vendor['lve_person_type_id']
+                          // },
                           {
                               "@column": "EMail",
                               "val": vendor['email']

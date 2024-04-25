@@ -4,6 +4,7 @@ import 'package:femovil/database/update_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
 import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/products/products_http.dart';
+import 'package:femovil/sincronization/https/bank_account.dart';
 import 'package:femovil/sincronization/https/customer_http.dart';
 import 'package:femovil/sincronization/https/impuesto_http.dart';
 import 'package:femovil/sincronization/sincronizar_create.dart';
@@ -14,6 +15,7 @@ double syncPercentageClient = 0.0;
 double syncPercentageProviders = 0.0;
 double syncPercentageSelling = 0.0;
 double syncPercentageImpuestos = 0.0;
+double syncPercentageBankAccount = 0.0;
 bool setearValoresEnCero = true;
 
 
@@ -54,16 +56,20 @@ class _SynchronizationScreenState extends State<SynchronizationScreen> {
                   syncPercentageImpuestos = 0;
                   syncPercentageProviders = 0;
                   syncPercentageSelling = 0;
+                  syncPercentageBankAccount = 0;
                   setearValoresEnCero = true;
                 });
               }
-              
-                // await sincronizationImpuestos(setState);
+
+                sincronizationBankAccount(setState);
+
+                sincronizationImpuestos(setState);
                 await synchronizeCustomersWithIdempiere(setState);
-                // await synchronizeVendorsWithIdempiere(setState);
-                // await synchronizeProductsWithIdempiere(setState);
+                await synchronizeVendorsWithIdempiere(setState);
+                await synchronizeProductsWithIdempiere(setState);
+
                 // sincronizationCustomers(setState);
-                // await synchronizeOrderSalesWithIdempiere(setState); 
+                await synchronizeOrderSalesWithIdempiere(setState); 
 
              setState(() {
               setearValoresEnCero = false;
@@ -298,7 +304,7 @@ class _SynchronizationScreenState extends State<SynchronizationScreen> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    const Text('Ventas'),
+                    const Text('Cuentas Bancarias'),
                     Container(
                       width: 150,
                       height: 20, // Altura del contenedor
@@ -314,12 +320,12 @@ class _SynchronizationScreenState extends State<SynchronizationScreen> {
                             color: Colors.green.withOpacity(
                                 0.5), // Opacidad del contenedor verde
                             width: 150 *
-                                (syncPercentageSelling /
+                                (syncPercentageBankAccount /
                                     100), // Ancho dinámico del contenedor verde
                           ),
                           Center(
                             child: Text(
-                              '${syncPercentageSelling.toStringAsFixed(1)} %', // Porcentaje visible
+                              '${syncPercentageBankAccount.toStringAsFixed(1)} %', // Porcentaje visible
                               style: const TextStyle(
                                 color: Colors.black, // Color del texto
                                 fontWeight:

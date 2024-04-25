@@ -120,6 +120,15 @@ invoke(option, newValue, data){
 
           return nombreTypePerson != null ? nombreTypePerson['person_type_name'] : '';
 
+            case 'obtenerNombreBankAccount':
+
+                Map<String, dynamic>? nombreBankAccount = data.firstWhere(
+            (typePerson) => typePerson['c_bank_id'] == newValue,
+          );
+
+          return nombreBankAccount != null ? nombreBankAccount['bank_name'] : '';
+
+
 
       default:
     }

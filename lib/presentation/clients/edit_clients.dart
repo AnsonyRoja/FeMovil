@@ -47,12 +47,13 @@ class _EditClientScreenState extends State<EditClientScreen> {
     List<Map<String, dynamic>> getGroupTercero = await listarGroupTercero();
     List<Map<String, dynamic>> getTaxType = await listarTaxType();
     List<Map<String, dynamic>> getTaxPayer = await listarTaxPayer();
-    List<Map<String, dynamic>> getTypePerson = await listarTypePerson();
+    // List<Map<String, dynamic>> getTypePerson = await listarTypePerson();
     print('Esta es la respuesta $getCountryGroup');
     print('Esta es la respuesta de getGroupTercero $getGroupTercero');
     print('Esto es getTaxType $getTaxType');
     print('Estos son los taxPayers $getTaxPayer');
-    print('Estos son los type person $getTypePerson');
+    // print('Estos son los type person $getTypePerson');
+
     _countryList.add({'c_country_id': 0, 'country': 'Selecciona un País'});
     _groupList
         .add({'c_bp_group_id': 0, 'group_bp_name': 'Selecciona un Grupo'});
@@ -64,17 +65,17 @@ class _EditClientScreenState extends State<EditClientScreen> {
       'lco_tax_payer_typeid': 0,
       'tax_payer_type_name': 'Selecciona un tipo de contribuyente'
     });
-    _typePersonList.add({
-      'lve_person_type_id': 0,
-      'person_type_name': 'Selecciona un tipo de Persona'
-    });
+    // _typePersonList.add({
+    //   'lve_person_type_id': 0,
+    //   'person_type_name': 'Selecciona un tipo de Persona'
+    // });
 
     setState(() {
       _countryList.addAll(getCountryGroup);
       _groupList.addAll(getGroupTercero);
       _taxTypeList.addAll(getTaxType);
       _taxPayerList.addAll(getTaxPayer);
-      _typePersonList.addAll(getTypePerson);
+      // _typePersonList.addAll(getTypePerson);
     });
   }
 
@@ -85,12 +86,12 @@ class _EditClientScreenState extends State<EditClientScreen> {
     print("this client ${widget.client}");
     
     loadList();
-    _selectedCountryIndex = widget.client['c_country_id'];
-    _countryText = widget.client['country'];
-    _seletectedTypePerson = widget.client['lve_person_type_id'];
-    _typePersonText = widget.client['person_type_name'].toString();
-    _selectedTaxPayer = widget.client['lco_tax_payer_typeid'];
-    _taxPayerText = widget.client['tax_payer_type_name'].toString();
+    _selectedCountryIndex = widget.client['c_country_id'] != '{@nil=true}' ? widget.client['c_country_id'] : 0 ;
+    _countryText = widget.client['country'] != '{@nil=true}' ? widget.client['country'] : 'Sin registro' ;
+    // _seletectedTypePerson = widget.client['lve_person_type_id'];
+    // _typePersonText = widget.client['person_type_name'].toString();
+    _selectedTaxPayer = widget.client['lco_tax_payer_typeid'] != '{@nil=true}' ?  widget.client['lco_tax_payer_typeid']:0;
+    _taxPayerText = widget.client['tax_payer_type_name'].toString() != '{@nil=true}' ? widget.client['tax_payer_type_name'].toString() : 'Sin registro';
     _selectedGroupIndex = widget.client['c_bp_group_id'];
     _groupText = widget.client['group_bp_name'].toString();
     _selectedTaxType = widget.client['lco_tax_id_typeid'];
@@ -99,9 +100,9 @@ class _EditClientScreenState extends State<EditClientScreen> {
     _rucController.text = widget.client['ruc'].toString();
     _correoController.text = widget.client['email'].toString() == '{@nil: true}' ? 'Sin registro' : widget.client['email'].toString();
     _telefonoController.text = widget.client['phone'].toString() == '{@nil: true}' ? 'Sin registro' : widget.client['phone'].toString();
-    _direccionController.text = widget.client['address'].toString();
-    _cityController.text = widget.client['city'].toString();
-    _codePostalController.text = widget.client['code_postal'].toString();
+    _direccionController.text = widget.client['address'].toString() == '{@nil: true}' ? 'Sin registro' : widget.client['address'].toString();
+    _cityController.text = widget.client['city'].toString() == '{@nil: true}' ? 'Sin registro' : widget.client['city'].toString();
+    _codePostalController.text = widget.client['code_postal'].toString() == '{@nil=true}' ? 'Sin registro' : widget.client['code_postal'].toString();
   }
 
   @override
@@ -193,18 +194,18 @@ class _EditClientScreenState extends State<EditClientScreen> {
                   const SizedBox(
                     height: 15,
                   ),
-                  CustomDropdownButtonFormField(
-                    identifier: 'typePerson',
-                    selectedIndex: _seletectedTypePerson,
-                    dataList: _typePersonList,
-                    text: _typePersonText,
-                    onSelected: (newValue, tyPersonText) {
-                      setState(() {
-                        _seletectedTypePerson = newValue ?? 0;
-                        _typePersonText = tyPersonText;
-                      });
-                    },
-                  ),
+                  // CustomDropdownButtonFormField(
+                  //   identifier: 'typePerson',
+                  //   selectedIndex: _seletectedTypePerson,
+                  //   dataList: _typePersonList,
+                  //   text: _typePersonText,
+                  //   onSelected: (newValue, tyPersonText) {
+                  //     setState(() {
+                  //       _seletectedTypePerson = newValue ?? 0;
+                  //       _typePersonText = tyPersonText;
+                  //     });
+                  //   },
+                  // ),
                   const SizedBox(height: 10,),
                      Container(
                       width: 300,

@@ -458,42 +458,42 @@ class _ComprasDetailsState extends State<ComprasDetails> {
                   ),
                 ),
                 const SizedBox(height: 15,),
-                Container(
-                  width: screenMax,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color:  compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Enviado' ? Colors.green: Colors.grey, // Color verde para el fondo del botón
-                  ),
-                  child: ElevatedButton(
-                    onPressed: compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Enviado' ? () {
+                // Container(
+                //   width: screenMax,
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(8),
+                //     color:  compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Enviado' ? Colors.green: Colors.grey, // Color verde para el fondo del botón
+                //   ),
+                //   child: ElevatedButton(
+                //     onPressed: compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Enviado' ? () {
 
-                        // Navigator.of(context).push(
-                        //  MaterialPageRoute(
-                        //     builder: (context) =>  Cobro(orderId: compraData['id'],saldoTotal:, loadCobranzas: _loadVentasForId),
-                        //   ),
-                        //  );
+                //         // Navigator.of(context).push(
+                //         //  MaterialPageRoute(
+                //         //     builder: (context) =>  Cobro(orderId: compraData['id'],saldoTotal:, loadCobranzas: _loadVentasForId),
+                //         //   ),
+                //         //  );
 
-                    }: null,
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Text(
-                        'Cobrar',
-                        style: TextStyle(
-                          color: Colors.white, // Texto blanco para que se destaque sobre el fondo verde
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                //     }: null,
+                //     style: ButtonStyle(
+                //       backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(8),
+                //         ),
+                //       ),
+                //     ),
+                //     child: const Padding(
+                //       padding: EdgeInsets.all(15.0),
+                //       child: Text(
+                //         'Cobrar',
+                //         style: TextStyle(
+                //           color: Colors.white, // Texto blanco para que se destaque sobre el fondo verde
+                //           fontWeight: FontWeight.bold,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                     ],
                   ),
                 ),

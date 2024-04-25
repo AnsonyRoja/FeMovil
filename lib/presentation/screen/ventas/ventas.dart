@@ -333,7 +333,7 @@ void _showFilterOptions(BuildContext context) {
                                       // Acción al presionar el botón "Cobrar"
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => Cobro(orderId: venta['id'], loadCobranzas: _loadVentas,saldoTotal: venta['saldo_total'], ),
+                                            builder: (context) => Cobro(orderId: venta['id'], loadCobranzas: _loadVentas,saldoTotal: venta['saldo_total'], cOrderId: venta['c_order_id'], documentNo: venta['documentno'], idFactura: venta['id_factura']),
                                           ),
                                         );
                                     }: null,

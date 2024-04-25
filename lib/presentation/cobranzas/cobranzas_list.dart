@@ -28,6 +28,8 @@ class _CobranzasState extends State<Cobranzas> {
       Future<void> _loadCobranzas() async {
         final CobranzasData = await getAllOrdersWithClientNames(); // Cambiar a la función de obtener Cobranzas
         
+         // ______________________________________________
+
             print("Esto es la venta Data $CobranzasData");
 
             setState(() {
@@ -168,6 +170,8 @@ void _showFilterOptions(BuildContext context) {
                   itemBuilder: (context, index) {
                   
                     final venta = filteredCobranzas[index];
+
+                    print("esto es venta de cobros $venta");
                     return  Column(
                       children: [
                         Container(  
@@ -180,7 +184,7 @@ void _showFilterOptions(BuildContext context) {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("N° ${venta['numero_referencia']}",
+                            child: Text("N° ${venta['documentno'] != "" ? venta['documentno'] : venta['ruc']  }",
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -223,7 +227,7 @@ void _showFilterOptions(BuildContext context) {
                                   onTap: venta['saldo_total'] > 0 ?   () {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                          builder: (context) =>  Cobro(orderId: venta['id'],saldoTotal: venta['saldo_total'], loadCobranzas: _loadCobranzas),
+                                          builder: (context) =>  Cobro(orderId: venta['id'],saldoTotal: venta['saldo_total'], loadCobranzas: _loadCobranzas,cOrderId: venta['c_order_id'], documentNo: venta['documentno'], idFactura: venta['id_factura'], ),
                                         ),
                                       );
 

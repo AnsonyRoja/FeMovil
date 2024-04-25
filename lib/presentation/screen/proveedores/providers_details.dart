@@ -60,8 +60,8 @@ class ProvidersDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10,),
                 _buildTextFormField('Direccion', provider['address'].toString() ),
-                _buildTextFormField('Ciudad', provider['city'].toString()),
-                _buildTextFormField('Pais', provider['country_name'].toString()),
+                _buildTextFormField('Ciudad', provider['city'].toString() != '{@nil=true}' ? provider['city'] : 'Sin registro'),
+                _buildTextFormField('Pais', provider['country_name'].toString() != '{@nil=true}' ? provider['country_name'].toString() : 'Sin registro'  ),
                 _buildTextFormField('Codigo Postal', provider['postal'] != '{@nil=true}' ? provider['postal'].toString(): 'Sin codigo postal' ),
 
                 const SizedBox(height: 29,),

@@ -216,6 +216,8 @@ Future updateMProductIdOrderCompra(int orderId, int mProductId) async {
  Future<void> actualizarDocumentNo(int id, Map<String, dynamic> nuevoDocumentNoAndCOrderId) async {
     final db = await DatabaseHelper.instance.database;
 
+    print('Entre aqui en actualizacion de orden de venta $id Y $nuevoDocumentNoAndCOrderId');
+
     int resultado = await db!.update(
       'orden_venta',
       {

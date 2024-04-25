@@ -21,24 +21,25 @@ try {
   
 
     Map<String, dynamic> posPropiertieData = {
-      'country_id': dataRows[6]['field'][1]['val'],
+      'country_id': dataRows[4]['field'][1]['val'],
       // 'tax_payer_type_natural': dataRows[4]['field'][1]['val'],
       // 'tax_payer_type_juridic': dataRows[5]['field'][1]['val'],
       // 'person_type_juridic': dataRows[6]['field'][1]['val'],
       // 'person_type_natural': dataRows[7]['field'][1]['val'],
       // 'm_warehouse_id':dataRows[8]['field'][1]['val'], 
-      'c_doc_type_order_id': dataRows[7]['field'][1]['val'],
+      'c_doc_type_order_id': dataRows[5]['field'][1]['val'],
       // 'c_conversion_type_id': dataRows[10]['field'][1]['val'],
       'c_paymentterm_id': dataRows[0]['field'][1]['val'],
       // 'c_bankaccount_id': dataRows[12]['field'][1]['val'],
       // 'c_bpartner_id': dataRows[13]['field'][1]['val'],
-      'c_doctypepayment_id': dataRows[1]['field'][1]['val'],
-      'c_doctypereceipt_id': dataRows[2]['field'][1]['val'],
-      // 'city': dataRows[16]['field'][1]['val'],
-      // 'address1':dataRows[17]['field'][1]['val'],
-      // 'm_pricelist_id':dataRows[18]['field'][1]['val'],
-      // 'c_currency_id':dataRows[19]['field'][1]['val'],
-      // 'c_doc_type_order_co': dataRows[20]['field'][1]['val']
+      'c_doctypepayment_id': dataRows[10]['field'][1]['val'],
+      'c_doctypereceipt_id': dataRows[7]['field'][1]['val'],
+      'city': dataRows[2]['field'][1]['val'],
+      'address1':dataRows[3]['field'][1]['val'],
+      'm_pricelist_id':dataRows[9]['field'][1]['val'],
+      'c_currency_id':dataRows[1]['field'][1]['val'],
+      'c_doc_type_order_co': dataRows[6]['field'][1]['val'],
+      'm_price_saleslist_id': dataRows[8]['field'][1]['val']
     };
     // Agrega los datos del producto a la lista
     posPropertiesData.add(posPropiertieData);

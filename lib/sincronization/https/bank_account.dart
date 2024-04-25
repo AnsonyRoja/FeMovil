@@ -3,11 +3,12 @@ import 'dart:io';
 
 import 'package:femovil/config/url.dart';
 import 'package:femovil/presentation/perfil/perfil_http.dart';
-import 'package:femovil/sincronization/ExtractData/extract_customers_data.dart';
+import 'package:femovil/sincronization/ExtractData/extract_bank_account_data.dart';
+import 'package:femovil/sincronization/ExtractData/extract_impuesto_data.dart';
 import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:path_provider/path_provider.dart';
 
-sincronizationCustomers(setState) async {
+sincronizationBankAccount(setState) async {
   HttpClient httpClient = HttpClient()
     ..badCertificateCallback = (X509Certificate cert, String host, int port) {
       return true;
@@ -40,7 +41,7 @@ sincronizationCustomers(setState) async {
   final requestBody = {
     "ModelCRUDRequest": {
       "ModelCRUD": {
-        "serviceType": "getCustomerAPP",
+        "serviceType": "getBankAccountAPP",
       },
       "ADLoginRequest": {
         "user": variablesLogin['user'],
@@ -68,14 +69,17 @@ sincronizationCustomers(setState) async {
 
   final response = await request.close();
   final responseBody = await response.transform(utf8.decoder).join();
-  dynamic customer =  extractCustomersData(responseBody);
-  
-  print('Estos son los clientes registrados en idempiere $customer');
+  dynamic bankAccount =  extractBankAccountData(responseBody);
 
-  await syncCustomers(customer,setState); 
 
-  final parsedJson = jsonDecode(responseBody);
-  print("esta es la respuesta $parsedJson");
-  return parsedJson;
+
+            print('Esta es la cuenta de banco extraida desde idempiere $bankAccount');
+
+
+  await syncBankAccount(bankAccount,setState); 
+
+  // final parsedJson = jsonDecode(responseBody);
+  // print("esta es la respuesta $parsedJson");
+  // return parsedJson;
 
 }

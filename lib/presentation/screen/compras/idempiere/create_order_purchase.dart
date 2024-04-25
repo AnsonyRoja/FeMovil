@@ -342,7 +342,7 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
                         "@column": "SalesRep_ID",
                         "val": orderPurchaseList['usuario_id']
                       },
-                      {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
+                      // {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
                       {"@column": "IsSOTrx", "val": 'N'}
                   
                     ]
@@ -371,7 +371,7 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
               "serviceType": "completeOrder",
               "tableName": "C_Order",
               "recordIDVariable": "@C_Order.C_Order_ID",
-              "docAction": "PR",
+              "docAction": "CO",
           }
       };
                 
@@ -394,7 +394,7 @@ createOrdenPurchaseIdempiere(orderPurchaseList) async {
 
       print("esta es la respuesta $parsedJson");
 
-        String documentNo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
+        dynamic documentNo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
         dynamic cOrderId = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
         print(' esto es el client id ${orderPurchaseList['id']} Esto es el document no $documentNo y este es el orderid $cOrderId');
 

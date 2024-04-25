@@ -46,3 +46,15 @@ que lo sincronice y lo agregue sino que no lo agregue
 
 
 14) la aplicacion debe funcionar en offline para que al sincronizarce funcione de ambas formas. 
+
+15) En la creacion de una orden de venta tiene que tener una columna del id de la factura para asi actualizarce al
+sincronizar la orden de venta si posee factura guardar si id de la factura sino, podria ser un anticipo al hacer un pago
+a la orden 
+
+
+16) Primero hay que cargar todas las cuentas de bancos disponibles de esa organizacion 
+
+17) Luego crear la interfaz que creara el cobro y si dependiendo de la orden de venta tenga factura o no
+
+18) Existen dos casos al crear el cobro 1 cuando el id de la factura no existe se crea el cobro como adelanto de la orden de venta
+y en caso de que si existe se le creara al numero de factura 

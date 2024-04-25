@@ -81,6 +81,7 @@ class _EditProviderScreenState extends State<EditProviderScreen> {
   void initState() {
     super.initState();
     loadList();
+    print('Esto es el provider tax payer ${widget.provider['lco_taxt_payer_type_id']}');
     // Initialize controllers with existing product details
     _nameController.text = widget.provider['bpname'].toString();
     _rucController.text = widget.provider['tax_id'].toString();
@@ -89,15 +90,15 @@ class _EditProviderScreenState extends State<EditProviderScreen> {
     _groupTextVendor = widget.provider['groupbpname'].toString();
     _taxPayerText = widget.provider['tax_payer_type_name'].toString();
     _taxTypeText = widget.provider['tax_id_type_name'].toString();
-    _personTypeText = widget.provider['person_type_name'].toString();
+    // _personTypeText = widget.provider['person_type_name'].toString();
     _countryTex = widget.provider['country_name'].toString();
     _selectedGroupIndex = widget.provider['c_bp_group_id'];
-    _selectedTaxIndexType = widget.provider['lco_tax_id_type_id'];
-    _selectedTaxPayerIndex = widget.provider['lco_taxt_payer_type_id'];
-    _selectedPersonTypeIndex = widget.provider['lve_person_type_id'];
+    _selectedTaxIndexType = widget.provider['lco_tax_id_type_id'] != '{@nil=true}' ? widget.provider['lco_tax_id_type_id'] : 0 ;
+    _selectedTaxPayerIndex = widget.provider['lco_taxt_payer_type_id'] != '{@nil=true}' ? widget.provider['lco_taxt_payer_type_id'] : 0;
+    // _selectedPersonTypeIndex = widget.provider['lve_person_type_id'];
     _selectedCountryIndex = widget.provider['c_country_id'];
-    _addressController.text = widget.provider['address'].toString();
-    _cityController.text = widget.provider['city'].toString();
+    _addressController.text = widget.provider['address'].toString() ;
+    _cityController.text = widget.provider['city'].toString() != '{@nil=true}' ? widget.provider['city']  : 'Sin registro';
     _codePostalController.text = widget.provider['postal'].toString() != '{@nil=true}' ? widget.provider['postal'].toString(): 'Sin Codigo Postal';
  
   }
@@ -172,17 +173,17 @@ class _EditProviderScreenState extends State<EditProviderScreen> {
                     });
 
                 },),
-                   const SizedBox(height: 10,),
-                CustomDropdownButtonFormFieldVendor(identifier: 'typePersonVendor', selectedIndex: _selectedPersonTypeIndex, dataList:_typePersonList, text: _personTypeText, onSelected: (newValue, personTypeText) {
+                  //  const SizedBox(height: 10,),
+                // CustomDropdownButtonFormFieldVendor(identifier: 'typePersonVendor', selectedIndex: _selectedPersonTypeIndex, dataList:_typePersonList, text: _personTypeText, onSelected: (newValue, personTypeText) {
 
-                    setState(() {
+                //     setState(() {
 
-                        _selectedPersonTypeIndex = newValue ?? 0;
-                        _personTypeText = personTypeText;
+                //         _selectedPersonTypeIndex = newValue ?? 0;
+                //         _personTypeText = personTypeText;
 
-                    });
+                //     });
 
-                },),
+                // },),
               const SizedBox(height: 10,),
 
                const ContainerBlue(label: 'Domicilio Fiscal'),

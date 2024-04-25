@@ -98,7 +98,7 @@ Future<void> syncGetPosProperties(posPropertiesData) async {
               'm_warehouse_id': posPropertieData['m_warehouse_id'],
               'c_doc_type_order_id': posPropertieData['c_doc_type_order_id'].toString(),
               'c_conversion_type_id': posPropertieData['c_conversion_type_id'].toString(),
-              'c_paymentterm_id': posPropertieData['c_bankaccount_id'],
+              'c_paymentterm_id': posPropertieData['c_paymentterm_id'],
               'c_bankaccount_id': posPropertieData['c_bankaccount_id'].toString(),
               'c_bpartner_id': posPropertieData['c_bpartner_id'].toString(),
               'c_doctypepayment_id': posPropertieData['c_doctypepayment_id'],
@@ -107,7 +107,8 @@ Future<void> syncGetPosProperties(posPropertiesData) async {
               'address1':posPropertieData['address1'],
               'm_pricelist_id': posPropertieData['m_pricelist_id'],
               'c_currency_id': posPropertieData['c_currency_id'],
-              'c_doc_type_order_co': posPropertieData['c_doc_type_order_co']
+              'c_doc_type_order_co': posPropertieData['c_doc_type_order_co'],
+              'm_price_saleslist_id':posPropertieData['m_price_saleslist_id']
           };
        
           // Parseo el objeto a json 
@@ -179,7 +180,9 @@ Future<List<Map<String, dynamic>>> getPosPropertiesV() async {
           city,
           address1,
           m_pricelist_id,
-          c_doc_type_order_co
+          c_doc_type_order_co,
+          m_price_saleslist_id,
+          c_currency_id
         FROM posproperties
         WHERE country_id > ?
       ''', [0]);

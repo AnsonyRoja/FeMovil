@@ -89,12 +89,14 @@ Future<void> _selectDate(BuildContext context) async {
     firstDate: currentDate,
     lastDate: currentDate,
   );
+
   if (pickedDate != null) {
     setState(() {
       selectedDate = pickedDate;
       fechaController.text = DateFormat('dd/MM/yyyy').format(selectedDate); // Formato día/mes/año
     });
   }
+  
 }
 
 void _addOrUpdateProduct(List<Map<String, dynamic>> products) {

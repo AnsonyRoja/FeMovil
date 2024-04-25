@@ -263,10 +263,10 @@ createOrdenSalesIdempiere(orderSalesList) async {
                         "@column": "Description",
                         "val": orderSalesList['descripcion'],
                       },
-                      {
-                        "@column": "C_ConversionType_ID",
-                        "val": variablesG[0]['c_conversion_type_id']
-                      },
+                      // {
+                      //   "@column": "C_ConversionType_ID",
+                      //   "val": variablesG[0]['c_conversion_type_id']
+                      // },
                       {
                         "@column": "C_DocTypeTarget_ID",
                         "val": orderSalesList['c_doctypetarget_id']
@@ -282,7 +282,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       {"@column": "IsTransferred", "val": 'Y'},
                       {
                         "@column": "M_PriceList_ID",
-                        "val": variablesG[0]['m_pricelist_id']
+                        "val": variablesG[0]['m_price_saleslist_id']
                       },
                       {
                         "@column": "M_Warehouse_ID",
@@ -293,7 +293,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                         "@column": "SalesRep_ID",
                         "val": orderSalesList['usuario_id']
                       },
-                      {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
+                      // {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
                       {"@column": "IsSOTrx", "val": 'Y'}
 
                   
@@ -344,11 +344,15 @@ createOrdenSalesIdempiere(orderSalesList) async {
 
       final parsedJson = jsonDecode(responseBody);
 
-      print("esta es la respuesta $parsedJson");
+      print("esta es la respuesta $parsedJson on");
 
-        String documentNo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
+   
+          
+        dynamic documentNo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
+
         dynamic cOrderId = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
-        print(' esto es el client id ${orderSalesList['id']} Esto es el document no $documentNo y este es el orderid $cOrderId');
+          
+
 
                         Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
 
@@ -357,12 +361,12 @@ createOrdenSalesIdempiere(orderSalesList) async {
 
 
                         };
+       
 
                       String newStatus = 'Enviado';
+                      await updateOrdereSalesForStatusSincronzed(orderSalesList['id'], newStatus);
+                      await actualizarDocumentNo(orderSalesList['id'], nuevoDocumentNoAndCOrderId);
 
-                      updateOrdereSalesForStatusSincronzed(orderSalesList['id'], newStatus);
-
-                      actualizarDocumentNo(orderSalesList['id'], nuevoDocumentNoAndCOrderId);
 
     return parsedJson;
 

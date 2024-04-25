@@ -327,21 +327,21 @@ void _showFilterOptions(BuildContext context) {
                                     },
                                     child: const Text('Ver más'),
                                   ),
-                                  ElevatedButton(
-                                      style: ButtonStyle(
-                                      backgroundColor:compra['status_sincronized'] == 'Completado' ? MaterialStateProperty.all<Color>(Colors.green) : MaterialStateProperty.all<Color>(Colors.grey),
-                                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                    ),
-                                    onPressed: compra['status_sincronized'] == 'Completado' ? () {
-                                      // Acción al presionar el botón "Cobrar"
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => Cobro(orderId: compra['id'], loadCobranzas: _loadCompras ,saldoTotal: compra['saldo_total'], ),
-                                          ),
-                                        );
-                                    }: null,
-                                    child: const Text('Cobrar'),
-                                  ),
+                                  // ElevatedButton(
+                                  //     style: ButtonStyle(
+                                  //     backgroundColor:compra['status_sincronized'] == 'Completado' ? MaterialStateProperty.all<Color>(Colors.green) : MaterialStateProperty.all<Color>(Colors.grey),
+                                  //     foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                  //   ),
+                                  //   onPressed: compra['status_sincronized'] == 'Completado' ? () {
+                                  //     // Acción al presionar el botón "Cobrar"
+                                  //       Navigator.of(context).push(
+                                  //         MaterialPageRoute(
+                                  //           builder: (context) => Cobro(orderId: compra['id'], loadCobranzas: _loadCompras ,saldoTotal: compra['saldo_total'], ),
+                                  //         ),
+                                  //       );
+                                  //   }: null,
+                                  //   child: const Text('Cobrar'),
+                                  // ),
                                 ],
                               ),
                             ),  

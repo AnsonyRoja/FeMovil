@@ -52,6 +52,7 @@ class DatabaseHelper {
       dbPath,
       version: 1,
       onCreate: (Database db, int version) async {
+
         await db.execute('''
           CREATE TABLE products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,6 +77,7 @@ class DatabaseHelper {
 
           )
         ''');
+
         await db.execute('''
         CREATE TABLE clients(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -98,7 +100,7 @@ class DatabaseHelper {
             c_city_id INTEGER,
             c_region_id INTEGER,
             c_country_id INTEGER,
-            ruc STRING,
+            ruc TEXT,
             address STRING,
             lco_tax_payer_typeid INTEGER,
             tax_payer_type_name STRING,
@@ -118,7 +120,7 @@ class DatabaseHelper {
             email STRING,
             c_bp_group_id INTEGER,
             groupbpname STRING,
-            tax_id STRING,
+            tax_id TEXT,
             is_vendor STRING,
             lco_tax_id_type_id INTEGER,
             tax_id_type_name STRING,
@@ -157,6 +159,7 @@ class DatabaseHelper {
           c_bpartner_location_id INTEGER,
           fecha TEXT,
           descripcion TEXT,
+          id_factura TEXT,
           monto REAL,
           saldo_neto REAL,
           usuario_id INTEGER,
@@ -240,17 +243,21 @@ class DatabaseHelper {
         await db.execute('''
           CREATE TABLE cobros(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            number_reference INTEGER,
-            type_document TEXT,
-            payment_type TEXT, 
+            c_bankaccount_id INTEGER,
+            c_doctype_id INTEGER,
+            date_trx TEXT,
+            description TEXT,
+            c_bpartner_id INTEGER,
+            pay_amt REAL,
             date TEXT,
-            coin TEXT,
-            amount INTEGER,
-            bank_account TEXT,
-            observation TEXT,
+            c_currency_id INTEGER,
+            c_order_id INTEGER,
+            c_invoice_id INTEGER,
+            documentno INTEGER,
+            tender_type STRING,
             sale_order_id INTEGER,
             FOREIGN KEY (sale_order_id) REFERENCES orden_venta(id)
-
+            
           )
         ''');
 
@@ -301,6 +308,7 @@ class DatabaseHelper {
             city STRING,
             address1 STRING, 
             m_pricelist_id INTEGER,
+            m_price_saleslist_id INTEGER,
             c_currency_id INTEGER,
             c_doc_type_order_co INTEGER
             )
@@ -317,6 +325,23 @@ class DatabaseHelper {
           iswithholding TEXT
           )
         ''');
+
+
+           await db.execute('''
+          CREATE TABLE bank_account_app(
+          id INTEGER PRIMARY KEY AUTOINCREMENT, 
+          c_bank_id INTEGER,
+          bank_name STRING,
+          routing_no TEXT,
+          c_bank_account_id INTEGER,
+          account_no TEXT,
+          c_currency_id INTEGER,
+          iso_code STRING
+          )
+        ''');
+
+
+
       },
     );
 

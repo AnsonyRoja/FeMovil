@@ -43,6 +43,21 @@ Future<List<Map<String, dynamic>>> getProducts() async {
     }
   }
 
+
+ Future<List<Map<String, dynamic>>> getBankAccounts() async {
+      final db = await DatabaseHelper.instance.database;
+    if (db != null) {
+      // Realiza la consulta para recuperar todos los registros de la tabla "bank_account_app"
+      return await db.query('bank_account_app');
+    } else {
+      // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
+      print('Error: db is null');
+      return [];
+    }
+  }
+
+
+
     Future<List<Map<String, dynamic>>> getClients() async {
      final db = await DatabaseHelper.instance.database;
 
@@ -94,7 +109,7 @@ Future<List<Map<String, dynamic>>> getProducts() async {
       // Consultar todas las órdenes de venta con el nombre del cliente asociado
       List<Map<String, dynamic>> orders = await db.rawQuery('''
         SELECT o.*, c.bp_name AS nombre_cliente, c.ruc as ruc,
-        (o.monto - COALESCE((SELECT SUM(amount) FROM cobros WHERE sale_order_id = o.id), 0)) AS saldo_total
+        (o.monto - COALESCE((SELECT SUM(pay_amt) FROM cobros WHERE sale_order_id = o.id), 0)) AS saldo_total
         FROM orden_venta o
         INNER JOIN clients c ON o.cliente_id = c.id
       ''');

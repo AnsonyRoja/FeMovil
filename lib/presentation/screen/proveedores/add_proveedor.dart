@@ -200,16 +200,16 @@ class _AddProvidersFormState extends State<AddProvidersForm> {
 
                 },),
                    const SizedBox(height: 10,),
-                CustomDropdownButtonFormFieldVendor(identifier: 'typePersonVendor', selectedIndex: _selectedPersonTypeIndex, dataList:_typePersonList, text: _personTypeText, onSelected: (newValue, personTypeText) {
+                // CustomDropdownButtonFormFieldVendor(identifier: 'typePersonVendor', selectedIndex: _selectedPersonTypeIndex, dataList:_typePersonList, text: _personTypeText, onSelected: (newValue, personTypeText) {
 
-                    setState(() {
+                //     setState(() {
 
-                        _selectedPersonTypeIndex = newValue ?? 0;
-                        _personTypeText = personTypeText;
+                //         _selectedPersonTypeIndex = newValue ?? 0;
+                //         _personTypeText = personTypeText;
 
-                    });
+                //     });
 
-                },),
+                // },),
                const SizedBox(height: 15,),
                const ContainerBlue(label:'Domicilio Fiscal',),
                const SizedBox(height: 15,),

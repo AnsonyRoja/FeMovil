@@ -19,7 +19,7 @@ class Customer {
   final dynamic cCityId;
   final dynamic cRegionId;
   final dynamic cCountryId;
-  final dynamic ruc;
+  final String ruc;
   final dynamic address;
   final dynamic lcoTaxPayerTypeId;
   final dynamic taxPayerTypeName;

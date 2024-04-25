@@ -254,20 +254,29 @@ if (_isMounted) {
       ),
     ),
 
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: GestureDetector(
-              onTap: () {
-                FocusScope.of(context).requestFocus(FocusNode());
-              },
+      body: GestureDetector(
+            onTap: () {
+                  // Cierra el teclado tocando en cualquier parte del Stack
+                  FocusScope.of(context).unfocus();
+                },
+        child: Stack(
+          children: [
+              Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  // Cierra el teclado tocando en cualquier parte del Stack
+                  FocusScope.of(context).unfocus();
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   
                 const SizedBox(height: 25,),
-          
+                        
                 IconButton(
                   icon: Image.asset(
                     'lib/assets/filtro@3x.png',
@@ -278,7 +287,7 @@ if (_isMounted) {
                     _showFilterOptions(context);
                   },
                 ),
-          
+                        
                   const SizedBox(height: 10,),
                  
                   Expanded(
@@ -286,7 +295,7 @@ if (_isMounted) {
                       itemCount: filteredProducts.length,
                       itemBuilder: (context, index) {
                         final product = filteredProducts[index];
-          
+                        
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
@@ -386,8 +395,8 @@ if (_isMounted) {
                                                         Text('${product['quantity'] is int ? product['quantity'] : 0}', style: const TextStyle(fontFamily: 'Poppins Regular'),),
                                                       ],
                                                     ),
-          
-          
+                        
+                        
                                                 Row(
                                                   children: [
                                                     const Text('Precio: ', style: TextStyle(fontFamily: 'Poppins SemiBold'),),
@@ -421,7 +430,7 @@ if (_isMounted) {
                                 ],
                               ),
                             ),
-          
+                        
                     
                             ],
                           ),
@@ -433,15 +442,15 @@ if (_isMounted) {
                 ],
               ),
             ),
-          ),
-
-          Positioned(
-            top: 450,
-            right: 15,
-            child: GestureDetector( 
-                onTap:  () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AddProductForm()),),
-               child: Image.asset('lib/assets/Agregar@3x.png', width: 80,) ,)),
-        ],
+        
+            Positioned(
+              top: 450,
+              right: 15,
+              child: GestureDetector( 
+                  onTap:  () => Navigator.push(context, MaterialPageRoute(builder: (context) => const AddProductForm()),),
+                 child: Image.asset('lib/assets/Agregar@3x.png', width: 80,) ,)),
+          ],
+        ),
       ),
       // bottomNavigationBar: CustomBottomNavigationBar(
       //   onAddPressed: () {

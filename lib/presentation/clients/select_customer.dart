@@ -189,6 +189,74 @@ class CustomDropdownButtonFormField extends StatelessWidget {
                         return null;
                       },
                     );
+
+           case 'selectTypeAccountBank':
+
+            return DropdownButtonFormField<int>(
+                      value: selectedIndex,
+                      items:dataList
+                          .where((bankAccount) => bankAccount['c_bank_id'] is int && bankAccount['bank_name'] != '' )
+                          .map<DropdownMenuItem<int>>((bankAcc) {
+                        print('bankAccount $bankAcc');
+                        return DropdownMenuItem<int>(
+                          value: bankAcc['c_bank_id'] as int,
+                          child: Text(bankAcc['bank_name'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        print('esto es el bank Account List ${dataList}');
+                        String nameBankAccount = invoke(
+                            'obtenerNombreBankAccount', newValue, dataList);
+                        print("esto es el nombre de la cuenta bancaria $nameBankAccount y este el id $newValue");
+
+                        onSelected(newValue, nameBankAccount);
+
+                      },
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      validator: (value) {
+                        if (value == null || value == 0) {
+                          return 'Por favor selecciona un Pais';
+                        }
+                        return null;
+                      },
+                    );
+
+                    case 'selectTypeCoins':
+
+            return DropdownButtonFormField<int>(
+                      value: selectedIndex,
+                      items:dataList
+                          .where((typeCoins) => typeCoins['c_currency_id'] is int && typeCoins['iso_code'] != '' )
+                          .map<DropdownMenuItem<int>>((typeCoins) {
+
+                        return DropdownMenuItem<int>(
+                          value: typeCoins['c_currency_id'] as int,
+                          child: Text(typeCoins['iso_code'] as String),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        print('esto es el bank Account List ${dataList}');
+                        String nameBankAccount = invoke(
+                            'obtenerNombreBankAccount', newValue, dataList);
+                        print("esto es el nombre de la cuenta bancaria $nameBankAccount y este el id $newValue");
+
+                        onSelected(newValue, nameBankAccount);
+
+                      },
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      validator: (value) {
+                        if (value == null || value == 0) {
+                          return 'Por favor selecciona un Pais';
+                        }
+                        return null;
+                      },
+                    );
         
       default:  return    DropdownButtonFormField<int>(
                     value: selectedIndex,

@@ -62,61 +62,65 @@ synchronizeCustomersWithIdempiere(setState) async {
   print('Esto es custommer en cero $customersWithZeroValues');
   
   for (var customersData in customersWithZeroValues) {
+    try {
+      Customer customer = Customer(
+          cbPartnerId: customersData['c_bpartner_id'],
+          codClient: customersData['cod_client'],
+          isBillTo: 'Y',
+          address: customersData['address'],
+          bpName: customersData['bp_name'],
+          cBpGroupId: customersData['c_bp_group_id'],
+          cBpGroupName: customersData['group_bp_name'],
+          cBparnetLocationId: 0,
+          cCityId: customersData['c_city_id'],
+          cCountryId: customersData['c_country_id'],
+          cLocationId: 0, 
+          cRegionId: 0,
+          city: customersData['city'],
+          codePostal: customersData['code_postal'],
+          country: customersData['country'],
+          email: customersData['email'],
+          lcoTaxIdTypeId: customersData['lco_tax_id_typeid'],
+          lcoTaxPayerTypeId: customersData['lco_tax_payer_typeid'],
+          lvePersonTypeId: customersData['lve_person_type_id'],
+          personTypeName: customersData['person_type_name'],
+          phone: customersData['phone'],
+          region: customersData['region'],
+          ruc: customersData['ruc'],
+          taxIdTypeName: customersData['tax_id_type_name'],
+          taxPayerTypeName: customersData['tax_payer_type_name']
+      );
 
-    Customer customer = Customer(
-        cbPartnerId: customersData['c_bpartner_id'],
-        codClient: customersData['cod_client'],
-        isBillTo: 'Y',
-        address: customersData['address'],
-        bpName: customersData['bp_name'],
-        cBpGroupId: customersData['c_bp_group_id'],
-        cBpGroupName: customersData['group_bp_name'],
-        cBparnetLocationId: 0,
-        cCityId: customersData['c_city_id'],
-        cCountryId: customersData['c_country_id'],
-        cLocationId: 0, 
-        cRegionId: 0,
-        city: customersData['city'],
-        codePostal: customersData['code_postal'],
-        country: customersData['country'],
-        email: customersData['email'],
-        lcoTaxIdTypeId: customersData['lco_tax_id_typeid'],
-        lcoTaxPayerTypeId: customersData['lco_tax_payer_typeid'],
-        lvePersonTypeId: customersData['lve_person_type_id'],
-        personTypeName: customersData['person_type_name'],
-        phone: customersData['phone'],
-        region: customersData['region'],
-        ruc: customersData['ruc'],
-        taxIdTypeName: customersData['tax_id_type_name'],
-        taxPayerTypeName: customersData['tax_payer_type_name']
+      dynamic result = await createCustomerIdempiere(customer.toMap());
+      print('este es el $result');
 
-    );
-    dynamic result = await createCustomerIdempiere(customer.toMap());
-    print('este es el $result');
+      final cBParnertId =
+          result['CompositeResponses']['CompositeResponse']
+          ['StandardResponse'][0]['outputFields']
+          ['outputField'][0]['@value'];
+      final newCodClient =
+          result['CompositeResponses']['CompositeResponse']
+          ['StandardResponse'][0]['outputFields']
+          ['outputField'][1]['@value'];
+      final cLocationId =  result['CompositeResponses']['CompositeResponse']
+          ['StandardResponse'][1]['outputFields']
+          ['outputField']['@value'];
+      final cBPartnerLocationId = result['CompositeResponses']['CompositeResponse']
+          ['StandardResponse'][2]['outputFields']
+          ['outputField']['@value'];
 
-    final cBParnertId =
-        result['CompositeResponses']['CompositeResponse']
-        ['StandardResponse'][0]['outputFields']
-        ['outputField'][0]['@value'];
-    final newCodClient =
-        result['CompositeResponses']['CompositeResponse']
-        ['StandardResponse'][0]['outputFields']
-        ['outputField'][1]['@value'];
-    final cLocationId =  result['CompositeResponses']['CompositeResponse']
-        ['StandardResponse'][1]['outputFields']
-        ['outputField']['@value'];
-    final cBPartnerLocationId = result['CompositeResponses']['CompositeResponse']
-        ['StandardResponse'][2]['outputFields']
-        ['outputField']['@value'];
+      print('Esto es el codigo de partnert id  $cBParnertId, esto es el $newCodClient, esto es el $cLocationId y esto es el cbparnert location id $cBPartnerLocationId');
 
-    print('Esto es el codigo de partnert id  $cBParnertId, esto es el $newCodClient, esto es el $cLocationId y esto es el cbparnert location id $cBPartnerLocationId');
-
-
-    await updateCustomerCBPartnerIdAndCodClient(
-        customersData['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
+      await updateCustomerCBPartnerIdAndCodClient(
+          customersData['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
+    } catch (error) {
+      print('Error al procesar cliente: $error');
+      // Continuar con el siguiente cliente
+      continue;
+    }
   }
-  
 }
+
 
 synchronizeVendorsWithIdempiere(setState) async {
   List<Map<String, dynamic>> vendorWithZeroValues =
@@ -127,6 +131,9 @@ synchronizeVendorsWithIdempiere(setState) async {
   print('Esto es vendor en cero $vendorWithZeroValues');
   
   for (var vendorsData in vendorWithZeroValues) {
+    try {
+      
+ 
     Vendor provider = Vendor(
       cBPartnerId: vendorsData['c_bpartner_id'],
       cCodeId: vendorsData['c_code_id'],
@@ -177,9 +184,13 @@ synchronizeVendorsWithIdempiere(setState) async {
 
     await updateCBPartnerIdAndCodVendor(
         vendorsData['id'], cBParnertId, newCodClient, cLocationId, cBPartnerLocationId );
+     } catch (e) {
+         print('Error al procesar Proveedor: $e');
+      // Continuar con el siguiente cliente
+      continue;
+    }
   }
 }
-
 
 
 synchronizeOrderSalesWithIdempiere(setState) async {

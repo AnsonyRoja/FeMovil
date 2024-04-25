@@ -405,3 +405,99 @@ https://165.227.197.236:1201/ADInterface/services/rest/composite_service/composi
 
 
 }
+
+
+
+https://demo.aapresolution.com/ADInterface/services/rest/composite_service/composite_operation
+
+
+{
+
+       "CompositeRequest":{
+            "ADLoginRequest": {
+            "user": "Admin",
+            "pass": "07@ng3l3s",
+            "lang": "es_CO",
+            "ClientID": 1000000,
+            "RoleID": "1000000",
+            "OrgID": "1000000",
+            "WarehouseID": "1000000",
+            "stage": 9
+        },
+          "serviceType": "UCCompositePayment",
+              "operations":{
+                  "operation":[
+                      {
+                      "TargetPort": "createUpdateData",
+                      "ModelCRUD": {
+                          "serviceType":"CreateReceiptAPP",
+                          "TableName": "C_Payment",
+                          "RecordID": "0",
+                          "Action":"CreateUpdate",
+                          "DataRow": {
+                      "field": [
+                    {
+                        "@column": "C_BankAccount_ID",
+                        "val": "1000000"
+                    }, 
+                    {
+                        "@column": "C_DocType_ID",
+                        "val": "1000008"
+                    }, 
+                    {
+                        "@column": "DateTrx",
+                        "val": "2024-04-22 04:03:55"
+                    },
+                      {
+                        "@column": "Description",
+                        "val": "Se Realizo el pago correctamente"
+                    }, 
+                       {
+                        "@column": "C_BPartner_ID",
+                        "val": "1000016"
+                    }, 
+
+                     {
+                        "@column": "PayAmt",
+                        "val": "1.5"
+                    }, 
+                         {
+                        "@column": "C_Currency_ID",
+                        "val": "100"
+                    }, 
+                     {
+                        "@column": "C_Order_ID",
+                        "val": "1000099"
+                    },
+                       {
+                        "@column": "TenderType",
+                        "val": "X"
+                    }      
+                    
+                     ]
+                      }
+
+                    }
+
+                    },
+                    {
+                    "TargetPort": "setDocAction",                      
+                    "ModelSetDocAction": {
+                        "serviceType": "completePaymentReceipt",
+                        "tableName": "C_Payment",
+                        "recordIDVariable": "@C_Payment.C_Payment_ID",
+                        "docAction": "PR"
+                    }
+                    }
+
+
+                  ]
+              }
+
+          
+    }
+}
+
+
+
+

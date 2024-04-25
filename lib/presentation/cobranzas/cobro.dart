@@ -1,7 +1,11 @@
+import 'package:femovil/config/getPosProperties.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/insert_database.dart';
+import 'package:femovil/presentation/clients/select_customer.dart';
+import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 
@@ -14,8 +18,11 @@ class Cobro extends StatefulWidget {
   final int orderId;
   final double saldoTotal;
   final Function loadCobranzas;
+  final dynamic cOrderId; 
+  final dynamic documentNo;
+  final dynamic idFactura;
   
-  const Cobro({super.key, required this.orderId, required this.saldoTotal, required this.loadCobranzas});
+  const Cobro({super.key, required this.orderId, required this.saldoTotal, required this.loadCobranzas, required this.cOrderId, required this.documentNo, required this.idFactura});
 
   @override
   State<Cobro> createState() => _CobroState();
@@ -28,32 +35,112 @@ class _CobroState extends State<Cobro> {
   TextEditingController dateController = TextEditingController();
   TextEditingController montoController = TextEditingController();
   TextEditingController observacionController = TextEditingController();
+  final TextEditingController _fechaIdempiereController = TextEditingController();
   String? paymentTypeValue = 'Efectivo';
   String? coinValue = "\$";
   String? typeDocumentValue = "Cobro";
-  String? bankAccountValue = "123456";
+  dynamic cBPartnerIds = 0;
+  DateTime selectedDate = DateTime.now();
+  List<Map<String, dynamic>> bankAccountsList = [];
+    List<Map<String, dynamic>> typeCoinsList = [];
+
+  // Selecteds 
+
+  int _selectsBankAccountId =  0; 
+  String _selectTypePayment = "X";
+  dynamic _selectTypeCoins = 0;
+  //Texts
+
+  String _bankAccountText = "";
+
+List<Map<String, dynamic>> uniqueISOsAndCurrencyId = [];
+
 
 
 void _loadCurrentDate() {
   final now = DateTime.now();
   final formattedDate = DateFormat('dd/MM/yyyy').format(now);
+
   dateController.text = formattedDate; // Asigna la fecha actual al controlador del campo de texto
 }
+
+
+void _getBankAcc() async {
+
+
+    List<Map<String, dynamic>> bankAccounts = await getBankAccounts();
+
+      bankAccountsList
+        .add({'c_bank_id': 0, 'bank_name': 'Selecciona una Cuenta Bancaria'});
+
+
+          for (var account in bankAccounts) {
+
+          if (!uniqueISOsAndCurrencyId.any((element) => element['iso_code'] == account['iso_code'])) {
+            setState(() {
+              
+            uniqueISOsAndCurrencyId.add({
+              'iso_code': account['iso_code'],
+              'c_currency_id': account['c_currency_id']
+            });
+            });
+          }
+          
+        }
+
+
+
+    setState(() {
+
+      bankAccountsList.addAll(bankAccounts);
+
+    });
+
+
+    print("estos son las cuentas agregadas desde la base de datos $bankAccounts");
+
+}
+
+    initV() async {
+
+        if (variablesG.isEmpty) {
+
+          await getPosPropertiesInit();
+          List<Map<String, dynamic>> response = await getPosPropertiesV();
+          setState(() { 
+            variablesG = response;
+          });
+
+        }
+      }
 
 
 @override
 void initState() {
 
-  _ordenVenta =  _loadOrdenVentasForId();
-  _loadCurrentDate();
+      initV();
+    _ordenVenta =  _loadOrdenVentasForId();
+    setState(() {
+      
+       montoController.text = "0";
+       numRefController.text = "Sin registro";
+    });
+      _loadCurrentDate();
+      _getBankAcc();
+
+    _fechaIdempiereController.text = DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedDate);
+
   super.initState();
-  
+
+
 }
 
  Future<Map<String, dynamic>> _loadOrdenVentasForId() async {
     return await getOrderWithProducts(widget.orderId);
     
   }
+
+
   @override
   Widget build(BuildContext context) {
            final screenMax = MediaQuery.of(context).size.width * 0.8;
@@ -84,12 +171,14 @@ void initState() {
                               final clientData = snapshot.data!['client'][0];
                               final orderData = snapshot.data!['order'];
                               print("Esto es snapshot data ${snapshot.data}");
-      
+
+                               cBPartnerIds = orderData['c_bpartner_id']; 
+
                            return  Padding(
                              padding: const EdgeInsets.all(16.0),
                              child: Align(
                                 alignment: Alignment.topCenter,
-                               child: SingleChildScrollView(
+                               child: SingleChildScrollView(  
                                  child: Column(
                                     crossAxisAlignment:  CrossAxisAlignment.center,
                                   children: [
@@ -119,12 +208,12 @@ void initState() {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                CustomTextInfo(
-                                                 label: "N°",
-                                                 value: orderData['numero_referencia'],
+                                                 label: "N° Document",
+                                                 value: orderData['documentno'].toString() != "" ? orderData['documentno'].toString() : "Sin registro",
                                                ),
                                                CustomTextInfo(
                                                  label: "Cliente",
-                                                 value: clientData['name'],
+                                                 value: clientData['bp_name'],
                                                ),
                                                CustomTextInfo(
                                                  label: "Ruc",
@@ -159,7 +248,7 @@ void initState() {
                                  
                                                 children: [
                                                   TextFormField(  
-                                                      
+                                                      readOnly: true,
                                                       controller: numRefController,
                                  
                                                       onChanged: (value) {
@@ -168,52 +257,105 @@ void initState() {
                                  
                                                       },
                                                        decoration: const InputDecoration(
-                                                      labelText: 'Número de Referencia', // Etiqueta que se muestra sobre el campo
+                                                      labelText: 'Número de Documento', // Etiqueta que se muestra sobre el campo
                                                       contentPadding: EdgeInsets.all(15)
                                                       ),
                                  
                                                   ), 
-                                                DropdownButtonFormField<String>(
-                                                    value: 'Cobro', // Valor predeterminado
-                                                    onChanged: (String? newValue) {
-                                                      // Aquí puedes realizar alguna acción cuando cambie la selección
-                                                            setState(() {
-                                                              typeDocumentValue = newValue;
-                                                            });
 
-                                                        print("Esto es el valor del select Cobro  $newValue");
-                                                    },
-                                                    items: <String>['Cobro'].map((String value) {
-                                                      return DropdownMenuItem<String>(
-                                                        value: value,
-                                                        child: Text(value),
-                                                      );
-                                                    }).toList(),
-                                                    decoration: const InputDecoration(
-                                                      labelText: 'Tipo de Documento', // Etiqueta que se muestra sobre el campo
-                                                      labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 0.5), // Estilo de la etiqueta con un margen inferior
-                                                      contentPadding: EdgeInsets.all(15),
-                                                    ),
-                                                  ),
-                                                  DropdownButtonFormField<String>(
-                                                    value: 'Efectivo', // Valor predeterminado
-                                                    onChanged: (String? newValue) {
+                                                   CustomDropdownButtonFormField(identifier: 'selectTypeAccountBank', selectedIndex: _selectsBankAccountId , dataList: bankAccountsList, text: _bankAccountText, onSelected: (newValue, bankAccText) {
                                                       setState(() {
-                                                        paymentTypeValue = newValue;
+                                                          _selectsBankAccountId = newValue ?? 0;
+                                                          _bankAccountText = bankAccText;
                                                       });
-                                                    },
-                                                    items: <String>['Efectivo'].map((String value) {
-                                                      return DropdownMenuItem<String>(
-                                                        value: value,
-                                                        child: Text(value),
-                                                      );
-                                                    }).toList(),
-                                                    decoration: const InputDecoration(
-                                                      labelText: 'Tipo de Pago', // Etiqueta que se muestra sobre el campo
-                                                      labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 0.5), // Estilo de la etiqueta con un margen inferior
-                                                      contentPadding: EdgeInsets.all(15),
-                                                    ),
-                                                  ),
+                                                  },),
+
+                                                  DropdownButtonFormField(
+                                              items: uniqueISOsAndCurrencyId.map((Map<String, dynamic> item) {
+                                                return DropdownMenuItem<String>(
+                                                  value: item['c_currency_id'].toString(),
+                                                  child: Text(item['iso_code']),
+                                                );
+                                              }).toList(),
+                                              onChanged: (selectedValue) {
+
+
+                                                  setState(() {
+                                                    _selectTypeCoins = selectedValue ;
+                                                  });
+
+                                                print('Este es el valor seleccionado: $selectedValue y selecteTypeCoins $_selectTypeCoins');
+                                                // Aquí puedes realizar acciones adicionales con el valor seleccionado
+                                              },
+                                              decoration: const InputDecoration(
+                                                labelText: 'Tipo de Moneda',
+                                                labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 0.5),
+                                                contentPadding: EdgeInsets.all(15),
+                                              ),
+                                            ),
+
+                                              DropdownButtonFormField<String>(
+                                              value: paymentTypeValue,
+                                              onChanged: (String? newValue) {
+                                                setState(() {
+                                                  paymentTypeValue = newValue;
+
+
+                                                });
+
+                                                if(newValue == 'Depósito Directo'){
+
+                                                    setState(() {
+                                                      _selectTypePayment = 'A';
+                                                    });
+
+                                                }else if(newValue == 'Tarjeta de Crédito'){
+
+                                                    setState(() {
+                                                      _selectTypePayment = 'C';
+                                                    });
+
+                                                }else if(newValue == "Cheque"){
+
+                                                    setState(() {
+                                                      _selectTypePayment = 'K';
+                                                    });
+
+                                                }else if(newValue == "Cuenta"){
+
+                                                    setState(() {
+                                                      _selectTypePayment = 'T';
+                                                    });
+
+                                                }else if(newValue == 'Efectivo' ){
+
+                                                    setState(() {
+                                                      _selectTypePayment = 'X';
+                                                    });
+
+                                                }else if(newValue == 'Débito Directo'){
+
+                                                    setState(() {
+                                                      _selectTypePayment = 'D';
+                                                    });
+
+                                                }
+
+                                                print('Este es el valor de paymentTypeValue $paymentTypeValue && este es el valor de $_selectTypePayment');
+                                              },
+                                             items: <String>['Depósito Directo', 'Tarjeta de Crédito', 'Cheque', 'Cuenta', 'Efectivo', 'Débito Directo' ].map((String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value),
+                                              );
+                                            }).toList(),
+                                            decoration: const InputDecoration(
+                                              labelText: 'Tipo de Pago',
+                                              labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 0.5),
+                                              contentPadding: EdgeInsets.all(15),
+                                            ),
+                                          ),
+
 
                                               TextFormField(
                                                 readOnly: true,
@@ -223,23 +365,8 @@ void initState() {
                                                   contentPadding: EdgeInsets.all(15),
                                                 ),
                                               ),
-                                                 DropdownButtonFormField<String>(
-                                                    value: '\$', // Valor predeterminado
-                                                    onChanged: (String? newValue) {
-                                                      // Aquí puedes realizar alguna acción cuando cambie la selección
-                                                    },
-                                                    items: <String>['\$'].map((String value) {
-                                                      return DropdownMenuItem<String>(
-                                                        value: value,
-                                                        child: Text(value),
-                                                      );
-                                                    }).toList(),
-                                                    decoration: const InputDecoration(
-                                                      labelText: 'Moneda', // Etiqueta que se muestra sobre el campo
-                                                      labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 0.5), // Estilo de la etiqueta con un margen inferior
-                                                      contentPadding: EdgeInsets.all(15),
-                                                    ),
-                                                  ),
+
+                                              
 
                                               TextFormField(
                                                 controller: montoController,
@@ -249,29 +376,7 @@ void initState() {
                                                 ),
                                               ),
 
-                                                  DropdownButtonFormField<String>(
-                                                    value: '123456', // Valor predeterminado
-                                                    onChanged: (String? newValue) {
-                                                      // Aquí puedes realizar alguna acción cuando cambie la selección
-
-                                                      setState(() {
-                                                        bankAccountValue = newValue;
-                                                      });
-                                                    
-                                                    },
-                                                    items: <String>['123456'].map((String value) {
-                                                      return DropdownMenuItem<String>(
-                                                        value: value,
-                                                        child: Text(value),
-                                                      );
-                                                    }).toList(),
-                                                    decoration: const InputDecoration(
-                                                      labelText: 'Cuenta Bancaria', // Etiqueta que se muestra sobre el campo
-                                                      labelStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 0.5), // Estilo de la etiqueta con un margen inferior
-                                                      contentPadding: EdgeInsets.all(15),
-                                                    ),
-                                                  ),
-
+                                           
                                                     TextFormField(
                                                 controller: observacionController,
                                                 decoration: const InputDecoration(
@@ -288,12 +393,12 @@ void initState() {
                                         ),  
                                           const SizedBox(height: 10,),
                                         // Aqui va el boton
-                                              ElevatedButton(
-                                                onPressed:  () async {
+                                           ElevatedButton(
+                                                onPressed: orderData['status_sincronized'] == 'Enviado' ?  () async {
                                                   // Aquí puedes agregar la lógica para crear el cobro
                                                            await _createCobro(widget.loadCobranzas);
   
-                                                },
+                                                } : null,
                                                 style: ElevatedButton.styleFrom(
                                                   foregroundColor: Colors.green, // Color de fondo verde
                                                   minimumSize: Size(screenMax, 50), // Ancho máximo y altura de 50
@@ -303,6 +408,7 @@ void initState() {
                                                   style: TextStyle(fontSize: 16), // Tamaño de fuente 16
                                                 ),
                                               ),
+                                              
                                                                               
                                       ],
                                     ),
@@ -322,20 +428,34 @@ void initState() {
   }
 
  Future<void> _createCobro(loadCobranzas) async {
-  final int numberReference = int.parse(numRefController.text);
-  final String? typeDocument = typeDocumentValue;
-  final String? paymentType = paymentTypeValue;
+  final dynamic bankAccountId = _selectsBankAccountId;
+  //Tipo del documento de cobro
+  final dynamic cDocTypeId = variablesG[0]['c_doctypereceipt_id'];
+  final dynamic dateTrx = _fechaIdempiereController.text;
+  final dynamic description = observacionController.text;
+  final dynamic cBPartnerId = cBPartnerIds;
+  final dynamic payAmt = double.parse(montoController.text);
+
+  final dynamic currencyId = _selectTypeCoins;
+  final dynamic cOrderId = widget.cOrderId;
+  final dynamic cInvoiceId = widget.idFactura;
+  final dynamic tenderType = _selectTypePayment;
+
+  print('Esto es currencyId $currencyId y este es el orderId $cOrderId y este es el id de la factura $cInvoiceId');
+
+  final int documentNo = int.parse(numRefController.text == 'Sin registro' ? numRefController.text = '0': numRefController.text);
+  
+
   final String date = dateController.text;
-  final String? coin = coinValue;
-  final double amount = double.parse(montoController.text);
-  final String? bankAccount = bankAccountValue;
-  final String observation = observacionController.text;
+
   final int saleOrderId = widget.orderId;
 
   // Obtener el saldo total de la orden
   final double saldoTotal = widget.saldoTotal;
 
-  if (amount > saldoTotal) {
+  print('esto es el saldototal $saldoTotal');
+
+  if (payAmt > saldoTotal) {
     // Si el monto del cobro es mayor al saldo total, mostrar mensaje de diálogo
     showDialog(
       context: context,
@@ -357,14 +477,18 @@ void initState() {
   } else {
     // Si el monto del cobro es menor o igual al saldo total, insertar el cobro en la base de datos
     await insertCobro(
-      numberReference: numberReference,
-      typeDocument: typeDocument,
-      paymentType: paymentType,
+      cBankAccountId: bankAccountId,
+      cDocTypeId: cDocTypeId,
+      dateTrx: dateTrx,
       date: date,
-      coin: coin,
-      amount: amount,
-      bankAccount: bankAccount,
-      observation: observation,
+      description: description,
+      cBPartnerId: cBPartnerId,
+      payAmt: payAmt,
+      cCurrencyId: currencyId,
+      cOrderId: cOrderId,
+      cInvoiceId: cInvoiceId,
+      documentNo: documentNo,
+      tenderType: tenderType ,
       saleOrderId: saleOrderId,
     );
 

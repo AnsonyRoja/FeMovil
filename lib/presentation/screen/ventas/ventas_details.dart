@@ -290,48 +290,9 @@ class _VentasDetailsState extends State<VentasDetails> {
                           ],
                         ),
                       )),
-                const SizedBox(height: 10,),
-                  Container(
-                  width: screenMax,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: ventaData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
-                  ),
-                  child: ElevatedButton(
-                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  {
-
-                        String newValue = 'Completado';
-                        updateOrdereSalesForStatusSincronzed(ventaData['id'], newValue );
-
-                        setState(() {
-                          
-                        _ventaData =  _loadVentasForId();
-                        });
-
-
-                    }: null,
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Text(
-                        'Completar',
-                        style: TextStyle(
-                          color: Colors.white, // Texto blanco para que se destaque sobre el fondo verde
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+            
                 const SizedBox(height: 15,),
-                   Container(
+              ventaData['status_sincronized'] == 'Borrador' ?  Container(
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
@@ -387,16 +348,16 @@ class _VentasDetailsState extends State<VentasDetails> {
                       ),
                     ),
                   ),
-                ),
+                ) : Container(),
                 const SizedBox(height: 15,),
-                     Container(
+                ventaData['status_sincronized'] == 'Por Enviar' ?     Container(
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Por Enviar'  ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color: ventaData['status_sincronized'] == 'Por Enviar'  ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:ventaData['status_sincronized'] == 'Completado' ||  ventaData['status_sincronized'] == 'Por Enviar'  ? () async {
+                    onPressed: ventaData['status_sincronized'] == 'Por Enviar'  ? () async {
                         
                        dynamic isTrue =  await _updateAndCreateOrders();
 
@@ -444,20 +405,20 @@ class _VentasDetailsState extends State<VentasDetails> {
                       ),
                     ),
                   ),
-                ),
+                ) : Container(),
                 const SizedBox(height: 15,),
                 Container(
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: widget.saldoTotal > 0 && ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Enviado' ? Colors.green: Colors.grey, // Color verde para el fondo del botón
+                    color: widget.saldoTotal > 0 &&  ventaData['status_sincronized'] == 'Enviado' ? Colors.green: Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:widget.saldoTotal > 0  && ventaData['status_sincronized'] == 'Completado' || ventaData['status_sincronized'] == 'Enviado' ? () {
+                    onPressed:widget.saldoTotal > 0  &&  ventaData['status_sincronized'] == 'Enviado' ? () {
 
                         Navigator.of(context).push(
                          MaterialPageRoute(
-                            builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId),
+                            builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId, cOrderId: ventaData['c_order_id'], documentNo: ventaData['documentno'] ,idFactura: ventaData['id_factura'],),
                           ),
                          );
                       
@@ -483,7 +444,7 @@ class _VentasDetailsState extends State<VentasDetails> {
                       ),
                     ),
                   ),
-                ),
+                )  ,
                     ],
                   ),
                 ),

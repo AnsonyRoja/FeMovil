@@ -124,7 +124,7 @@ try {
                           },
                           // {
                           //     "@column": "LVE_PersonType_ID",
-                          //     "val": customer['lve_person_type_id']
+                          //     "val": "customer['lve_person_type_id']"
                           // },
                           {
                               "@column": "EMail",

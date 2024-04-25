@@ -423,10 +423,14 @@ class _AddClientsFormState extends State<AddClientsForm> {
     ));
   }
 
-  Future<void> saveClientToDatabase(Customer product) async {
+  Future<void> saveClientToDatabase(Customer client) async {
+
+
+    print('Client ${client.toMap()}');
+
     final db = await DatabaseHelper.instance.database;
     if (db != null) {
-      int result = await db.insert('clients', product.toMap());
+      int result = await db.insert('clients', client.toMap());
 
       if (result != -1) {
         print(
