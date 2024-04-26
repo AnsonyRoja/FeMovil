@@ -41,6 +41,9 @@ Future<void> insertTaxData() async {
     required int saleOrderId,
   }) async {
     final db = await DatabaseHelper.instance.database;
+
+        
+
     await db!.insert(
       'cobros',
       {

@@ -96,7 +96,7 @@ class _CrearRetencionesState extends State<CrearRetenciones> {
                             items: ordenesSinRetencion.map((Map<String, dynamic> order) {
                               return DropdownMenuItem<String>(
                                 value: order['id'].toString(),// este es el orden_compra_id
-                                child: Text('${order['numero_factura'] as String}  (\$${order['monto']})'),
+                                child: Text('${order['id_factura'].toString() }  (\$${order['monto']})'),
                               );
                             }).toList(),
                             onChanged: (String? newValue) async {

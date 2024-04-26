@@ -53,5 +53,9 @@ AV PRINCIPAL CALLE LOS SAUCES CASA NRO P-N60 SECTOR ALTOS DE, SAN CRISTOBAL, TAC
 
 
 
+quedo pendiente la consulta de datos de la orden de ventas con  sus lineas, no trae el id de la factura
+
+el cual necesitamos actualizar
+
 
 

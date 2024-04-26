@@ -310,7 +310,11 @@ class DatabaseHelper {
             m_pricelist_id INTEGER,
             m_price_saleslist_id INTEGER,
             c_currency_id INTEGER,
-            c_doc_type_order_co INTEGER
+            c_doc_type_order_co INTEGER,
+            doc_status_receipt STRING,
+            doc_status_invoice_so STRING,
+            doc_status_order_so STRING,
+            doc_status_order_po STRING
             )
         ''');
 

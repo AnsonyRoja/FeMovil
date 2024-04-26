@@ -3,6 +3,7 @@ import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/insert_database.dart';
 import 'package:femovil/presentation/clients/select_customer.dart';
+import 'package:femovil/presentation/cobranzas/idempiere/create_cobro.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -441,9 +442,9 @@ void initState() {
   final dynamic cInvoiceId = widget.idFactura;
   final dynamic tenderType = _selectTypePayment;
 
-  print('Esto es currencyId $currencyId y este es el orderId $cOrderId y este es el id de la factura $cInvoiceId');
+  print('Esto es numRef ${numRefController.text}  es currencyId $currencyId y este es el orderId $cOrderId y este es el id de la factura $cInvoiceId');
 
-  final int documentNo = int.parse(numRefController.text == 'Sin registro' ? numRefController.text = '0': numRefController.text);
+  final int documentNo = int.parse(numRefController.text == 'Sin registro'  ? numRefController.text = '0': numRefController.text);
   
 
   final String date = dateController.text;
@@ -476,6 +477,26 @@ void initState() {
     );
   } else {
     // Si el monto del cobro es menor o igual al saldo total, insertar el cobro en la base de datos
+
+
+    Map<String, dynamic> cobro = {
+      "c_bankaccount_id" : bankAccountId, 
+      "c_doctype_id" : cDocTypeId, 
+      "date_trx" : dateTrx, 
+      "description" : description,
+      "c_bpartner_id": cBPartnerId, 
+      "pay_amt": payAmt, 
+      "c_currency_id": currencyId,
+      "c_order_id":  cOrderId, 
+      "c_invoice_id": cInvoiceId,
+      "tender_type": tenderType,      
+
+    };
+
+   dynamic response = await createCobroIdempiere(cobro);
+
+    print("esto es el cobro $cobro y la respuesta $response" );
+
     await insertCobro(
       cBankAccountId: bankAccountId,
       cDocTypeId: cDocTypeId,

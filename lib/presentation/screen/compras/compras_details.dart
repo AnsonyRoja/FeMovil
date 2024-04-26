@@ -301,48 +301,9 @@ class _ComprasDetailsState extends State<ComprasDetails> {
                           ],
                         ),
                       )),
-                const SizedBox(height: 10,),
-                  Container(
-                  width: screenMax,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: compraData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
-                  ),
-                  child: ElevatedButton(
-                    onPressed:compraData['status_sincronized'] == 'Borrador' ? ()  {
-
-                        String newValue = 'Completado';
-                        updateOrderePurchaseForStatusSincronzed(compraData['id'], newValue );
-
-                        setState(() {
-                          
-                        _compraData =  _loadComprasForId();
-                        });
-
-
-                    }: null,
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent), // Hace que el color de fondo del botón sea transparente
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: Text(
-                        'Completar',
-                        style: TextStyle(
-                          color: Colors.white, // Texto blanco para que se destaque sobre el fondo verde
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+    
                 const SizedBox(height: 15,),
-                   Container(
+                 compraData['status_sincronized'] == 'Borrador' ?  Container(
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
@@ -398,16 +359,16 @@ class _ComprasDetailsState extends State<ComprasDetails> {
                       ),
                     ),
                   ),
-                ),
+                ): Container(),
                 const SizedBox(height: 15,),
-                     Container(
+                 compraData['status_sincronized'] == 'Por Enviar'  ?    Container(
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: compraData['status_sincronized'] == 'Completado' || compraData['status_sincronized'] == 'Por Enviar'  ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color:  compraData['status_sincronized'] == 'Por Enviar'  ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:compraData['status_sincronized'] == 'Completado' ||  compraData['status_sincronized'] == 'Por Enviar'  ? () async {
+                    onPressed: compraData['status_sincronized'] == 'Por Enviar'  ? () async {
                         
                        dynamic isTrue =  await _updateAndCreateOrders();
 
@@ -456,7 +417,7 @@ class _ComprasDetailsState extends State<ComprasDetails> {
                       ),
                     ),
                   ),
-                ),
+                ): Container(),
                 const SizedBox(height: 15,),
                 // Container(
                 //   width: screenMax,

@@ -164,6 +164,9 @@ createOrdenSalesIdempiere(orderSalesList) async {
             orderSalesList = await updateAndCreateTercero(orderSalesList);
           
           }
+        
+
+
 
 
 
@@ -242,6 +245,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                   "Action": "CreateUpdate",
                   "DataRow": {
                     "field": [
+                      
                       {
                         "@column": "AD_Client_ID",
                         "val": orderSalesList['ad_client_id']
@@ -257,7 +261,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
                       },
                       {
                         "@column": "C_Currency_ID",
-                        "val": "100",
+                        "val": variablesG[0]['c_currency_id'],
                       },
                       {
                         "@column": "Description",
@@ -293,6 +297,15 @@ createOrdenSalesIdempiere(orderSalesList) async {
                         "@column": "SalesRep_ID",
                         "val": orderSalesList['usuario_id']
                       },
+                      {
+                        "@column": "AD_User_ID",
+                        "val": orderSalesList['usuario_id']
+                      },
+                      {
+                        "@column": "Bill_User_ID",
+                        "val": orderSalesList['usuario_id']
+                      },
+     
                       // {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
                       {"@column": "IsSOTrx", "val": 'Y'}
 
@@ -323,7 +336,7 @@ createOrdenSalesIdempiere(orderSalesList) async {
               "serviceType": "completeOrder",
               "tableName": "C_Order",
               "recordIDVariable": "@C_Order.C_Order_ID",
-              "docAction": "PR",
+              "docAction": variablesG[0]['doc_status_order_so'],
           }
       };
                 
@@ -348,11 +361,24 @@ createOrdenSalesIdempiere(orderSalesList) async {
 
    
           
+        // dynamic isErrorTwo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse']['@IsError'] ?? 0;
+        //   if(isErrorTwo == 0){
+        //     print('no hay errores');
+        //   }else if(isErrorTwo){
+        //     return false;
+        //   }
+
         dynamic documentNo = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
 
         dynamic cOrderId = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][0]['@value'];
-          
 
+        dynamic isError = parsedJson['CompositeResponses']['CompositeResponse']['StandardResponse'][2]['@IsError'];
+
+
+                        if(isError){
+
+                          return false;
+                        }
 
                         Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
 

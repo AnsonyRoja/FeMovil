@@ -169,7 +169,7 @@ Future<List<Map<String, dynamic>>> getProducts() async {
 
 
         List<Map<String, dynamic>> clientsResult = await db.rawQuery('''
-          SELECT c.bp_name, c.ruc
+          SELECT c.bp_name, c.ruc, c.email
           FROM clients c
           WHERE  c.id = ?
         ''', [clienteId]); 
@@ -277,9 +277,11 @@ Future<List<Map<String, dynamic>>> getProducts() async {
     if (db != null) {
       // Consultar todas las órdenes de compra con el nombre del proveedor asociado
       List<Map<String, dynamic>> ordenesCompra = await db.rawQuery('''
-        SELECT oc.*, p.name AS nombre_proveedor
+        
+        SELECT oc.*, p.bpname AS nombre_proveedor
         FROM orden_compra oc
         INNER JOIN providers p ON oc.proveedor_id = p.id
+
       ''');
       return ordenesCompra;
     } else {
@@ -296,7 +298,7 @@ Future<List<Map<String, dynamic>>> getProducts() async {
       // Realiza la consulta para recuperar todas las retenciones de la tabla "retenciones"
       // y sus proveedores asociados
       return await db.rawQuery('''
-        SELECT r.*, oc.*, p.name AS nombre_proveedor
+        SELECT r.*, oc.*, p.bpname AS nombre_proveedor
         FROM retenciones r
         INNER JOIN orden_compra oc ON r.orden_compra_id = oc.id
         INNER JOIN providers p ON oc.proveedor_id = p.id
@@ -410,6 +412,7 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
       orden_venta.saldo_neto,
       orden_venta.usuario_id,
       orden_venta.cliente_id,
+      orden_venta.id_factura,
       orden_venta.status_sincronized,
       orden_venta_lines.id AS line_id,
       orden_venta_lines.producto_id,
@@ -444,6 +447,7 @@ Future<List<Map<String, dynamic>>> obtenerOrdenesDeVentaConLineas() async {
         'saldo_neto': row['saldo_neto'],
         'usuario_id': row['usuario_id'],
         'cliente_id': row['cliente_id'],
+        'id_factura':row['id_factura'],
         'status_sincronized': row['status_sincronized'],
         'lines': []
       };
