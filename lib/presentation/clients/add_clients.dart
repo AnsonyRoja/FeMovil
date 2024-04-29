@@ -141,6 +141,8 @@ class _AddClientsFormState extends State<AddClientsForm> {
                         }
                         return null;
                       },
+                     keyboardType: TextInputType.text,
+
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
@@ -210,7 +212,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
                           labelText: 'Correo',
                           filled: true,
                           fillColor: Colors.white),
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Por favor ingresa un correo';
@@ -274,6 +276,8 @@ class _AddClientsFormState extends State<AddClientsForm> {
                         }
                         return null;
                       },
+                      keyboardType: TextInputType.text,
+
                     ),
 
                      const SizedBox(
@@ -292,6 +296,8 @@ class _AddClientsFormState extends State<AddClientsForm> {
                         return null;
                       },
                       maxLines: 2,
+                    keyboardType: TextInputType.text,
+
                     ),
                    
                     const SizedBox(height: 10,),
@@ -307,6 +313,8 @@ class _AddClientsFormState extends State<AddClientsForm> {
                         }
                         return null;
                       },
+                      keyboardType: TextInputType.text,
+
                     ),
 
                     Padding(

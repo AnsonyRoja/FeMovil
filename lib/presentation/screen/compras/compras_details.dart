@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/update_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
@@ -17,6 +19,7 @@ class ComprasDetails extends StatefulWidget {
 class _ComprasDetailsState extends State<ComprasDetails> {
   late Future<Map<String, dynamic>> _compraData;
   dynamic comprasDate = {};
+  bool bottonEnable = true;
 
 
   initComprasDatas() async {
@@ -307,11 +310,20 @@ class _ComprasDetailsState extends State<ComprasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: compraData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color: compraData['status_sincronized'] == 'Borrador' && bottonEnable == true ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:compraData['status_sincronized'] == 'Borrador' ? ()  async{
+                    onPressed:compraData['status_sincronized'] == 'Borrador' && bottonEnable == true ? ()  async{
+                      
+                      setState(() {
+                        bottonEnable = false;
+                      });
 
+                        Timer(const Duration(seconds: 3), () {
+                            setState(() {
+                              bottonEnable = true;
+                            });
+                          });
 
                      dynamic isTrue =  await _updateAndCreateOrders();
 
@@ -372,6 +384,15 @@ class _ComprasDetailsState extends State<ComprasDetails> {
                         
                        dynamic isTrue =  await _updateAndCreateOrders();
 
+                           setState(() {
+                            bottonEnable = false;
+                          });
+
+                            Timer(const Duration(seconds: 3), () {
+                              setState(() {
+                                bottonEnable = true;
+                              });
+                            });
 
                           if(isTrue != false){
 

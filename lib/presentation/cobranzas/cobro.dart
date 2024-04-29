@@ -2,6 +2,7 @@ import 'package:femovil/config/getPosProperties.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/insert_database.dart';
+import 'package:femovil/database/update_database.dart';
 import 'package:femovil/presentation/clients/select_customer.dart';
 import 'package:femovil/presentation/cobranzas/idempiere/create_cobro.dart';
 import 'package:femovil/presentation/screen/home/home_screen.dart';
@@ -44,6 +45,7 @@ class _CobroState extends State<Cobro> {
   DateTime selectedDate = DateTime.now();
   List<Map<String, dynamic>> bankAccountsList = [];
     List<Map<String, dynamic>> typeCoinsList = [];
+  List<Map<String, dynamic>> cobrosList = [];
 
   // Selecteds 
 
@@ -70,7 +72,12 @@ void _getBankAcc() async {
 
 
     List<Map<String, dynamic>> bankAccounts = await getBankAccounts();
+     List<Map<String, dynamic>> cobros = await getCobrosByOrderId(widget.cOrderId);
 
+      cobrosList.addAll(cobros);
+
+      print('Cobros unicos $cobros'); 
+      
       bankAccountsList
         .add({'c_bank_id': 0, 'bank_name': 'Selecciona una Cuenta Bancaria'});
 
@@ -121,6 +128,7 @@ void initState() {
 
       initV();
     _ordenVenta =  _loadOrdenVentasForId();
+    // numRefController.text = cobrosList[0]['documentno'];
     setState(() {
       
        montoController.text = "0";
@@ -222,7 +230,7 @@ void initState() {
                                                ),
                                                 CustomTextInfo(
                                                  label: "Saldo Total",
-                                                 value: widget.saldoTotal.toString(),
+                                                 value: orderData['saldo_total'].toStringAsFixed(2),
                                                ),
                                                ],
                                               ),
@@ -248,22 +256,7 @@ void initState() {
                                             child:  Column(
                                  
                                                 children: [
-                                                  TextFormField(  
-                                                      readOnly: true,
-                                                      controller: numRefController,
-                                 
-                                                      onChanged: (value) {
-                                 
-                                                        
-                                 
-                                                      },
-                                                       decoration: const InputDecoration(
-                                                      labelText: 'Número de Documento', // Etiqueta que se muestra sobre el campo
-                                                      contentPadding: EdgeInsets.all(15)
-                                                      ),
-                                 
-                                                  ), 
-
+                                           
                                                    CustomDropdownButtonFormField(identifier: 'selectTypeAccountBank', selectedIndex: _selectsBankAccountId , dataList: bankAccountsList, text: _bankAccountText, onSelected: (newValue, bankAccText) {
                                                       setState(() {
                                                           _selectsBankAccountId = newValue ?? 0;
@@ -375,6 +368,8 @@ void initState() {
                                                   labelText: "Monto",
                                                   contentPadding: EdgeInsets.all(15),
                                                 ),
+                                                keyboardType: TextInputType.number,
+
                                               ),
 
                                            
@@ -397,7 +392,14 @@ void initState() {
                                            ElevatedButton(
                                                 onPressed: orderData['status_sincronized'] == 'Enviado' ?  () async {
                                                   // Aquí puedes agregar la lógica para crear el cobro
-                                                           await _createCobro(widget.loadCobranzas);
+                                                           
+
+                                                               await _createCobro(widget.loadCobranzas);
+
+                                                              setState(() {
+                                                              _ordenVenta = _loadOrdenVentasForId();
+                                                              });
+                                                           
   
                                                 } : null,
                                                 style: ElevatedButton.styleFrom(
@@ -415,15 +417,13 @@ void initState() {
                                     ),
                                                             
                                  ],                        
-                                                             ),
+                                ),
                                ),
                              ),
                            );
                         }
-                    }, 
-      
+                 }, 
             ),
-      
       ),
     );
   }
@@ -435,8 +435,7 @@ void initState() {
   final dynamic dateTrx = _fechaIdempiereController.text;
   final dynamic description = observacionController.text;
   final dynamic cBPartnerId = cBPartnerIds;
-  final dynamic payAmt = double.parse(montoController.text);
-
+  final double payAmt = double.parse(montoController.text);
   final dynamic currencyId = _selectTypeCoins;
   final dynamic cOrderId = widget.cOrderId;
   final dynamic cInvoiceId = widget.idFactura;
@@ -444,8 +443,7 @@ void initState() {
 
   print('Esto es numRef ${numRefController.text}  es currencyId $currencyId y este es el orderId $cOrderId y este es el id de la factura $cInvoiceId');
 
-  final int documentNo = int.parse(numRefController.text == 'Sin registro'  ? numRefController.text = '0': numRefController.text);
-  
+  // final int documentNo = int.parse(numRefController.text == 'Sin registro'  ? numRefController.text = '0': numRefController.text);
 
   final String date = dateController.text;
 
@@ -485,7 +483,7 @@ void initState() {
       "date_trx" : dateTrx, 
       "description" : description,
       "c_bpartner_id": cBPartnerId, 
-      "pay_amt": payAmt, 
+      "pay_amt": payAmt.toStringAsFixed(2), 
       "c_currency_id": currencyId,
       "c_order_id":  cOrderId, 
       "c_invoice_id": cInvoiceId,
@@ -493,32 +491,49 @@ void initState() {
 
     };
 
-   dynamic response = await createCobroIdempiere(cobro);
 
-    print("esto es el cobro $cobro y la respuesta $response" );
-
-    await insertCobro(
+    int cobroId = await insertCobro(
       cBankAccountId: bankAccountId,
       cDocTypeId: cDocTypeId,
       dateTrx: dateTrx,
       date: date,
       description: description,
       cBPartnerId: cBPartnerId,
-      payAmt: payAmt,
+      payAmt: payAmt.toStringAsFixed(2),
       cCurrencyId: currencyId,
       cOrderId: cOrderId,
       cInvoiceId: cInvoiceId,
-      documentNo: documentNo,
+      documentNo: 0,
       tenderType: tenderType ,
       saleOrderId: saleOrderId,
     );
 
-    loadCobranzas();
+    // setState(() {
+      
+    // _loadOrdenVentasForId();
+    // });
+
+    //  loadCobranzas();
+
+
+   dynamic response = await createCobroIdempiere(cobro);
+
+    dynamic numDoc = response['CompositeResponses']['CompositeResponse']['StandardResponse'][0]['outputFields']['outputField'][1]['@value'];
+    
+    await updateDocumentNoCobro(cobroId, numDoc);
+  
+    print('NumDoc $numDoc');
+    print("esto es el cobro $cobro y la respuesta $response" );
+
 
     // Limpiar los campos de texto después de insertar el cobro
     numRefController.clear();
     montoController.clear();
     observacionController.clear();
+    
+    setState(() {
+      _selectsBankAccountId = 0;
+    });
 
     // Mostrar un mensaje de éxito
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cobro creado con éxito')));

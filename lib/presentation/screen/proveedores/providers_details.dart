@@ -39,7 +39,7 @@ class ProvidersDetailsScreen extends StatelessWidget {
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(8), // Establece el radio de los bordes
                     ),
-                    child: const Text('Datos Del Cliente', style:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                    child: const Text('Datos Del Proveedor', style:  TextStyle(color: Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
                   ),
 
                 const SizedBox(height: 10,),

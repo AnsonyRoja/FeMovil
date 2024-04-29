@@ -117,7 +117,7 @@ class _AddProvidersFormState extends State<AddProvidersForm> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                   const ContainerBlue(label:'Datos Personales',),
+                   const ContainerBlue(label:'Datos Del Proveedor',),
 
                 const SizedBox(height: 15),
                   TextFormField(
@@ -129,15 +129,16 @@ class _AddProvidersFormState extends State<AddProvidersForm> {
                       }
                       return null;
                     },
+                   keyboardType: TextInputType.text,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _rucController,
-                    decoration: const InputDecoration(labelText: 'Ruc/Dni', filled: true, fillColor: Colors.white),
+                    decoration: const InputDecoration(labelText: 'RUC/DNI', filled: true, fillColor: Colors.white),
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa un Ruc Valido';
+                        return 'Por favor ingresa un RUC Valido';
                       }
                       return null;
                     },
@@ -146,7 +147,7 @@ class _AddProvidersFormState extends State<AddProvidersForm> {
                   TextFormField(
                     controller: _correoController,
                     decoration: const InputDecoration(labelText: 'Correo', filled: true, fillColor: Colors.white),
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
                      validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingresa un correo';
@@ -227,7 +228,7 @@ class _AddProvidersFormState extends State<AddProvidersForm> {
                 TextFormField(
                     controller: _cityController,
                     decoration: const InputDecoration(labelText: 'Ciudad', filled: true, fillColor: Colors.white),
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
                      validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor, ingresa la ciudad del proveedor';
@@ -241,7 +242,7 @@ class _AddProvidersFormState extends State<AddProvidersForm> {
               TextFormField(
                     controller: _addressController,
                     decoration: const InputDecoration(labelText: 'Dirección', filled: true, fillColor: Colors.white),
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
                      validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingresa una dirección del Proveedor';

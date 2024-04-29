@@ -58,3 +58,16 @@ a la orden
 
 18) Existen dos casos al crear el cobro 1 cuando el id de la factura no existe se crea el cobro como adelanto de la orden de venta
 y en caso de que si existe se le creara al numero de factura 
+
+19) RUC  y DNI son acronimos por lo tanto van en mayusculas
+
+20) Campo de email de cliente esta como numerico 
+
+21) crear una validacion para el boton de comp y enviar de ordenes de compra y ventas, para que al presionarle se deshabilite
+
+22) Arreglar los cobros, que valide si el monto es menor no lo cree
+
+23) En agregar la orden se pueda completar en esa misma pantalla 
+
+
+

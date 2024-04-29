@@ -1,11 +1,10 @@
-import 'package:femovil/database/create_database.dart';
+import 'dart:async';
+
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/update_database.dart';
 import 'package:femovil/presentation/cobranzas/cobro.dart';
 import 'package:femovil/presentation/screen/ventas/idempiere/create_orden_sales.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class VentasDetails extends StatefulWidget {
   final int ventaId;
@@ -20,6 +19,7 @@ class VentasDetails extends StatefulWidget {
 class _VentasDetailsState extends State<VentasDetails> {
   late Future<Map<String, dynamic>> _ventaData;
   dynamic ventasDate = {};
+  bool bottonEnable = true;
 
   @override
   void initState() {
@@ -296,11 +296,20 @@ class _VentasDetailsState extends State<VentasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ventaData['status_sincronized'] == 'Borrador' ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color: ventaData['status_sincronized'] == 'Borrador' && bottonEnable == true ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed:ventaData['status_sincronized'] == 'Borrador' ? ()  async{
+                    onPressed:ventaData['status_sincronized'] == 'Borrador' && bottonEnable == true ? ()  async{
 
+                           setState(() {
+                            bottonEnable = false;
+                          });
+
+                            Timer(const Duration(seconds: 3), () {
+                                setState(() {
+                                  bottonEnable = true;
+                                });
+                              });
 
                      dynamic isTrue =  await _updateAndCreateOrders();
 
@@ -354,13 +363,22 @@ class _VentasDetailsState extends State<VentasDetails> {
                   width: screenMax,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: ventaData['status_sincronized'] == 'Por Enviar'  ? Colors.green:Colors.grey, // Color verde para el fondo del botón
+                    color: ventaData['status_sincronized'] == 'Por Enviar' && bottonEnable == true ? Colors.green:Colors.grey, // Color verde para el fondo del botón
                   ),
                   child: ElevatedButton(
-                    onPressed: ventaData['status_sincronized'] == 'Por Enviar'  ? () async {
+                    onPressed: ventaData['status_sincronized'] == 'Por Enviar' && bottonEnable == true  ? () async {
                         
                        dynamic isTrue =  await _updateAndCreateOrders();
 
+                             setState(() {
+                            bottonEnable = false;
+                          });
+
+                            Timer(const Duration(seconds: 3), () {
+                                setState(() {
+                                  bottonEnable = true;
+                                });
+                              });
 
                           if(isTrue != false){
 
@@ -415,7 +433,8 @@ class _VentasDetailsState extends State<VentasDetails> {
                   ),
                   child: ElevatedButton(
                     onPressed:widget.saldoTotal > 0  &&  ventaData['status_sincronized'] == 'Enviado' ? () {
-
+                                   
+                                
                         Navigator.of(context).push(
                          MaterialPageRoute(
                             builder: (context) =>  Cobro(orderId: ventaData['id'],saldoTotal: widget.saldoTotal, loadCobranzas: _loadVentasForId, cOrderId: ventaData['c_order_id'], documentNo: ventaData['documentno'] ,idFactura: ventaData['id_factura'],),

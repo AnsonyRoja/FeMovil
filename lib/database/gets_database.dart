@@ -144,11 +144,19 @@ Future<List<Map<String, dynamic>>> getProducts() async {
     final db = await DatabaseHelper.instance.database;
     if (db != null) {
       // Consultar la orden de venta con el ID especificado
-      List<Map<String, dynamic>> orderResult = await db.query(
-        'orden_venta',
-        where: 'id = ?',
-        whereArgs: [orderId],
-      );
+
+       String sql = '''
+          SELECT 
+            o.*, 
+            (o.monto - COALESCE((SELECT SUM(pay_amt) FROM cobros WHERE sale_order_id = o.id), 0)) AS saldo_total
+          FROM 
+            orden_venta o
+          WHERE 
+            o.id = ?
+        ''';
+
+       List<Map<String, dynamic>> orderResult = await db.rawQuery(sql, [orderId]);
+
 
 
 
@@ -695,5 +703,33 @@ Future<Map<String, dynamic>?> getVendorsById(int vendorId) async {
     // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
     print('Error: db is null');
     return null;
+  }
+}
+
+
+Future<List<Map<String, dynamic>>> getCobros() async {
+  final db = await DatabaseHelper.instance.database;
+  if (db != null) {
+    // Consultar todos los registros de la tabla 'cobros'
+    List<Map<String, dynamic>> result = await db.query('cobros');
+    return result;
+  } else {
+    // Manejar el caso en el que db sea null
+    print('Error: db is null');
+    return [];
+  }
+}
+
+
+Future<List<Map<String, dynamic>>> getCobrosByOrderId(int cOrderId) async {
+  final db = await DatabaseHelper.instance.database;
+  if (db != null) {
+    // Consultar todos los registros de la tabla 'cobros' filtrados por c_order_id
+    List<Map<String, dynamic>> result = await db.query('cobros', where: 'c_order_id = ?', whereArgs: [cOrderId]);
+    return result;
+  } else {
+    // Manejar el caso en el que db sea null
+    print('Error: db is null');
+    return [];
   }
 }

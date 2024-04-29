@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
+
+
 Future addConfig(url, token) async {
   final info = await getApplicationSupportDirectory();
   print('Esto es temporal $info');
@@ -167,6 +169,7 @@ class _ConfiguracionState extends State<Configuracion> {
                     children: [
                
                       const SizedBox(width: 8),
+                   
                       Container(
                         width: 300,
                         height: 50,
@@ -295,7 +298,7 @@ class _ConfiguracionState extends State<Configuracion> {
                                 'Esto es un valor: ${textTokenController.text}');
                             bool resp = await verificarConexion(
                                 textUrlController.text,
-                                textTokenController.text);
+                                textTokenController.text, setState);
                             print('Esto es la respuesta: $resp');
                             if (resp == true) {
                               setState(() {
@@ -347,7 +350,7 @@ class _ConfiguracionState extends State<Configuracion> {
 
                         try {
                           var verificon = await verificarConexion(
-                                  textoIngresado, textTokenIngresado)
+                                  textoIngresado, textTokenIngresado, setState)
                               .timeout(const Duration(seconds: 2));
 
                           if (verificon) {

@@ -262,18 +262,34 @@ class DatabaseHelper {
         ''');
 
         await db.execute('''
-          CREATE TABLE retenciones(
+          CREATE TABLE f_retenciones(
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            total_bdi INTEGER,
-            impuesto TEXT,
-            fecha_transaccion TEXT,
-            tipo_retencion TEXT,
-            nro_document INTEGER,
-            porcentaje REAL, 
-            total_impuesto REAL, 
-            regla_retencion TEXT,
-            orden_compra_id INTEGER,
-            FOREIGN KEY(orden_compra_id) REFERENCES orden_compra(id)
+            ad_client_id INTEGER,
+            ad_org_id TEXT,
+            c_bpartner_id TEXT,
+            c_bpartner_location_id TEXT,
+            c_conversion_type_id INTEGER,
+            c_currency_id INTEGER, 
+            c_doctypetarget_id INTEGER, 
+            c_paymentterm_id INTEGER,
+            dateordered TEXT,
+            description TEXT,
+            documentno TEXT,
+            is_sotrx TEXT,
+            is_transferred STRING, 
+            m_pricelist_id INTEGER,
+            payment_rule STRING,
+            po_reference STRING,
+            sales_rep_id INTEGER,
+            sri_authorization_code INTEGER,
+            auth_date TEXT,
+            ing_establishment INTEGER, 
+            c_cashplanline_id INTEGER,
+            ing_emission INTEGER, 
+            ing_sequence INTEGER,
+            ing_taxsustance TEXT, 
+            orden_compra_id INTEGER
+          
             )
 
         ''');

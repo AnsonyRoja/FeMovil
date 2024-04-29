@@ -7,7 +7,7 @@ class Product {
   final dynamic price;
   final dynamic quantity; 
   final dynamic prodCatId;
-  final String categoria;
+  final dynamic categoria;
   final dynamic qtySold;
   final dynamic taxId;
   final String taxName;

@@ -254,3 +254,37 @@ Future updateMProductIdOrderCompra(int orderId, int mProductId) async {
       print('La actualización falló.');
     }
   }
+
+
+
+  Future<void> updateDocumentNoCobro(
+  int cobrorId, 
+  int documentNo,
+   ) async {
+    final db = await DatabaseHelper.instance.database;
+    
+    print('Este es el cobroId $cobrorId y este es el documentno $documentNo');
+
+  if (db != null) {
+    await db.update(
+      
+      'cobros',
+      {
+        'documentno': documentNo,
+    
+      },
+      where: 'id = ?',
+      whereArgs: [cobrorId],
+    );
+    
+    print('Cobro updated successfully');
+
+  } else {
+    
+    print('Error: db is null');
+  
+  }
+}
+
+
+

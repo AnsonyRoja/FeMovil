@@ -7,7 +7,7 @@ import 'package:femovil/presentation/cobranzas/cobranzas_list.dart';
 import 'package:femovil/presentation/clients/clients_screen.dart';
 import 'package:femovil/presentation/precios/precios.dart';
 import 'package:femovil/presentation/products/products_screen.dart';
-import 'package:femovil/presentation/retenciones/retenciones_screen.dart';
+import 'package:femovil/presentation/retenciones/factura_retenciones_screen.dart';
 import 'package:femovil/presentation/screen/compras/compras.dart';
 import 'package:femovil/presentation/screen/login/progress_indicator.dart';
 import 'package:femovil/presentation/screen/proveedores/providers_screen.dart';

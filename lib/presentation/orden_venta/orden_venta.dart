@@ -221,6 +221,8 @@ void initState()  {
                 readOnly: true,
                 controller: numeroReferenciaController,
                 decoration: const InputDecoration(labelText: 'Número de Documento'),
+                keyboardType: TextInputType.number,
+
               ),
              TextField(
                 controller: fechaController,

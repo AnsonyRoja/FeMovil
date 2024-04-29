@@ -29,7 +29,7 @@ try {
       'price':row['field'][10]['val'],
       'quantity':row['field'][9]['val'] is int ? row['field'][9]['val'] : 0,
       'pro_cat_id':row['field'][3]['val'],
-      'categoria':row['field'][4]['val'],
+      'categoria':row['field'][4]['val'].toString(),
       'product_type':row['field'][7]['val'],
       'product_type_name':row['field'][8]['val'],
       'total_sold': 0,

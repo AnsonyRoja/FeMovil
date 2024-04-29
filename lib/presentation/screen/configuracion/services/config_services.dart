@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:femovil/config/url.dart';
+import 'package:femovil/presentation/screen/configuracion/config_screen.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future crearVariablesEntorno(
@@ -154,7 +155,7 @@ Future<void> verificarDatosDeAcceso() async {
 
 
 
-verificarConexion(url, token) async {
+verificarConexion(url, token, setState) async {
   print("esto es la url y el token: $url $token");
   HttpClient httpClient = HttpClient()
     ..badCertificateCallback = (X509Certificate cert, String host, int port) {
@@ -187,7 +188,7 @@ verificarConexion(url, token) async {
         "ADLoginRequest": {
           "user": "ERPDocApproved",
           "pass": "3rp2023**",
-          "lang": "en_US",
+          "lang": "en_CO",
           "ClientID": 0,
           "RoleID": "50000",
           "OrgID": "0",
@@ -205,6 +206,9 @@ verificarConexion(url, token) async {
     request.write(jsonBody);
     print("esto es la respuesta $json");
 
+       
+
+
     final response = await request.close();
 
     if (response.statusCode == 200) {
@@ -212,6 +216,9 @@ verificarConexion(url, token) async {
       final parsedJson = jsonDecode(responseBody);
 
       print("esto es la respuesta $parsedJson");
+
+     
+      
       if (parsedJson['WindowTabData']['@TotalRows'] > 0) {
         return true;
       } else {
