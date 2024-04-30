@@ -307,7 +307,7 @@ Future<List<Map<String, dynamic>>> getProducts() async {
       // y sus proveedores asociados
       return await db.rawQuery('''
         SELECT r.*, oc.*, p.bpname AS nombre_proveedor
-        FROM retenciones r
+        FROM f_retenciones r
         INNER JOIN orden_compra oc ON r.orden_compra_id = oc.id
         INNER JOIN providers p ON oc.proveedor_id = p.id
       ''');

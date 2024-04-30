@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/insert_database.dart';
@@ -37,9 +39,108 @@ class _CrearRetencionesState extends State<CrearRetenciones> {
   Future? _terceros ;
   AsyncSnapshot<dynamic>? _tercerosSnapshot;
    List<dynamic>? filteredTerceros;
+  List<dynamic>? tercerosData;
+  bool isLoading = true;
+
+bool hasMoreData = true;  // Inicializa la variable fuera de tus métodos, en el ámbito de tu clase o widget
+
+void loadMoreData(StateSetter setState) {
+  if (!hasMoreData || isLoading) return;  // Si no hay más datos o ya estamos cargando, retorna sin hacer nada
+
+  setState(() {
+    isLoading = true;
+  });
+
+  // Simula una llamada a la red para buscar más datos
+  Future.delayed(const Duration(seconds: 2), () {
+    List<dynamic> moreData = List.generate(20, (index) => {
+      'c_bpartner_id': tercerosData!.length + index,
+      'bp_name': 'Name ${tercerosData!.length + index}',
+      'ruc': 'RUC ${tercerosData!.length + index}'
+    });
+
+    if (moreData.isEmpty) { // Simula una condición donde no hay más datos para cargar
+      hasMoreData = false;
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+
+    setState(() {
+      tercerosData!.addAll(moreData);
+      filteredTerceros!.addAll(moreData);
+      isLoading = false;
+    });
+
+    Timer(const Duration(seconds: 5), () {
+      setState(() {
+        isLoading = false; // Detiene el loader después de 5 segundos
+      });
+    });
+  });
+}
 
 
+void _openDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Selecciona un tercero"),
+        content: Container(
+          width: double.maxFinite,
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollInfo) {
+                        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && !isLoading && hasMoreData) {
+                          loadMoreData(setState);
+                        }
+                        return true;
+                      },
+                      child: ListView.builder(
+                        itemCount: filteredTerceros!.length + (isLoading ? 1 : 0),
+                        itemBuilder: (context, index) {
+                        if (index >= filteredTerceros!.length && isLoading && hasMoreData) {
+                             Timer(const Duration(seconds: 5), () {
+                            setState(() {
+                              isLoading = false; // Detiene el loader después de 5 segundos
+                            });
+                          });
+                            print("esto es isloadin $isLoading");
+                         return const Center(child: CircularProgressIndicator());
+                        } else if (index >= filteredTerceros!.length) {
+                          return Container(); // Muestra un contenedor vacío si el loader no está activo
+                        }else{
+                            return ListTile(
+                              title: Text("${filteredTerceros![index]['bp_name']} - ${filteredTerceros![index]['ruc']}"),
+                              onTap: () {
+                                setState(() {
+                                  _selectedTercero = filteredTerceros![index]['c_bpartner_id'];
+                                  print('Esto es el ruc ${filteredTerceros![index]['ruc']} ');
 
+                                });
+                                Navigator.of(context).pop();
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+    },
+  );
+}
 
 
   @override
@@ -49,6 +150,10 @@ setState(() {
   
    _terceros =  getClients();
 });
+
+
+
+
 
 
 
@@ -122,15 +227,15 @@ setState(() {
                                           return const Text('Error al cargar los datos');
                                         } else {
                                           _tercerosSnapshot = snapshot; // Asignamos el snapshot para accederlo fuera del builder
-                                          List<dynamic> tercerosData = snapshot.data; // Accedemos a los datos del snapshot
+                                            tercerosData = snapshot.data; // Accedemos a los datos del snapshot
 
-                                                    filteredTerceros ??= tercerosData;
+                                            filteredTerceros ??= snapshot.data;   
 
-                                          List<int> nombresTerceros =
-                                              tercerosData.map((tercero) => tercero['c_bpartner_id'] as int).toList();
-                                                bool isSelectedValuePresent = filteredTerceros!.any((tercero) => tercero['c_bpartner_id'] == _selectedTercero);
+                                          // List<int> nombresTerceros =
+                                          //     tercerosData!.map((tercero) => tercero['c_bpartner_id'] as int).toList();
+                                          //       bool isSelectedValuePresent = filteredTerceros!.any((tercero) => tercero['c_bpartner_id'] == _selectedTercero);
 
-
+                                          
                                           return Column(
                                             children: [
                                                  Padding(
@@ -144,7 +249,7 @@ setState(() {
                                                     onChanged: (value) {
                                                       print('este es el value $value');
                                                       setState(() {
-                                                        filteredTerceros = tercerosData.where((tercero) =>
+                                                        filteredTerceros = tercerosData!.where((tercero) =>
                                                           
                                                           tercero['bp_name'].toLowerCase().contains(value.toLowerCase()) ||
                                                           tercero['ruc'].contains(value)).toList();
@@ -152,16 +257,8 @@ setState(() {
                                                            if (!filteredTerceros!.any((tercero) => tercero['c_bpartner_id'] == _selectedTercero)) {
                                                             _selectedTercero = null; // Resetea el valor seleccionado si ya no es válido
                                                           }
-
-                                                          if (filteredTerceros!.length == 1) {
-                                                            // Si hay exactamente un tercero, seleccionarlo automáticamente.
-                                                            _selectedTercero = filteredTerceros!.first['c_bpartner_id'];
-                                                          } else if (!filteredTerceros!.any((tercero) => tercero['c_bpartner_id'] == _selectedTercero)) {
-                                                            _selectedTercero = null; // Resetea el valor seleccionado si ya no es válido
-                                                          }
-
-                                                      });
                                                       
+                                                      });
                                                       print('Este es el valor de filteredTerceros ${filteredTerceros}');
                                                     },
                                                   ),
@@ -170,40 +267,11 @@ setState(() {
                                                 width: 400,
                                                 height: 50,
                                                 color: Colors.white,
-                                                child: DropdownButton<int>(
-                                                  value: isSelectedValuePresent ? _selectedTercero : null, // Valor seleccionado, inicialmente null
-                                                  hint: const Text('Selecciona un tercero'),
-                                                  items: filteredTerceros?.map((dynamic value) {
-                                                     String bpName = value['bp_name'];
-                                                     String ruc = value['ruc'];
-                                                     String displayText = "${bpName.length > 15 ? bpName.substring(0, 15) + '...' : bpName} - $ruc";
-                                                    return DropdownMenuItem<int>(
-                                                      value: value['c_bpartner_id'] as int,
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.all(10.0),
-                                                        child:Container(width: 270, child:Text(displayText)),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                                  onChanged: (dynamic selectedValue) {
-                                                    print('Esto es el valor del select $selectedValue');
-                                                    // Aquí puedes manejar la selección del usuario y obtener los ids correspondientes
-                                                    int index = nombresTerceros.indexOf(selectedValue);
-                                                    dynamic selectedTercero = tercerosData[index];
-                                                    print('Este es el tercero $selectedTercero');
-                                                    int cBPartnerId = selectedTercero['c_bpartner_id'] as int;
-                                                    int cBPartnerLocationId =
-                                                        selectedTercero['c_bpartner_location_id'] is int ? selectedTercero['c_bpartner_location_id'] : 0;
-                                                        
-                                                        setState(() {
-                                                          
-                                                          _selectedTercero = selectedValue;
-                                                
-                                                        });
-                                                
-                                                    print('c_bpartner_id: $cBPartnerId, c_bpartner_location_id: $cBPartnerLocationId');
-                                                  },
-                                                ),
+                                                child: ElevatedButton(
+                                                    onPressed: _openDialog,
+                                                    child: Text(_selectedTercero != null ? 'Tercero seleccionado: $_selectedTercero' : 'Selecciona un tercero'),
+                                                  ),
+
                                               ),
                                             ],
                                           );
@@ -397,4 +465,12 @@ setState(() {
       ),
     );
   }
+  
 }
+
+
+
+
+
+
+

@@ -112,7 +112,8 @@ Future<void> syncGetPosProperties(posPropertiesData) async {
               'doc_status_receipt': posPropertieData['doc_status_receipt'],
               'doc_status_invoice_so': posPropertieData['doc_status_invoice_so'],
               'doc_status_order_so': posPropertieData['doc_status_order_so'],
-              'doc_status_order_po': posPropertieData['doc_status_order_po']
+              'doc_status_order_po': posPropertieData['doc_status_order_po'],
+              'c_doc_type_target_fr': posPropertieData['c_doc_type_target_fr']
           };
        
           // Parseo el objeto a json 
@@ -190,7 +191,8 @@ Future<List<Map<String, dynamic>>> getPosPropertiesV() async {
           doc_status_receipt,
           doc_status_invoice_so,
           doc_status_order_so,
-          doc_status_order_po
+          doc_status_order_po,
+          c_doc_type_target_fr
         FROM posproperties
         WHERE country_id > ?
       ''', [0]);

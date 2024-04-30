@@ -280,6 +280,8 @@ class DatabaseHelper {
             m_pricelist_id INTEGER,
             payment_rule STRING,
             po_reference STRING,
+            date_invoiced TEXT,
+            date_acct TEXT, 
             sales_rep_id INTEGER,
             sri_authorization_code INTEGER,
             auth_date TEXT,
@@ -288,6 +290,7 @@ class DatabaseHelper {
             ing_emission INTEGER, 
             ing_sequence INTEGER,
             ing_taxsustance TEXT, 
+            c_order_id INTEGER,
             orden_compra_id INTEGER
           
             )
@@ -330,7 +333,9 @@ class DatabaseHelper {
             doc_status_receipt STRING,
             doc_status_invoice_so STRING,
             doc_status_order_so STRING,
-            doc_status_order_po STRING
+            doc_status_order_po STRING,
+            c_doc_type_target_fr INTEGER,
+            orden_compra_id INTEGER
             )
         ''');
 

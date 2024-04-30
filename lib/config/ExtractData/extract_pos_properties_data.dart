@@ -11,7 +11,7 @@ List<Map<String, dynamic>> extractGetPosPropertiesData(String responseData) {
   // Crea una lista para almacenar los datos de los productos
   List<Map<String, dynamic>> posPropertiesData = [];
 
-  print('Esto es la respuesta del erp ${dataRows[14]}');
+  print('Esto es la respuesta del erp ${dataRows[15]}');
 
   // Itera sobre cada DataRow y extrae los datos relevantes de los productos
 
@@ -44,6 +44,7 @@ try {
       'doc_status_invoice_so': dataRows[12]['field'][1]['val'],
       'doc_status_order_so': dataRows[13]['field'][1]['val'],
       'doc_status_order_po': dataRows[14]['field'][1]['val'],
+      'c_doc_type_target_fr': dataRows[15]['field'][1]['val']
 
     };
     // Agrega los datos del producto a la lista
