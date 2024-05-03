@@ -306,10 +306,9 @@ Future<List<Map<String, dynamic>>> getProducts() async {
       // Realiza la consulta para recuperar todas las retenciones de la tabla "retenciones"
       // y sus proveedores asociados
       return await db.rawQuery('''
-        SELECT r.*, oc.*, p.bpname AS nombre_proveedor
+        SELECT r.*, p.bpname AS nombre_proveedor, p.tax_id as ruc
         FROM f_retenciones r
-        INNER JOIN orden_compra oc ON r.orden_compra_id = oc.id
-        INNER JOIN providers p ON oc.proveedor_id = p.id
+        INNER JOIN providers p ON r.provider_id = p.id
       ''');
     } else {
       // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
@@ -732,4 +731,11 @@ Future<List<Map<String, dynamic>>> getCobrosByOrderId(int cOrderId) async {
     print('Error: db is null');
     return [];
   }
+}
+
+
+
+Future<List<Map<String, dynamic>>> getPaymentTerms() async {
+  final db = await DatabaseHelper.instance.database;
+  return db!.query('payment_term_fr', columns: ['id', 'c_paymentterm_id', 'name']);
 }

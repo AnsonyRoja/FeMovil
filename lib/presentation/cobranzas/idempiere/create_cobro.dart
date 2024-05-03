@@ -20,7 +20,7 @@ try {
 
    initV() async {
     if (variablesG.isEmpty) {
-      await getPosPropertiesInit();
+     
       List<Map<String, dynamic>> response = await getPosPropertiesV();
       print('variables Entre aqui');
         variablesG = response;

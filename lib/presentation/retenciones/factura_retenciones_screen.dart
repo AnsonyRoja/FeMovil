@@ -47,6 +47,13 @@ class _RetencionesState extends State<Retenciones> {
     super.initState();
   }
 
+  @override
+  void dispose(){
+    searchController.clear();
+
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +114,7 @@ class _RetencionesState extends State<Retenciones> {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text("N° ${retencion['nro_document']}",
+                            child: Text("N° ${retencion['documentno']}",
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
                               textAlign: TextAlign.center,
                             ),
@@ -127,9 +134,8 @@ class _RetencionesState extends State<Retenciones> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Proveedor: ${retencion['nombre_proveedor']}'),
-                                Text('Numero de Factura: ${retencion['numero_factura']}'),
-                                Text('Fecha:  ${retencion['fecha_transaccion']}'),
-                                Text('Tipo de Retencion:  ${retencion['tipo_retencion']}'),
+                                Text('Ruc: ${retencion['ruc']}'),
+                                Text('Fecha:  ${retencion['date']}'),
                                 Text('Monto: ${retencion['monto']} ')
                                 // Text('Descripcion: ${retencion['descripcion']}'),
                                 // aqui quiero agregar los dos botones con space betwenn 

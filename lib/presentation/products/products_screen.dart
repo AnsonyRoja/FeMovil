@@ -65,7 +65,7 @@ class _ProductsState extends State<Products> {
     _loadProducts();
       _isMounted = true;
 
-    // _deleteBaseDatos();
+    _deleteBaseDatos();
     super.initState();
     // sincronizationProducts();
   }

@@ -206,14 +206,68 @@ Future<void> insertTaxData() async {
 
 
 
-     Future<void> insertRetencion(Map<String, dynamic> retencion) async {
+     Future insertRetencion(Map<String, dynamic> retencion) async {
           final db = await DatabaseHelper.instance.database;
 
-      await db?.insert(
-        'retenciones',
-        retencion,
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+        if (db != null) {
+              int retencionId = await db.insert('f_retenciones', {
+                'ad_client_id': retencion['ad_client_id'],
+                'ad_org_id': retencion['ad_org_id'],
+                'c_bpartner_id': retencion['c_bpartner_id'],
+                'c_bpartner_location_id': retencion['c_bpartner_location_id'],
+                'c_currency_id': retencion['c_currency_id'],
+                'c_doctypetarget_id': retencion['c_doctypetarget_id'],
+                'c_paymentterm_id': retencion['c_paymentterm_id'],
+                'description':retencion['description'],
+                'documentno': retencion['documentno'],
+                'is_sotrx': retencion['is_sotrx'],
+                'm_pricelist_id': retencion['m_pricelist_id'],
+                'payment_rule' : retencion['payment_rule'],
+                'date_invoiced': retencion['date_invoiced'],
+                'date_acct': retencion['date_acct'],
+                'sales_rep_id' : retencion['sales_rep_id'],
+                'sri_authorization_code' : retencion['sri_authorization_code'], 
+                'ing_establishment' : retencion['ing_establishment'], 
+                'ing_emission' : retencion['ing_emission'], 
+                'ing_sequence': retencion['ing_sequence'], 
+                'ing_taxsustance' : retencion['ing_taxsustance'],
+                'date': retencion['date'],
+                'monto':retencion['monto'],
+                'provider_id': retencion['provider_id'],
+              });
+
+       for (Map<String, dynamic> product in retencion['productos']) {
+        await db.insert('f_retencion_lines', {  
+          'f_retencion_id': retencionId,
+          'producto_id': product['id'],
+          'qty_entered': product['quantity'],
+          'ad_client_id': retencion['ad_client_id'],
+          'ad_org_id': retencion['ad_org_id'], 
+          'price_entered': product['price'], 
+          'price_actual': product['price'],
+          'm_product_id': product['m_product_id'],  
+
+        });
+
+        // Actualizar la cantidad disponible del producto en la tabla 'products'
+        // int productId = product['id'];
+        // int soldQuantity = product['quantity'];
+        // await db.rawUpdate(
+        //   'UPDATE products SET quantity = quantity + ? WHERE id = ?',
+        //   [soldQuantity, productId],
+        // );
+      }
+      print('Se inserto correctamente');
+        return retencionId;
+        
+        }else{
+
+          return -1;
+        }
+
+
+    
+
     }
 
 

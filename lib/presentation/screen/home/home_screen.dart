@@ -22,6 +22,8 @@ String mensaje = '';
 InfPerfil? perfilData;
 List<Map<dynamic, dynamic>> variablesG = [];
 
+
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -30,34 +32,21 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+
   final scrollController = ScrollController();
   String selectedOperationType = 'Todos';
   bool primeraActualizacion = true;
   bool closeScreen = false;
-
   var showErrorCon = false;
   String messageErrorCon = "Hay problemas de conexion";
   String mensajeSuc = "Se ha Aprobado correctamente";
 
-  initV() async {
-    if (variablesG.isEmpty) {
-         await getPosPropertiesInit();
 
-      List<Map<String, dynamic>> response = await getPosPropertiesV();
-
-      setState(() {
-        variablesG = response;
-      });
-    
-
-    }
-       print('Esto es la variable global de country_id ${variablesG}');
-  }
 
   @override
   void initState() {
     DatabaseHelper.instance.initDatabase();
-    initV();
+     print('Esto es la variable global de country_id ${variablesG}');
     super.initState();
     print("me monte");
   }

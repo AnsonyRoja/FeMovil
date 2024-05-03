@@ -35,7 +35,7 @@ class DatabaseHelper {
     // Verificar si la base de datos ya existe
     bool exists = await databaseExists(dbpath);
 
-    if (!exists) {
+    if (exists) {
       print("base de datos si existe");
     } else {
       print("base de datos creada");
@@ -268,33 +268,58 @@ class DatabaseHelper {
             ad_org_id TEXT,
             c_bpartner_id TEXT,
             c_bpartner_location_id TEXT,
-            c_conversion_type_id INTEGER,
             c_currency_id INTEGER, 
             c_doctypetarget_id INTEGER, 
             c_paymentterm_id INTEGER,
-            dateordered TEXT,
             description TEXT,
             documentno TEXT,
             is_sotrx TEXT,
-            is_transferred STRING, 
             m_pricelist_id INTEGER,
             payment_rule STRING,
-            po_reference STRING,
             date_invoiced TEXT,
             date_acct TEXT, 
             sales_rep_id INTEGER,
             sri_authorization_code INTEGER,
-            auth_date TEXT,
             ing_establishment INTEGER, 
-            c_cashplanline_id INTEGER,
             ing_emission INTEGER, 
             ing_sequence INTEGER,
-            ing_taxsustance TEXT, 
-            c_order_id INTEGER,
-            orden_compra_id INTEGER
-          
+            ing_taxsustance TEXT,
+            provider_id INTEGER,
+            date TEXT,
+            monto REAL,
+            FOREIGN KEY (provider_id) REFERENCES providers(id)
+
+
             )
 
+        ''');
+
+           await db.execute('''
+
+        CREATE TABLE f_retencion_lines (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            f_retencion_id INTEGER,
+            ad_client_id INTEGER,
+            ad_org_id INTEGER,
+            price_entered REAL,
+            price_actual REAL,
+            m_product_id INTEGER,
+            qty_entered REAL,
+            producto_id INTEGER,
+            FOREIGN KEY (f_retencion_id) REFERENCES f_retenciones(id),
+            FOREIGN KEY (producto_id) REFERENCES products(id)
+        )
+
+      ''');
+
+         await db.execute('''
+
+          CREATE TABLE payment_term_fr(
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            c_paymentterm_id INTEGER,
+            name TEXT
+            )
+            
         ''');
 
         await db.execute('''

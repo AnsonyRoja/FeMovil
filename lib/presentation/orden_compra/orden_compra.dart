@@ -118,7 +118,7 @@ class _OrdenDeCompraScreenState extends State<OrdenDeCompraScreen> {
 
   initV() async {
     if (variablesG.isEmpty) {
-      await getPosPropertiesInit();
+     
       List<Map<String, dynamic>> response = await getPosPropertiesV();
       setState(() {
         variablesG = response;

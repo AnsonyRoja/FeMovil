@@ -4,6 +4,8 @@ import 'package:femovil/database/update_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
 import 'package:femovil/presentation/products/idempiere/create_product.dart';
 import 'package:femovil/presentation/products/products_http.dart';
+import 'package:femovil/presentation/retenciones/idempiere/payment_terms_sincronization.dart';
+import 'package:femovil/presentation/screen/home/home_screen.dart';
 import 'package:femovil/sincronization/https/bank_account.dart';
 import 'package:femovil/sincronization/https/customer_http.dart';
 import 'package:femovil/sincronization/https/impuesto_http.dart';
@@ -59,10 +61,23 @@ class _SynchronizationScreenState extends State<SynchronizationScreen> {
                   syncPercentageBankAccount = 0;
                   setearValoresEnCero = true;
                 });
-              }
+              } 
+
+               await getPosPropertiesInit();
+
+                if (variablesG.isEmpty) {
+
+                  List<Map<String, dynamic>> response = await getPosPropertiesV();
+
+                  setState(() {
+                    variablesG = response;
+                  });
+                
+
+                }
 
                 sincronizationBankAccount(setState);
-
+                sincronizationPaymentTerms();
                 sincronizationImpuestos(setState);
                 await synchronizeCustomersWithIdempiere(setState);
                 await synchronizeVendorsWithIdempiere(setState);
