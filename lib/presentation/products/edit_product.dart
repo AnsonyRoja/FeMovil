@@ -1,7 +1,9 @@
+import 'package:femovil/config/app_bar_femovil.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/list_database.dart';
 import 'package:femovil/database/update_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
+import 'package:femovil/presentation/clients/select_customer.dart';
 import 'package:femovil/presentation/products/utils/switch_generated_names_select.dart';
 import 'package:femovil/sincronization/sincronizar.dart';
 import 'package:flutter/material.dart';
@@ -110,6 +112,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorTheme = Theme.of(context).colorScheme;
+    final double mediaScreen = MediaQuery.of(context).size.width * 0.8;
+
     return GestureDetector(
       onTap: () {
 
@@ -117,34 +122,35 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Editar Producto",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w400,
-              color: Color.fromARGB(255, 105, 102, 102),
-            ),
+        appBar: const PreferredSize( 
+          preferredSize: Size.fromHeight(170) ,
+          child: AppBars(labelText: 'Editar Producto',) ,
           ),
-          backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-          iconTheme: const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
-        ),
-        backgroundColor: const Color.fromARGB(255, 236, 247, 255),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Form(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 25),
-                  _buildTextFormField('Nombre', _nameController),
+                  const SizedBox(height: 15),
+                  _buildTextFormField('Nombre', _nameController, mediaScreen),
+
+
                      Container(
+                      width: mediaScreen,
+                      height: mediaScreen * 0.15,
                     decoration: BoxDecoration(
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8.0), // Ajusta el radio del borde según sea necesario
-                      border: Border.all(color: Colors.grey), // Color del borde
-                      color: const Color.fromARGB(255, 236, 247, 255), // Color de fondo
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          blurRadius: 7, 
+                          spreadRadius: 2 
+                          )
+                      ]
                     ),
                     child: DropdownButtonFormField<int>(
                       value: _selectedTaxIndex,
@@ -161,10 +167,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           _selectedTaxIndex = newValue as int;
                         });
                       },
-                      decoration: const InputDecoration(
+                      decoration:  InputDecoration(
                         labelText: 'Impuesto',
                         border: InputBorder.none, // No necesitas un borde adicional aquí ya que está definido en el Container
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        enabledBorder:  OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white, width: 15),
+                        ),
+                         focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0), // Maintain border radius on focus
+                          borderSide:  const BorderSide(color: Colors.white, width: 15.0), // Change border color and thickness on focus (optional)
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value == 0) {
@@ -423,15 +437,33 @@ class _EditProductScreenState extends State<EditProductScreen> {
     );
   }
 
-  Widget _buildTextFormField(String label, TextEditingController controller) {
+  Widget _buildTextFormField(String label, TextEditingController controller, double mediaScreen) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      child: Container(
+        width: mediaScreen,
+        decoration: BoxDecoration(
+          color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                blurRadius: 7, spreadRadius: 2)
+            ]
+
+        ),
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: const TextStyle(fontFamily: 'Poppins Regular', ) ,
+            border:  OutlineInputBorder( borderRadius: BorderRadius.circular(10) , borderSide: const BorderSide(width: 2) ),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Colors.white , width: 15 )),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(width: 15, color: Colors.white)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15.0),
+           
+          ),
         ),
       ),
     );

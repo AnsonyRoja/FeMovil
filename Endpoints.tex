@@ -538,6 +538,138 @@ https://demo.aapresolution.com/ADInterface/services/rest/composite_service/compo
 
 
 
+{
+
+       "CompositeRequest":{
+            "ADLoginRequest": {
+            "user": "Admin",
+            "pass": "07@ng3l3s",
+            "lang": "es_CO",
+            "ClientID": 1000000,
+            "RoleID": "1000000",
+            "OrgID": "1000000",
+            "WarehouseID": "1000000",
+            "stage": 9
+        },
+          "serviceType": "UCCompositeInvoice",
+              "operations":{
+                  "operation":[
+                      {
+                      "TargetPort": "createUpdateData",
+                      "ModelCRUD": {
+                          "serviceType":"UCCreateInvoice",
+                          "TableName": "C_Invoice",
+                          "RecordID": "0",
+                          "Action":"CreateUpdate",
+                          "DataRow": {
+                      "field": [
+                    {
+                        "@column": "AD_Client_ID",
+                        "val": "1000000"
+                    }, 
+                    {
+                        "@column": "AD_Org_ID",
+                        "val": "1000000"
+                    }, 
+                    {
+                        "@column": "C_BPartner_ID",
+                        "val": "1000056"
+                    },
+                      {
+                        "@column": "C_BPartner_Location_ID",
+                        "val": "1000031"
+                    }, 
+                       {
+                        "@column": "C_Currency_ID",
+                        "val": "100"
+                    }, 
+
+                     {
+                        "@column": "C_DocTypeTarget_ID",
+                        "val": "1000052"
+                    }, 
+                         {
+                        "@column": "C_PaymentTerm_ID",
+                        "val": "1000000"
+                    }, 
+                     {
+                        "@column": "Description",
+                        "val": "Esto es una descripcion"
+                    },
+                       {
+                        "@column": "DocumentNo",
+                        "val": "001-010-000000131"
+                    },
+                    {
+                        "@column": "IsSOTrx",
+                        "val": "N"
+                    },      
+                     {
+                        "@column": "DateInvoiced",
+                        "val": "2024-05-03 8:23:22"
+                    },     
+                     {
+                        "@column": "DateAcct",
+                        "val": "2024-05-03 8:23:22"
+                    },
+                     {
+                        "@column": "AD_User_ID",
+                        "val": "1000011"
+                    },
+                     {
+                        "@column": "M_PriceList_ID",
+                        "val": "1000000"
+                    },
+                    {
+                        "@column": "SRI_AuthorizationCode",
+                        "val": "2304202401059174155100120010100000001314155100117"
+                    },
+                      {
+                        "@column": "SalesRep_ID",
+                        "val": "1000011"
+                    },
+                      {
+                        "@column": "PaymentRule",
+                        "val": "P"
+                    },
+                     {
+                        "@column": "ING_Establishment",
+                        "val": "001"
+                    }, {
+                        "@column": "ING_Emission",
+                        "val": "010"
+                    },
+                     {
+                        "@column": "ING_Sequence",
+                        "val": "000000131"
+                    },
+                     {
+                        "@column": "ING_TaxSustance",
+                        "val": "01"
+                    },
+                     {
+                        "@column": "AuthDate",
+                        "val": "2024-04-30 10:23:22"
+                    }
+                    
+                    ]
+                    
+                    }
+
+                    }
+
+                    }
+                  
+
+                  ]
+              }
+
+          
+    }
+}
+
+
+
 
 
 

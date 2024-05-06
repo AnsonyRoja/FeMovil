@@ -1,4 +1,5 @@
 import 'package:femovil/assets/nav_bottom_menu.dart';
+import 'package:femovil/config/app_bar_femovil.dart';
 import 'package:femovil/config/banner_app.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
@@ -65,7 +66,7 @@ class _ProductsState extends State<Products> {
     _loadProducts();
       _isMounted = true;
 
-    _deleteBaseDatos();
+    // _deleteBaseDatos();
     super.initState();
     // sincronizationProducts();
   }
@@ -135,63 +136,13 @@ if (_isMounted) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
         appBar: PreferredSize(
+        
         preferredSize: const Size.fromHeight(170),
         child: Stack(
           clipBehavior: Clip.none,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(50), // Radio del borde redondeado
-            ),
-            child: GestureDetector(
-             
-              onTap: () {
-                FocusScope.of(context).requestFocus(FocusNode());
-              },
-              
-              child: AppBar(
-                  leading: IconButton(
-              icon: Image.asset('lib/assets/Atras@3x.png', width: 25, height: 25,), // Reemplaza 'tu_imagen.png' con la ruta de tu imagen en los assets
-              onPressed: () {
-                // Acción al presionar el botón de flecha hacia atrás
-                Navigator.pop(context);
-              },
-            ),
-                backgroundColor: const Color(0xFF7531FF), // Color hexadecimal
-                flexibleSpace: Stack(
-                  children: [
-                    CustomPaint(
-                      painter: CirclePainter(),
-                    ),
-                    const Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 55,),
-                          Text(
-                            'Productos',
-                            style: TextStyle(
-                              fontFamily: 'Poppins ExtraBold',
-                              color: Colors.white,
-                              fontSize: 30, // Tamaño del texto
-                              shadows: <Shadow>[
-                                Shadow(
-                                  offset: Offset(2, 2),
-                                  blurRadius: 3.0,
-                                  color: Colors.grey,
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+        
+          const AppBars(labelText: 'Productos',),
       
           Positioned(
             left: 16,
@@ -489,3 +440,5 @@ if (_isMounted) {
     }
   }
 }
+
+

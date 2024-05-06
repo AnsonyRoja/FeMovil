@@ -224,7 +224,7 @@ class CustomDropdownButtonFormField extends StatelessWidget {
                       },
                     );
 
-                    case 'selectTypeCoins':
+            case 'selectTypeCoins':
 
             return DropdownButtonFormField<int>(
                       value: selectedIndex,

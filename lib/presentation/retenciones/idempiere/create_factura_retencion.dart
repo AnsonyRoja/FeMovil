@@ -78,16 +78,14 @@ createInvoicedWithholdingIdempiere(retenciones) async {
             "WarehouseID": jsonData["WarehouseID"],
             "stage": "9",
           },
-          "serviceType": "UCCompositeOrder",
+          "serviceType": "UCCompositeInvoice",
           "operations": {
             "operation": [
               {
-                "@preCommit": "false",
-                "@postCommit": "false",
                 "TargetPort": "createData",
                 "ModelCRUD": {
-                  "serviceType": "UCCreateOrder",
-                  "TableName": "C_Order",
+                  "serviceType": "UCCreateInvoice",
+                  "TableName": "C_Invoice",
                   "RecordID": "0",
                   "Action": "CreateUpdate",
                   "DataRow": {
@@ -105,6 +103,10 @@ createInvoicedWithholdingIdempiere(retenciones) async {
                         "@column": "C_BPartner_Location_ID",
                         "val": retenciones['c_bpartner_location_id'],
                       },
+                       {
+                        "@column": "DocumentNo",
+                        "val": retenciones['documentno'],
+                      },
                       {
                         "@column": "C_Currency_ID",
                         "val": "100",
@@ -119,32 +121,52 @@ createInvoicedWithholdingIdempiere(retenciones) async {
                       // },
                       {
                         "@column": "C_DocTypeTarget_ID",
-                        "val": retenciones['c_doc_type_target_id']
+                        "val": retenciones['c_doctypetarget_id']
                       },
                       {
                         "@column": "C_PaymentTerm_ID",
-                        "val": variablesG[0]['c_paymentterm_id']
+                        "val": retenciones['c_paymentterm_id']
                       },
                       {
-                        "@column": "DateOrdered",
-                        "val": retenciones['dateordered']
+                        "@column": "DateInvoiced",
+                        "val": retenciones['date_invoiced']
                       },
-                      {"@column": "IsTransferred", "val": 'Y'},
+                      {"@column": "DateAcct", "val": retenciones['date_acct']},
                       {
                         "@column": "M_PriceList_ID",
-                        "val": variablesG[0]['m_pricelist_id']
+                        "val": retenciones['m_pricelist_id']
                       },
-                      {
-                        "@column": "M_Warehouse_ID",
-                        "val": retenciones['m_warehouse_id']
-                      },
-                      {"@column": "PaymentRule", "val": 'B'},
+                      {"@column": "PaymentRule", "val": retenciones['payment_rule']},
                       {
                         "@column": "SalesRep_ID",
-                        "val": retenciones['usuario_id']
+                        "val": retenciones['sales_rep_id']
+                      },
+                      {
+                        "@column": "SRI_AuthorizationCode",
+                        "val": retenciones['sri_authorization_code']
+                      },
+                      {
+                        "@column": "ING_Establishment",
+                        "val": retenciones['ing_establishment']
+                      },
+                      {
+                        "@column": "ING_Emission",
+                        "val": retenciones['ing_emission']
+                      },
+                       {
+                        "@column": "ING_Sequence",
+                        "val": retenciones['ing_sequence']
+                      },
+                      {
+                        "@column": "ING_TaxSustance",
+                        "val": retenciones['ing_taxsustance']
                       },
                       // {"@column": "LVE_PayAgreement_ID", "val": '1000001'},
-                      {"@column": "IsSOTrx", "val": 'N'}
+                      {"@column": "AD_User_ID", "val": retenciones['sales_rep_id']},
+                      {
+                        "@column": "IsSOTrx",
+                        "val": "N"
+                      },   
                   
                     ]
                   }
@@ -157,7 +179,7 @@ createInvoicedWithholdingIdempiere(retenciones) async {
       };
 
       // Crear las líneas de la orden
-  final lines = createLines(retenciones['productos'], retenciones['usuario_id']);
+  final lines = createLines(retenciones['productos'],retenciones['ad_client_id'], retenciones['ad_org_id']);
 
   // Agregar las líneas de la orden al JSON de la orden
   for (var line in lines) {
@@ -169,10 +191,10 @@ createInvoicedWithholdingIdempiere(retenciones) async {
         "@postCommit": "false",
         "TargetPort": "setDocAction",                      
           "ModelSetDocAction": {
-              "serviceType": "completeOrder",
-              "tableName": "C_Order",
-              "recordIDVariable": "@C_Order.C_Order_ID",
-              "docAction": variablesG[0]['doc_status_order_po'],
+              "serviceType": "completeInvoce",
+              "tableName": "C_Invoice",
+              "recordIDVariable": "@C_Invoice.C_Invoice_ID",
+              "docAction": variablesG[0]['doc_status_invoice_so'],
           }
       };
                 
@@ -208,15 +230,15 @@ createInvoicedWithholdingIdempiere(retenciones) async {
 
 
 
-                        Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
+                      //   Map<String, dynamic> nuevoDocumentNoAndCOrderId = {
 
-                            'documentno': documentNo,
-                            'c_order_id':cOrderId
+                      //       'documentno': documentNo,
+                      //       'c_order_id':cOrderId
 
 
-                        };
+                      //   };
 
-                      String newStatus = 'Enviado';
+                      // String newStatus = 'Enviado';
 
                       // updateOrderePurchaseForStatusSincronzed(orderPurchaseList['id'], newStatus);
 
@@ -232,7 +254,7 @@ createInvoicedWithholdingIdempiere(retenciones) async {
 
 
 
-createLines(lines, rePId) {
+createLines(lines, adClient, orgId) {
   List linea = [];
 
   lines.forEach((line) => {
@@ -242,21 +264,21 @@ createLines(lines, rePId) {
             "@postCommit": "false",
             "TargetPort": "createData",
             "ModelCRUD": {
-                "serviceType": "UCCreateOrderLine",
-                "TableName": "C_OrderLine",
+                "serviceType": "UCCreateInvoiceLine",
+                "TableName": "C_InvoiceLine",
                 "recordID": "0",
                 "Action": "Create",
                 "DataRow": {
           "field": [
-            {"@column": "AD_Client_ID", "val": line['ad_client_id']},
-            {"@column": "AD_Org_ID", "val": line['ad_org_id']},
-            {"@column": "C_Order_ID", "val": "@C_Order.C_Order_ID"},
-            {"@column": "PriceEntered", "val": line['price_entered']},
-            {"@column": "PriceActual", "val": line['price_entered']},
+            {"@column": "AD_Client_ID", "val": adClient},
+            {"@column": "AD_Org_ID", "val": orgId},
+            {"@column": "C_Invoice_ID", "val": "@C_Invoice.C_Invoice_ID"},
+            {"@column": "PriceEntered", "val": line['price']},
+            {"@column": "PriceActual", "val": line['price']},
             {"@column": "M_Product_ID", "val": line['m_product_id']},
-            {"@column": "QtyOrdered", "val": line['qty_entered']},
-            {"@column": "QtyEntered", "val": line['qty_entered']},
-            {"@column": "SalesRep_ID", "val": rePId}
+            {"@column": "QtyInvoiced", "val": line['quantity']},
+            {"@column": "QtyEntered", "val": line['quantity']},
+    
           ]
          }
         }

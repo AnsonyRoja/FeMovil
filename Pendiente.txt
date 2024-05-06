@@ -69,5 +69,9 @@ y en caso de que si existe se le creara al numero de factura
 
 23) En agregar la orden se pueda completar en esa misma pantalla 
 
-
-
+24) Agregar ccampo CIUU en maestro de proveedores
+25) Regla general, precio de venta editable 
+26) Mostrar saldo pendiente por cobrar.
+27) Acceso por modulos(Compras/Ventas/Ambos)
+28) Agregar configuracion para documentos de prueba(Agregar un limite para documentos de prueba que no pueda agregar mas 
+documentos del limite)
