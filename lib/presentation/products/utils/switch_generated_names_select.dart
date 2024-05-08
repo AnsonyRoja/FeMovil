@@ -24,7 +24,8 @@ invoke(option, newValue, data){
             (productGroupList) => productGroupList['product_group_id'] == newValue,
           );
 
-          print("Esto es el nombre umlist $productGroup");
+          print("Esto es el nombre product Group $productGroup");
+          
 
           return productGroup != null ? productGroup['product_group_name'] : '';
 

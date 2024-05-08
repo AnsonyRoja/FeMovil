@@ -1,4 +1,5 @@
 import 'package:femovil/config/getPosProperties.dart';
+import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/gets_database.dart';
 import 'package:femovil/database/update_database.dart';
 import 'package:femovil/infrastructure/models/products.dart';
@@ -28,12 +29,23 @@ class SynchronizationScreen extends StatefulWidget {
   _SynchronizationScreenState createState() => _SynchronizationScreenState();
 }
 
-
+  Future<void> _deleteBaseDatos() async {
+    await DatabaseHelper.instance.deleteDatabases();
+  }
 
 class _SynchronizationScreenState extends State<SynchronizationScreen> {
   GlobalKey<_SynchronizationScreenState> synchronizationScreenKey =
       GlobalKey<_SynchronizationScreenState>();
 
+@override
+void initState() {
+
+      //  _deleteBaseDatos();
+
+
+  super.initState();
+  
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

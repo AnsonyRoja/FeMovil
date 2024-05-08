@@ -67,6 +67,8 @@ flutter:
     - lib/assets/foto_grandep.png
     - lib/assets/Cerrar_Sesión.png
     - lib/assets/Check.png
+    - lib/assets/Check@3x.png
+    - lib/assets/Check@2x.png
     - lib/assets/FB@3x.png
     - lib/assets/WhatsApp.png
     - lib/assets/IG@3x.png

@@ -29,6 +29,7 @@ class _FilterGroupsState extends State<FilterGroups> {
 
     return AlertDialog(
       title: const Text('Filtrar por Grupo'),
+      backgroundColor: Colors.white,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -59,14 +60,14 @@ class _FilterGroupsState extends State<FilterGroups> {
             // Por ejemplo, puedes enviar la categoría seleccionada de vuelta a la pantalla principal para que se aplique el filtro
             Navigator.of(context).pop(sgrupo);
           },
-          child: const Text('Filtrar'),
+          child: const Text('Filtrar', style: TextStyle(fontFamily: 'Poppins SemiBold', color: Color(0xFF7531FF)),),
         ),
         TextButton(
           onPressed: () {
             // Aquí puedes implementar la lógica para cerrar el diálogo sin aplicar el filtro
             Navigator.of(context).pop();
           },
-          child: const Text('Cancelar'),
+          child: const Text('Cancelar', style: TextStyle(fontFamily: 'Poppins SemiBold', color: Colors.red),),
         ),
       ],
     );

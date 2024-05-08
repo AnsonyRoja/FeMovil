@@ -39,6 +39,9 @@ class _ProductsState extends State<Products> {
     });
   }
 
+
+  
+
   Future<void> _deleteBaseDatos() async {
     await DatabaseHelper.instance.deleteDatabases();
   }
@@ -337,13 +340,17 @@ if (_isMounted) {
                                                     Row(
                                                       children: [
                                                         const Text('Nombre: ', style: TextStyle(fontFamily:'Poppins SemiBold' ),),
-                                                        Text('${product['name']}', style: const TextStyle(fontFamily: 'Poppins Regular' ))
+                                                        SizedBox(
+                                                          width: screenMax * 0.45,
+                                                          child: Text('${product['name']}', style: const TextStyle(fontFamily: 'Poppins Regular' ), overflow: TextOverflow.ellipsis,))
                                                       ],
                                                     ),
                                                     Row(
                                                       children: [
                                                         const Text('Stock: ', style: TextStyle(fontFamily: 'Poppins SemiBold') ,),
-                                                        Text('${product['quantity'] is int ? product['quantity'] : 0}', style: const TextStyle(fontFamily: 'Poppins Regular'),),
+                                                        SizedBox(
+                                                          width: screenMax * 0.45,
+                                                          child: Text('${product['quantity'] is int ? product['quantity'] : 0}', style: const TextStyle(fontFamily: 'Poppins Regular'),overflow: TextOverflow.ellipsis,)),
                                                       ],
                                                     ),
                         
@@ -351,7 +358,9 @@ if (_isMounted) {
                                                 Row(
                                                   children: [
                                                     const Text('Precio: ', style: TextStyle(fontFamily: 'Poppins SemiBold'),),
-                                                    Text('${product['price'] is double ? product['price'] : 0}\$')
+                                                    SizedBox(
+                                                      width: screenMax * 0.45,
+                                                      child: Text('${product['price'] is double ? product['price'] : 0}\$',style: const TextStyle(fontFamily: 'Poppins Regular'),overflow: TextOverflow.ellipsis,))
                                                   ],
                                                 ),
                                                 

@@ -11,6 +11,10 @@ class ProductDetailsScreen extends StatelessWidget {
 
   const ProductDetailsScreen({super.key, required this.product});
 
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final colorTheme = Theme.of(context).colorScheme;
@@ -183,7 +187,7 @@ class ProductDetailsScreen extends StatelessWidget {
                     // _buildTextFormField('Cantidad Disponible', product['quantity'].toString(), mediaScreen),
 
                     SizedBox(
-                      height: mediaScreen * 0.34,
+                      height: mediaScreen * 0.2,
                     ),
 
                     Padding(
@@ -200,7 +204,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         width: mediaScreen,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
