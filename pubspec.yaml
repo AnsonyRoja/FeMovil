@@ -92,6 +92,8 @@ flutter:
     - lib/assets/filtro@3x.png
     - lib/assets/Lupa-2@2x.png
     - lib/assets/Agregar@3x.png
+    - lib/assets/Atras-2.png
+    - lib/assets/Abajo.png
     
 
 

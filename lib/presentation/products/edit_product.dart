@@ -1,4 +1,5 @@
 import 'package:femovil/config/app_bar_femovil.dart';
+import 'package:femovil/config/app_bar_sampler.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/list_database.dart';
 import 'package:femovil/database/update_database.dart';
@@ -124,10 +125,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
       },
       child: Scaffold(
         appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(170),
-          child: AppBars(
-            labelText: 'Editar Producto',
-          ),
+          preferredSize: Size.fromHeight(50),
+          child: AppBarSample(label: 'Editar Producto') ,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -548,26 +547,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               'product_type': selectedProductType,
                               'product_type_name': prodTypeText
                             };
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Producto actualizado'),
-                                  content: const Text(
-                                      '¡El producto se ha actualizado correctamente!'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Aceptar'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                       
                             updateProduct(updatedProduct);
-                            Navigator.pop(context);
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -592,6 +573,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                                         onPressed: () => {
                                           Navigator.pop(context),
                                           Navigator.pop(context)
+
                                         },
                                         child: const Text('Volver'),
                                       ),

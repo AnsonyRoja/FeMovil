@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:femovil/config/app_bar_femovil.dart';
+import 'package:femovil/config/app_bar_sampler.dart';
 import 'package:femovil/presentation/products/edit_product.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +23,8 @@ class ProductDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(170),
-          child: AppBars(
-            labelText: 'Detalles del Producto',
-          )),
+          preferredSize: Size.fromHeight(50),
+          child: AppBarSample(label: 'Detalles del Producto')),
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -41,9 +40,7 @@ class ProductDetailsScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
+           
 
                     Container(
                       width: mediaScreen,

@@ -23,6 +23,7 @@ class _ClientsState extends State<Clients> {
   List<Map<String, dynamic>> searchClient = [];
   TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> filteredClients = [];
+  bool _isMounted = false;
 
   String input = "";
 
@@ -57,8 +58,17 @@ class _ClientsState extends State<Clients> {
   @override
   void initState() {
     // print("Esto es la variable global ${variablesG[0]['m_pricelist_id']}");
+    _isMounted = true;
     _loadClients();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isMounted) {
+      _loadClients();
+    }
   }
 
   @override
@@ -423,22 +433,22 @@ class _ClientsState extends State<Clients> {
                 ],
               ),
             ),
+            Positioned(
+                top: 450,
+                right: 15,
+                child: GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AddClientsForm()),
+                  ),
+                  child: Image.asset(
+                    'lib/assets/Agregar@3x.png',
+                    width: 80,
+                  ),
+                )),
           ],
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        onAddPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddClientsForm()),
-          );
-        },
-        onRefreshPressed: () {
-          _loadClients();
-        },
-        onBackPressed: () {
-          Navigator.pop(context);
-        },
       ),
     );
   }

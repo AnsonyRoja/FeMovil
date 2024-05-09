@@ -1,6 +1,9 @@
+import 'package:femovil/config/app_bar_femovil.dart';
+import 'package:femovil/config/app_bar_sampler.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/database/list_database.dart';
 import 'package:femovil/infrastructure/models/clients.dart';
+import 'package:femovil/presentation/clients/helpers/save_client_to_database.dart';
 import 'package:femovil/presentation/clients/select_customer.dart';
 import 'package:flutter/material.dart';
 
@@ -89,75 +92,150 @@ class _AddClientsFormState extends State<AddClientsForm> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaScreen = MediaQuery.of(context).size.width * 0.8;
+    final colorTheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
       },
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-        appBar: AppBar(
-          title: const Text(
-            "Agregar Cliente",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w400,
-              color: Color.fromARGB(255, 105, 102, 102),
-            ),
-          ),
-          backgroundColor: const Color.fromARGB(255, 236, 247, 255),
-          iconTheme:
-              const IconThemeData(color: Color.fromARGB(255, 105, 102, 102)),
-        ),
+        appBar: const PreferredSize(
+            preferredSize: Size.fromHeight(50),
+          child:  AppBarSample(label: 'Agregar Cliente')),
         body: Align(
           alignment: Alignment.topCenter,
-          child: Container(
-            width: 250,
+          child: SizedBox(
+            width: mediaScreen,
             child: Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               key: _formKey,
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                      width: 300,
-                      color: Colors.blue,
+                    SizedBox(height: MediaQuery.of(context).size.width * 0.05,),
+                    SizedBox(
+                      width: mediaScreen,
+                      
                       child: const Text(
                         "Datos Personales",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(color: Colors.black, fontFamily: 'Poppins Bold', fontSize:  18),
+                        
                       ),
                     ),
                     const SizedBox(height: 15),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                          labelText: 'Nombre Completo',
-                          filled: true,
-                          fillColor: Colors.white),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa el nombre del Cliente';
-                        }
-                        return null;
-                      },
-                     keyboardType: TextInputType.text,
+                                      Container(
+                            height: mediaScreen * 0.20,
+                            width: mediaScreen * 0.95,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: TextFormField(
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                labelText: 'Nombre Completo',
+                                labelStyle: const TextStyle(fontFamily: 'Poppins Regular', color: Colors.black),
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:  const BorderSide(color:Colors.white, width: 25),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:  const BorderSide(color:Colors.white, width: 25),
+                                ),
+                                errorBorder: OutlineInputBorder(
 
-                    ),
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(color: Colors.red, width: 1),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(color: Colors.red, width: 1),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor ingresa el nombre del Cliente';
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.text,
+                            ),
+                          ),
+
                     const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _rucController,
-                      decoration: const InputDecoration(
-                          labelText: 'Ruc/Dni',
-                          filled: true,
-                          fillColor: Colors.white),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa un Ruc/Dni Valido';
-                        }
-                        return null;
-                      },
+                    Container(
+                      height: mediaScreen * 0.20,
+                      width: mediaScreen * 0.95,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 7,
+                            spreadRadius: 2
+                          )
+                        ]
+                      ),
+                      child: TextFormField(
+                        controller: _rucController,
+                        decoration:  InputDecoration(
+                          errorStyle: const TextStyle(fontFamily: 'Poppins Regular'),
+                            labelText: 'RUC/DNI',
+                            labelStyle: const TextStyle(fontFamily: 'Poppins Regular', color: Colors.black),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                             border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:  const BorderSide(color:Colors.white, width: 25),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide:  const BorderSide(color:Colors.white, width: 25),
+                                ),
+                                errorBorder: OutlineInputBorder(
+
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(color: Colors.red, width: 1),
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(color: Colors.red, width: 1),
+                                ),
+                            ),
+                        keyboardType: TextInputType.number,
+                        
+                        validator: (value) {
+                          
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa un RUC/DNI Valido';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
               
                     const SizedBox(
@@ -194,7 +272,7 @@ class _AddClientsFormState extends State<AddClientsForm> {
                         });
 
                     },),
-                    const SizedBox(height: 10,),
+                    // const SizedBox(height: 10,),
                     // CustomDropdownButtonFormField(identifier: 'typePerson', selectedIndex: _seletectedTypePerson, dataList: _typePersonList, text: _typePersonText, onSelected: (newValue, tyPersonText) {
                     //     setState(() {
                     //       _seletectedTypePerson = newValue ?? 0;
@@ -206,48 +284,155 @@ class _AddClientsFormState extends State<AddClientsForm> {
                     const SizedBox(
                       height: 10,
                     ),
-                    TextFormField(
-                      controller: _correoController,
-                      decoration: const InputDecoration(
-                          labelText: 'Correo',
-                          filled: true,
-                          fillColor: Colors.white),
-                      keyboardType: TextInputType.text,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa un correo';
-                        }
-                        return null;
-                      },
+                    Container(
+                      height: mediaScreen * 0.20,
+                      width: mediaScreen * 0.95,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15) ,
+                        boxShadow:  [
+                           BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 7,
+                            spreadRadius: 2
+                          )
+                        ]
+                      ),
+                      child: TextFormField(
+                      
+                        controller: _correoController,
+                        decoration:  InputDecoration(
+                          errorStyle: const TextStyle(fontFamily: 'Poppins Regular') ,
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 1, color: Colors.red
+                            )
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10) ,
+                              borderSide: const BorderSide(
+                                color: Colors.red ,
+                                width: 1,
+                              ) 
+                          ) ,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none ,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 25 ,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 25 ,),
+                              
+                            ) ,
+                            labelText: 'Correo',
+                            labelStyle: const TextStyle(fontFamily: 'Poppins Regular',color: Colors.black) ,
+                            filled: true,
+                            fillColor: Colors.white),
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+
+
+                          if (value!.isEmpty ) {
+                            return 'Por favor ingresa un correo';
+                          }else if(!value.contains('@')){
+                            return 'Por favor ingresa un correo electronico valido';
+
+                            }
+                          return null;
+                        },
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    TextFormField(
-                      controller: _telefonoController,
-                      decoration: const InputDecoration(
-                          labelText: 'Telefono',
-                          filled: true,
-                          fillColor: Colors.white),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa el telefono del cliente';
-                        }
-                        return null;
-                      },
+                    Container(
+                      height: mediaScreen * 0.20,
+                      width: mediaScreen * 0.95,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                         borderRadius: BorderRadius.circular(15),
+                         boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            blurRadius: 7,
+                            spreadRadius: 2
+                          )
+                         ]
+                      ) ,
+
+                      child: TextFormField(
+                        controller: _telefonoController,
+                        decoration:  InputDecoration(
+                          errorStyle: const TextStyle(fontFamily: 'Poppins Regular'),
+                           errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              width: 1, color: Colors.red
+                            )
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10) ,
+                              borderSide: const BorderSide(
+                                color: Colors.red ,
+                                width: 1,
+                              ) 
+                          ) ,
+                              border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none ,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 25 ,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 25 ,),),
+
+                            contentPadding:  const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                            labelText: 'Telefono',
+                            labelStyle: const TextStyle(fontFamily: 'Poppins Regular', color: Colors.black),
+                            filled: true,
+                            fillColor: Colors.white),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa el telefono del cliente';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
                     
                     const SizedBox(
                       height: 10,
                     ),
-                      Container(
-                      width: 300,
-                      color: Colors.blue,
+                      SizedBox(
+                      width: mediaScreen, 
                       child: const Text(
                         "Dirección Fiscal",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.start,
+                        style: TextStyle(fontFamily: 'Poppins Bold',color: Colors.black, fontSize: 18),
                       ),
                     ),
                           const SizedBox(
@@ -264,63 +449,201 @@ class _AddClientsFormState extends State<AddClientsForm> {
                        const SizedBox(
                       height: 10,
                     ),
-                     TextFormField(
-                      controller: _cityController,
-                      decoration: const InputDecoration(
-                          labelText: 'Ciudad',
-                          filled: true,
-                          fillColor: Colors.white),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa la Ciudad';
-                        }
-                        return null;
-                      },
-                      keyboardType: TextInputType.text,
-
-                    ),
+                     Container(
+                        height: mediaScreen * 0.20,
+                        width: mediaScreen * 0.95,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 7,
+                              spreadRadius: 2,
+                              color: Colors.grey.withOpacity(0.5)
+                              
+                            )
+                          ]
+                        ),
+                        child: TextFormField(
+                        controller: _cityController,
+                        decoration:  InputDecoration(
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(color: Colors.red, width: 1.0)
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                              width: 1.0,
+                            )
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(width: 25, color:Colors.white)
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: BorderSide.none
+                          ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(width: 25, color: Colors.white),
+                            ),
+                            labelText: 'Ciudad',
+                            labelStyle: const TextStyle(fontFamily: 'Poppins Regular', color: Colors.black) ,
+                            filled: true,
+                            fillColor: Colors.white),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa la Ciudad';
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.text,
+                       
+                                           ),
+                     ),
 
                      const SizedBox(
                       height: 10,
                     ),
-                     TextFormField(
-                      controller: _direccionController,
-                      decoration: const InputDecoration(
-                          labelText: 'Direccion',
-                          filled: true,
-                          fillColor: Colors.white),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa la direccion del cliente';
-                        }
-                        return null;
-                      },
-                      maxLines: 2,
-                    keyboardType: TextInputType.text,
-
-                    ),
+                     Container(
+                        height: mediaScreen * 0.30,
+                        width: mediaScreen * 0.95,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                           borderRadius: BorderRadius.circular(15),
+                           boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              blurRadius: 7, 
+                              spreadRadius: 2,
+                            )
+                           ]
+                        ) ,
+                       child: TextFormField(
+                        controller: _direccionController,
+                        decoration:  InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(width: 25, color: Colors.white)
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius:  BorderRadius.circular(15) ,
+                            borderSide: BorderSide.none
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(
+                              color: Colors.white,
+                              width: 25,
+                             )
+                          ) ,
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            borderSide: const BorderSide(color: Colors.red, width: 1.0)
+                          ) ,
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15), 
+                              borderSide: const BorderSide(width: 1.0, color: Colors.red )
+                          ) ,
+                            labelText: 'Direccion',
+                            labelStyle: const TextStyle(fontFamily: 'Poppins Regular', color: Colors.black , ),
+                            filled: true,
+                            fillColor: Colors.white),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa la direccion del cliente';
+                          }
+                          return null;
+                        },
+                        maxLines: 2,
+                                           keyboardType: TextInputType.text,
+                       
+                                           ),
+                     ),
                    
                     const SizedBox(height: 10,),
-                          TextFormField(
-                      controller: _codePostalController,
-                      decoration: const InputDecoration(
-                          labelText: 'Codigo Postal',
-                          filled: true,
-                          fillColor: Colors.white),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa el codigo postal de su dirección';
-                        }
-                        return null;
-                      },
-                      keyboardType: TextInputType.text,
-
-                    ),
+                          Container(
+                            height: mediaScreen * 0.20,
+                            width: mediaScreen * 0.95,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  blurRadius: 7,
+                                  spreadRadius: 2
+                                )
+                              ]
+                            ),
+                            child: TextFormField(
+                            controller: _codePostalController,
+                            decoration:  InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15), 
+                              borderSide: const BorderSide(
+                                width: 25, 
+                                color: Colors.white
+                              )
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                width: 25, 
+                                color: Colors.white
+                              )
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(color: Colors.red, width: 1)
+                            ) ,
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                color: Colors.red,
+                                width: 1
+                              )
+                            ),
+                            labelText: 'Codigo Postal',
+                            errorStyle: const TextStyle(fontFamily: 'Poppins Regular',),
+                            labelStyle: const TextStyle(fontFamily: 'Poppins Regular', color: Colors.black),
+                            filled: true,
+                            fillColor: Colors.white),
+                            validator: (value) {
+                            if (value == null || value.isEmpty) {
+                            return 'Por favor ingresa el codigo postal de su dirección';
+                                }
+                                return null;
+                              },
+                              keyboardType: TextInputType.number,
+        
+                                                ),
+                          ),
 
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
+                      child: Container(
+                        width: mediaScreen * 0.95,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              blurRadius: 7,
+                              spreadRadius: 2
+                            )
+                          ]
+                        ),
                         child: ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -329,13 +652,13 @@ class _AddClientsFormState extends State<AddClientsForm> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: colorTheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
-                          child: const Text('Guardar'),
+                          child: const Text('Crear', style: TextStyle(fontFamily: 'Poppins SemiBold'),),
                         ),
                       ),
                     ),
@@ -429,28 +752,10 @@ class _AddClientsFormState extends State<AddClientsForm> {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Cliente guardado correctamente'),
     ));
+
   }
 
-  Future<void> saveClientToDatabase(Customer client) async {
-
-
-    print('Client ${client.toMap()}');
-
-    final db = await DatabaseHelper.instance.database;
-    if (db != null) {
-      int result = await db.insert('clients', client.toMap());
-
-      if (result != -1) {
-        print(
-            'El Cliente se ha guardado correctamente en la base de datos con el id: $result');
-      } else {
-        print('Error al guardar el Cliente en la base de datos');
-      }
-    } else {
-      // Manejar el caso en el que db sea null, por ejemplo, lanzar una excepción o mostrar un mensaje de error
-      print('Error: db is null');
-    }
-  }
+  
 
   @override
   void dispose() {

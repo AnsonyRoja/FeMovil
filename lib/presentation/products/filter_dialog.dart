@@ -52,10 +52,10 @@ class _FilterCategoriesState extends State<FilterCategories> {
           return DropdownMenuItem<String>(
             value: category,
             child: SizedBox(
-              width: 220,
+              width: MediaQuery.of(context).size.width *0.5 ,
               child: Text(
                 category,
-                overflow: TextOverflow.clip,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontFamily: 'Poppins Regular'),
               ),
             ),
