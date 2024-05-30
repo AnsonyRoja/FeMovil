@@ -480,7 +480,6 @@ class _SynchronizationScreenState extends State<SynchronizationScreen> {
                   sincronizationPaymentTerms();
                   sincronizationImpuestos(setState);
                   await synchronizeCustomersWithIdempiere(setState);
-                  await synchronizeVendorsWithIdempiere(setState);
                   await synchronizeProductsWithIdempiere(setState);
                   await synchronizeOrderSalesWithIdempiere(setState);
               

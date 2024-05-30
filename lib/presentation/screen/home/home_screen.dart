@@ -1,6 +1,5 @@
 import 'package:femovil/assets/nav_bar_bottom.dart';
 import 'package:femovil/config/banner_app.dart';
-import 'package:femovil/config/getPosProperties.dart';
 import 'package:femovil/database/create_database.dart';
 import 'package:femovil/infrastructure/models/info_perfil.dart';
 import 'package:femovil/presentation/cobranzas/cobranzas_list.dart';
@@ -60,8 +59,7 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width * 0.8;
-    final colors = Theme.of(context).colorScheme;
+
 
     if (closeScreen == false) {
       return Scaffold(
@@ -126,38 +124,7 @@ class HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 50),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Products(),
-                              ));
-                        },
-                        child: Column(
-                          children: [
-                          Container(
-                            width: 100,
-                            height: 80,
-                              decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 218, 248, 219), // Establece el color de fondo verde
-                                borderRadius: BorderRadius.circular(20), // Establece bordes redondeados
-                              ),
-                            child: Center( // Centra la imagen dentro del contenedor
-                              child: Image.asset(
-                                'lib/assets/Productos@3x.png',
-                                width: 45,
-                                height: 45,
-                                fit: BoxFit.contain, // Ajusta la imagen para que quepa dentro del contenedor
-                              ),
-                            ),
-                          ),
-                            const SizedBox(height: 5,),
-                            const Text("Productos", style:  TextStyle(fontFamily: 'Poppins SemiBold'),),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 10),
+                
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -212,18 +179,15 @@ class HomeState extends State<Home> {
                                   )),
                                 const SizedBox(height: 5,),
                                 const Text("Precios", style: TextStyle(fontFamily: 'Poppins SemiBold') ,),
+
+
                               
                             ],
                           ),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 25,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 120),
-                     
+
+                      const SizedBox(width: 10,),
+     
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -249,60 +213,10 @@ class HomeState extends State<Home> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10,),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Providers(),
-                              ));
-                        },
-                        child: Column(
-                          children: [
-                            Container(  
-                               width: 100,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(255, 245, 208, 171), // Establece el color de fondo verde
-                                      borderRadius: BorderRadius.circular(20), // Establece bordes redondeados
-                                    ),
-                              child: Center(child: Image.asset("lib/assets/proveedores.png", width: 45, height: 45, fit: BoxFit.contain,))),
-                            const SizedBox(height: 5,),
-                            const Text("Proveedores", style: TextStyle(fontFamily: 'Poppins SemiBold'),),
-                        
-                          ],
-                        ),
-                      ),
-                        const SizedBox(width: 10,),
-                        GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Compras(),
-                              ));
-                        },
-                        child:  Column(
-                          children: [
-
-                            Container(
-                                width: 100,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(255, 212, 245, 246), // Establece el color de fondo verde
-                                      borderRadius: BorderRadius.circular(20), // Establece bordes redondeados
-                              ),
-                              child: Center(child: Image.asset('lib/assets/Compras@3x.png', width: 45, height: 45,))),
-                            const SizedBox(height: 5,),
-                            const Text("Compras", style: TextStyle(fontFamily: 'Poppins SemiBold'),),
-                          
-                          ],
-                        ),
-                      ),
                     ],
                   ),
-                 const SizedBox(height: 25,),
+                  const SizedBox(height: 25,),
+            
                    Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -334,33 +248,8 @@ class HomeState extends State<Home> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10,),
 
-                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const Retenciones(),
-                              ));
-                        },
-                        child: Column(
-                          children: [
-                            
-                            Container(
-                                width: 100,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(255, 250, 201, 249), // Establece el color de fondo verde
-                                      borderRadius: BorderRadius.circular(20), // Establece bordes redondeados
-                              ),
-                              child: Center(child: Image.asset('lib/assets/Retenciones@3x.png', width: 45, height: 45, fit: BoxFit.contain,))),
-                            const SizedBox(height: 5,),
-                            const Text("Retenciones", style: TextStyle(fontFamily: 'Poppins SemiBold' ), ),
-                         
-                          ],
-                        ),
-                      ),
+                  
 
                       const SizedBox(height: 25, width: 10,),
                     
